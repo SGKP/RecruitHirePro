@@ -251,13 +251,13 @@ export default function CulturalTest() {
 
   const Question = ({ id, question, options }) => (
     <div className="mb-6">
-      <label className="block text-gray-200 font-medium mb-3 text-lg">{question}</label>
+      <label className="block text-gray-900 font-medium mb-3 text-lg">{question}</label>
       <div className="space-y-3">
         {options.map((option) => (
           <label 
             key={option} 
-            className={`flex items-center p-4 card-modern cursor-pointer transition-all hover:scale-[1.02] ${
-              answers[id] === option ? 'border-2 border-green-400 bg-green-500/20' : 'border border-gray-600'
+            className={`flex items-center p-4 bg-white rounded-lg cursor-pointer transition-all hover:scale-[1.02] ${
+              answers[id] === option ? 'border-2 border-blue-500 bg-blue-50' : 'border border-gray-200'
             }`}
             onClick={(e) => {
               e.preventDefault();
@@ -270,9 +270,9 @@ export default function CulturalTest() {
               value={option}
               checked={answers[id] === option}
               onChange={() => {}}
-              className="mr-3 text-green-500 pointer-events-none w-5 h-5"
+              className="mr-3 text-blue-600 pointer-events-none w-5 h-5"
             />
-            <span className="text-gray-200">{option}</span>
+            <span className="text-gray-900">{option}</span>
           </label>
         ))}
       </div>
@@ -280,14 +280,14 @@ export default function CulturalTest() {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar role="student" />
       <div className="ml-64">
         {/* Header */}
-        <header className="navbar-modern border-b border-gray-700">
+        <header className="bg-white border-b border-gray-200 shadow-sm">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <h1 className="text-2xl font-bold text-gradient">Cultural Fitness Test</h1>
-            <p className="text-gray-300 mt-1">25 questions to understand your work preferences</p>
+            <h1 className="text-2xl font-bold text-gray-900">🎯 Cultural Fitness Test</h1>
+            <p className="text-gray-700 mt-1">25 questions to understand your work preferences</p>
           </div>
         </header>
 
@@ -295,12 +295,12 @@ export default function CulturalTest() {
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-gray-300 text-sm font-medium">Overall Progress</span>
-            <span className="text-gray-300 text-sm">{currentCategory + 1} / {categories.length} categories</span>
+            <span className="text-gray-900 text-sm font-medium">Overall Progress</span>
+            <span className="text-gray-700 text-sm">{currentCategory + 1} / {categories.length} categories</span>
           </div>
-          <div className="w-full bg-gray-700/50 rounded-full h-3">
+          <div className="w-full bg-gray-200 rounded-full h-3">
             <div
-              className="h-3 rounded-full transition-all bg-gradient-to-r from-green-500 to-purple-500"
+              className="h-3 rounded-full transition-all bg-gradient-to-r from-blue-500 to-purple-500"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
@@ -317,12 +317,12 @@ export default function CulturalTest() {
               <button
                 key={idx}
                 onClick={() => setCurrentCategory(idx)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
+                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all font-medium ${
                   currentCategory === idx
-                    ? `btn-primary`
+                    ? `bg-blue-600 text-white shadow-lg`
                     : isComplete
-                    ? 'bg-green-500/20 border border-green-400 text-green-200 hover:bg-green-500/30'
-                    : 'btn-secondary'
+                    ? 'bg-green-100 border-2 border-green-500 text-green-700 hover:bg-green-200'
+                    : 'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {cat.name} ({categoryAnswered}/{categoryTotal})
@@ -331,23 +331,23 @@ export default function CulturalTest() {
           })}
         </div>
 
-        <div className="card-modern p-8">
+        <div className="card-modern p-8 border border-gray-200">
           {error && (
-            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 text-red-200 rounded-lg">
+            <div className="mb-6 p-4 bg-red-100 border-2 border-red-500 text-red-700 rounded-lg">
               {error}
             </div>
           )}
 
           {/* Category Header */}
-          <div className="mb-8 pb-6 border-b border-gray-700">
-            <h2 className="text-2xl font-bold text-gradient mb-2">{currentCategoryData.name}</h2>
-            <p className="text-gray-400">{currentCategoryData.description}</p>
+          <div className="mb-8 pb-6 border-b border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{currentCategoryData.name}</h2>
+            <p className="text-gray-700 text-lg">{currentCategoryData.description}</p>
             <div className="mt-4">
-              <div className="flex justify-between text-sm text-gray-400 mb-1">
+              <div className="flex justify-between text-sm text-gray-700 font-medium mb-1">
                 <span>Category Progress</span>
                 <span>{answeredInCategory} / {totalInCategory} answered</span>
               </div>
-              <div className="w-full bg-gray-700/50 rounded-full h-2">
+              <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all bg-${currentCategoryData.color}-500`}
                   style={{ width: `${(answeredInCategory / totalInCategory) * 100}%` }}
@@ -363,7 +363,7 @@ export default function CulturalTest() {
             ))}
 
             {/* Navigation */}
-            <div className="mt-8 flex justify-between items-center pt-6 border-t border-gray-700">
+            <div className="mt-8 flex justify-between items-center pt-6 border-t border-gray-200">
               <div className="flex gap-3">
                 <button
                   type="button"
@@ -396,9 +396,9 @@ export default function CulturalTest() {
                   <button
                     type="submit"
                     disabled={loading || Object.values(answers).filter(a => !a).length > 0}
-                    className="btn-primary disabled:opacity-50"
+                    className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? 'Submitting...' : 'Submit Test'}
+                    {loading ? 'Submitting...' : '✓ Submit Test'}
                   </button>
                 )}
               </div>

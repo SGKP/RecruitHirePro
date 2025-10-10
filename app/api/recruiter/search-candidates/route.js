@@ -5,6 +5,10 @@ import connectDB from '@/lib/mongodb';
 import Student from '@/models/Student';
 import Job from '@/models/Job';
 import User from '@/models/User';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function GET(request) {
   try {
@@ -46,8 +50,8 @@ export async function GET(request) {
     // Get all students
     const students = await Student.find().populate('user_id');
 
-    // Calculate match scores for each student
-    const candidatesWithScores = students.map(student => {
+    // Calculate match scores for each student (with AI-powered retention)
+    const candidatesWithScores = await Promise.all(students.map(async student => {
       // Calculate skill match score (100% of match score)
       const studentSkills = student.resume_parsed_data?.skills || [];
       const requiredSkills = job.required_skills || [];
@@ -69,22 +73,11 @@ export async function GET(request) {
       // Match score is based ONLY on skills
       const match_score = skillMatchScore;
 
-      // Calculate retention score based on cultural fitness
-      let retentionScore = 50; // Base score
-      
-      if (student.cultural_fitness) {
-        const cf = student.cultural_fitness;
-        
-        // Work style alignment
-        if (cf.work_style === 'In teams') retentionScore += 10;
-        if (cf.work_life_balance === 'Very important') retentionScore += 5;
-        if (cf.learning_preference === 'Mentorship') retentionScore += 10;
-        if (cf.career_goals === 'Leadership role') retentionScore += 10;
-        if (cf.collaboration_style === 'Contribute equally') retentionScore += 10;
-        if (cf.feedback_preference === 'Regular structured reviews') retentionScore += 5;
-      }
-
-      retentionScore = Math.min(retentionScore, 100);
+      // ✨ AI-POWERED RETENTION SCORE CALCULATION ✨
+      const retentionResult = await calculateAIRetentionScore(student.cultural_fitness);
+      const retentionScore = retentionResult.score;
+      const retentionReasoning = retentionResult.reasoning;
+      const aiPowered = retentionResult.ai_powered;
 
       return {
         student_id: student._id.toString(),
@@ -100,6 +93,8 @@ export async function GET(request) {
         achievements: student.achievements || [],
         match_score: Math.round(match_score),
         retention_score: Math.round(retentionScore),
+        retention_reasoning: retentionReasoning,
+        ai_powered: aiPowered,
         skills: studentSkills,
         matched_skills: matchedSkills,
         resume_url: student.resume_url,
@@ -109,7 +104,7 @@ export async function GET(request) {
         location: student.location || 'N/A',
         interests: student.interests || []
       };
-    });
+    }));
 
     // Apply filters
     let filteredCandidates = candidatesWithScores;
@@ -230,4 +225,176 @@ export async function GET(request) {
       { status: 500 }
     );
   }
+}
+
+// AI-Powered Retention Score Calculation using Gemini
+async function calculateAIRetentionScore(culturalFitness) {
+  if (!culturalFitness) {
+    return {
+      score: 50,
+      reasoning: 'No cultural fitness data available',
+      ai_powered: false
+    };
+  }
+
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+    const prompt = `Analyze this candidate's cultural fitness profile and predict retention probability (0-100).
+
+PROFILE:
+Team: ${culturalFitness.team_preference || 'N/A'}, Conflict: ${culturalFitness.conflict_handling || 'N/A'}, Collaboration: ${culturalFitness.collaboration_style || 'N/A'}
+Work-Life: ${culturalFitness.work_life_balance || 'N/A'}, Environment: ${culturalFitness.work_environment || 'N/A'}
+Learning: ${culturalFitness.learning_preference || 'N/A'}, Feedback: ${culturalFitness.feedback_preference || 'N/A'}
+Career: ${culturalFitness.career_focus || 'N/A'}, Vision: ${culturalFitness.five_year_vision || 'N/A'}
+Communication: ${culturalFitness.communication_style || 'N/A'}
+
+Respond with ONLY a JSON object:
+{"score": <0-100>, "reason": "<brief 1-sentence reason>"}`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    // Parse response
+    const cleanText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const aiResult = JSON.parse(cleanText);
+
+    return {
+      score: Math.max(0, Math.min(100, aiResult.score || 50)),
+      reasoning: aiResult.reason || 'AI analysis completed',
+      ai_powered: true
+    };
+
+  } catch (error) {
+    console.error('AI Retention Error:', error);
+    // Fallback to basic calculation
+    return calculateFallbackRetention(culturalFitness);
+  }
+}
+
+// Fallback calculation if AI fails
+function calculateFallbackRetention(culturalFitness) {
+  let score = 50;
+  const strengths = [];
+  const concerns = [];
+  
+  if (!culturalFitness) {
+    return { 
+      score: 50, 
+      reasoning: 'No cultural fitness assessment completed. Score based on baseline metrics only.', 
+      ai_powered: false 
+    };
+  }
+  
+  // Team dynamics (25 points)
+  if (culturalFitness.collaboration_style?.includes('Contribute equally')) {
+    score += 5;
+    strengths.push('balanced team collaboration');
+  }
+  if (culturalFitness.collaboration_style?.includes('Take initiative')) {
+    score += 5;
+    strengths.push('proactive leadership');
+  }
+  if (culturalFitness.conflict_handling?.includes('Address directly')) {
+    score += 5;
+    strengths.push('direct conflict resolution');
+  } else if (culturalFitness.conflict_handling?.includes('Avoid')) {
+    concerns.push('may avoid confrontation');
+  }
+  if (culturalFitness.team_preference?.toLowerCase().includes('collaborative')) {
+    score += 5;
+    strengths.push('team-oriented mindset');
+  }
+  if (culturalFitness.group_role) {
+    score += 5;
+  }
+  
+  // Work style (20 points)
+  if (culturalFitness.work_life_balance?.includes('Important') || culturalFitness.work_life_balance?.includes('priority')) {
+    score += 5;
+    strengths.push('values work-life balance');
+  }
+  if (culturalFitness.work_environment) {
+    score += 5;
+    if (culturalFitness.work_environment.toLowerCase().includes('flexible') || 
+        culturalFitness.work_environment.toLowerCase().includes('remote')) {
+      strengths.push('adaptable work style');
+    }
+  }
+  if (culturalFitness.deadline_management) {
+    score += 5;
+  }
+  if (culturalFitness.schedule_flexibility) {
+    score += 5;
+  }
+  
+  // Learning & growth (25 points)
+  if (culturalFitness.learning_preference) {
+    score += 5;
+    if (culturalFitness.learning_preference.toLowerCase().includes('hands-on') || 
+        culturalFitness.learning_preference.toLowerCase().includes('practical')) {
+      strengths.push('hands-on learner');
+    }
+  }
+  if (culturalFitness.feedback_preference?.includes('Regular')) {
+    score += 5;
+    strengths.push('seeks regular feedback');
+  }
+  if (culturalFitness.feedback_preference?.includes('Continuous')) {
+    score += 5;
+    strengths.push('growth-oriented mindset');
+  }
+  if (culturalFitness.challenge_approach) {
+    score += 5;
+  }
+  if (culturalFitness.mentorship_preference) {
+    score += 5;
+  }
+  
+  // Career goals (10 points)
+  if (culturalFitness.five_year_vision) {
+    score += 5;
+    strengths.push('clear career vision');
+  } else {
+    concerns.push('unclear long-term goals');
+  }
+  if (culturalFitness.leadership_interest) {
+    score += 5;
+    if (culturalFitness.leadership_interest.toLowerCase().includes('yes') || 
+        culturalFitness.leadership_interest.toLowerCase().includes('interested')) {
+      strengths.push('leadership ambitions');
+    }
+  }
+  
+  // Build personalized reasoning
+  let reasoning = '';
+  
+  if (score >= 80) {
+    reasoning = '🌟 Strong cultural fit. ';
+  } else if (score >= 65) {
+    reasoning = '✅ Good cultural alignment. ';
+  } else if (score >= 50) {
+    reasoning = '⚖️ Moderate fit. ';
+  } else {
+    reasoning = '⚠️ Limited cultural data. ';
+  }
+  
+  if (strengths.length > 0) {
+    reasoning += `Key strengths: ${strengths.slice(0, 3).join(', ')}.`;
+  }
+  
+  if (concerns.length > 0 && score < 70) {
+    reasoning += ` Areas to explore: ${concerns.join(', ')}.`;
+  }
+  
+  if (strengths.length === 0 && concerns.length === 0) {
+    reasoning += 'Standard cultural assessment completed.';
+  }
+  
+  return {
+    score: Math.min(score, 100),
+    reasoning: reasoning.trim(),
+    ai_powered: false
+  };
 }

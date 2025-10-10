@@ -13,6 +13,8 @@ export default function RecruiterCandidates() {
   const [loading, setLoading] = useState(false);
   const [shortlistedIds, setShortlistedIds] = useState(new Set());
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  const [showReasoningModal, setShowReasoningModal] = useState(false);
+  const [selectedReasoning, setSelectedReasoning] = useState(null);
   const [filters, setFilters] = useState({
     min_match_score: '',
     min_retention_score: '',
@@ -164,6 +166,21 @@ export default function RecruiterCandidates() {
     }
   };
 
+  const openReasoningModal = (candidate) => {
+    setSelectedReasoning({
+      name: candidate.name,
+      score: candidate.retention_score,
+      reasoning: candidate.retention_reasoning || 'No detailed reasoning available.',
+      aiPowered: candidate.ai_powered
+    });
+    setShowReasoningModal(true);
+  };
+
+  const closeReasoningModal = () => {
+    setShowReasoningModal(false);
+    setSelectedReasoning(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar role="recruiter" />
@@ -198,7 +215,6 @@ export default function RecruiterCandidates() {
               className="btn-secondary text-sm"
             >
               {showAdvancedSearch ? '▼ Hide Advanced' : '▶ Show Advanced Filters'}
-            </button>
             </button>
           </div>
           
@@ -436,19 +452,19 @@ export default function RecruiterCandidates() {
         </div>
 
         {/* Candidates Results */}
-        <div className="card-modern p-6">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-6">
-            Candidates ({candidates.length})
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
+            👥 Candidates ({candidates.length})
           </h2>
 
           {loading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto"></div>
-              <p className="mt-4 text-gray-300">Searching candidates...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-700 font-medium">Searching candidates...</p>
             </div>
           ) : candidates.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-300 text-lg">
+              <p className="text-gray-700 text-lg font-medium">
                 {selectedJob ? 'No candidates match your criteria' : 'Select a job to view candidates'}
               </p>
             </div>
@@ -457,14 +473,14 @@ export default function RecruiterCandidates() {
               {candidates.map((candidate) => (
                 <div
                   key={candidate.student_id}
-                  className="card-modern p-6 hover:scale-[1.02] hover:shadow-xl hover:shadow-purple-500/20 transition-all"
+                  className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/20 transition-all"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-200 mb-2">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">
                         {candidate.name}
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-300 mb-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700 mb-3 font-medium">
                         <p>{candidate.email}</p>
                         <p>GPA: {candidate.gpa}</p>
                         <p>Year: {candidate.graduation_year}</p>
@@ -483,7 +499,7 @@ export default function RecruiterCandidates() {
                             href={candidate.linkedin_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-purple-400 hover:text-purple-300 text-sm hover:underline"
+                            className="text-blue-600 hover:text-blue-700 text-sm hover:underline font-medium"
                           >
                             LinkedIn Profile →
                           </a>
@@ -492,22 +508,22 @@ export default function RecruiterCandidates() {
 
                       {candidate.achievements && candidate.achievements.length > 0 && (
                         <div className="mb-3">
-                          <p className="text-sm font-medium text-gray-200 mb-1">Achievements:</p>
+                          <p className="text-sm font-medium text-gray-900 mb-1">Achievements:</p>
                           <div className="space-y-1">
                             {candidate.achievements.map((ach, idx) => (
-                              <p key={idx} className="text-sm text-gray-300">• {ach.title}</p>
+                              <p key={idx} className="text-sm text-gray-700">• {ach.title}</p>
                             ))}
                           </div>
                         </div>
                       )}
 
                       <div className="mb-3">
-                        <p className="text-sm font-medium text-gray-200 mb-2">Matched Skills:</p>
+                        <p className="text-sm font-medium text-gray-900 mb-2">Matched Skills:</p>
                         <div className="flex flex-wrap gap-2">
                           {candidate.matched_skills?.map((skill, idx) => (
                             <span
                               key={idx}
-                              className="px-3 py-1 bg-green-500/20 border border-green-400/50 text-green-200 rounded-full text-sm"
+                              className="px-3 py-1 bg-green-100 border border-green-500 text-green-700 rounded-full text-sm font-medium"
                             >
                               ✓ {skill}
                             </span>
@@ -521,9 +537,21 @@ export default function RecruiterCandidates() {
                         <div className="text-2xl font-bold">{candidate.match_score}%</div>
                         <div className="text-xs">Skills Match</div>
                       </div>
-                      <div className="bg-gradient-to-br from-pink-600 to-purple-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-pink-500/50">
+                      <div 
+                        onClick={() => candidate.retention_reasoning && openReasoningModal(candidate)}
+                        className={`bg-gradient-to-br from-pink-600 to-purple-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-pink-500/50 ${candidate.retention_reasoning ? 'cursor-pointer hover:scale-105 transition-transform' : ''}`}
+                        title={candidate.retention_reasoning ? "Click to view detailed analysis" : ""}
+                      >
                         <div className="text-2xl font-bold">{candidate.retention_score}%</div>
-                        <div className="text-xs">Retention</div>
+                        <div className="text-xs flex items-center justify-center gap-1">
+                          Retention
+                          {candidate.ai_powered && (
+                            <span className="text-yellow-300" title="AI-Powered Analysis">✨</span>
+                          )}
+                          {candidate.retention_reasoning && (
+                            <span className="ml-1">🔍</span>
+                          )}
+                        </div>
                       </div>
                       {candidate.gpa_numeric && (
                         <div className="bg-gradient-to-br from-blue-600 to-cyan-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-blue-500/50">
@@ -579,6 +607,79 @@ export default function RecruiterCandidates() {
           )}
         </div>
       </div>
+
+      {/* Retention Reasoning Modal */}
+      {showReasoningModal && selectedReasoning && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={closeReasoningModal}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-6 rounded-t-xl">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">
+                    🎯 Retention Analysis
+                  </h2>
+                  <p className="text-pink-100">{selectedReasoning.name}</p>
+                </div>
+                <button
+                  onClick={closeReasoningModal}
+                  className="text-white hover:text-pink-200 text-3xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="mt-4 flex items-center gap-4">
+                <div className="bg-white bg-opacity-20 rounded-lg px-4 py-2">
+                  <div className="text-3xl font-bold">{selectedReasoning.score}%</div>
+                  <div className="text-xs text-pink-100">Retention Score</div>
+                </div>
+                {selectedReasoning.aiPowered && (
+                  <div className="bg-yellow-400 bg-opacity-20 text-yellow-100 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                    <span>✨</span>
+                    AI-Powered Analysis
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                📊 Detailed Analysis:
+              </h3>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  {selectedReasoning.reasoning}
+                </p>
+              </div>
+
+              {selectedReasoning.aiPowered && (
+                <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-blue-900">
+                    <strong>💡 Note:</strong> This analysis was generated using Google Gemini AI based on the candidate's cultural fitness assessment responses. It analyzes 25 questions across 5 categories: Team Dynamics, Work Style, Learning & Growth, Career Goals, and Work Environment.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-50 px-6 py-4 rounded-b-xl border-t border-gray-200">
+              <button
+                onClick={closeReasoningModal}
+                className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:scale-105 transition-transform font-medium"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
