@@ -9,21 +9,21 @@ export default function Sidebar({ role }) {
   const [collapsed, setCollapsed] = useState(false);
 
   const recruiterLinks = [
-    { href: '/recruiter/dashboard', icon: '📊', label: 'Dashboard' },
-    { href: '/recruiter/jobs', icon: '💼', label: 'Jobs' },
-    { href: '/recruiter/jobs/new', icon: '➕', label: 'Post Job' },
-    { href: '/recruiter/candidates', icon: '🔍', label: 'Search Candidates' },
-    { href: '/recruiter/shortlist', icon: '⭐', label: 'Shortlisted' },
-    { href: '/recruiter/analytics', icon: '📈', label: 'Analytics' },
+    { href: '/recruiter/dashboard', icon: '', label: 'Dashboard' },
+    { href: '/recruiter/jobs', icon: '', label: 'Jobs' },
+    { href: '/recruiter/jobs/new', icon: '', label: 'Post Job' },
+    { href: '/recruiter/candidates', icon: '', label: 'Search Candidates' },
+    { href: '/recruiter/shortlist', icon: '', label: 'Shortlisted' },
+    { href: '/recruiter/analytics', icon: '', label: 'Analytics' },
   ];
 
   const studentLinks = [
-    { href: '/student/dashboard', icon: '🏠', label: 'Dashboard' },
-    { href: '/student/profile', icon: '👤', label: 'Profile' },
-    { href: '/student/jobs', icon: '💼', label: 'Browse Jobs' },
-    { href: '/student/applications', icon: '📝', label: 'My Applications' },
-    { href: '/student/analytics', icon: '📊', label: 'My Analytics' },
-    { href: '/student/cultural-test', icon: '🎯', label: 'Cultural Fit Test' },
+    { href: '/student/dashboard', icon: '', label: 'Dashboard' },
+    { href: '/student/profile', icon: '', label: 'Profile' },
+    { href: '/student/jobs', icon: '', label: 'Browse Jobs' },
+    { href: '/student/applications', icon: '', label: 'My Applications' },
+    { href: '/student/analytics', icon: '', label: 'My Analytics' },
+    { href: '/student/cultural-test', icon: '', label: 'Cultural Fit Test' },
   ];
 
   const links = role === 'recruiter' ? recruiterLinks : studentLinks;
@@ -48,22 +48,22 @@ export default function Sidebar({ role }) {
           onClick={() => setCollapsed(!collapsed)}
           className="p-2 hover:bg-gray-100 rounded-lg transition-all text-gray-600"
         >
-          {collapsed ? '☰' : '✕'}
+          {collapsed ? '☰' : '×'}
         </button>
       </div>
 
       {/* Navigation Links */}
-      <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100vh-100px)]">
+      <nav className="p-4 space-y-2 overflow-y-auto h-[calc(100vh-100px)]">
         {links.map((link) => {
           const isActive = pathname === link.href;
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all font-medium ${
                 isActive
-                  ? 'bg-blue-50 text-blue-700 shadow-sm'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
+                  ? 'bg-blue-50 text-blue-700 border-blue-500 shadow-sm'
+                  : 'text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-blue-600 hover:border-blue-300'
               }`}
               title={collapsed ? link.label : ''}
             >
