@@ -9,11 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chroma-core/default-embed": "^0.1.8",
     "@google/generative-ai": "^0.21.0",
     "@octokit/rest": "^21.0.2",
     "@vercel/blob": "^0.24.1",
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.5.0",
+    "chromadb": "^3.0.17",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.0",
     "next": "14.2.18",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
+    "null-loader": "^4.0.1",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14"
   }

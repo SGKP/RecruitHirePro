@@ -15,6 +15,10 @@ export default function RecruiterCandidates() {
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [showReasoningModal, setShowReasoningModal] = useState(false);
   const [selectedReasoning, setSelectedReasoning] = useState(null);
+  const [useSemanticSearch, setUseSemanticSearch] = useState(false);
+  const [semanticQuery, setSemanticQuery] = useState('');
+  const [syncingChroma, setSyncingChroma] = useState(false);
+  const [syncStatus, setSyncStatus] = useState('');
   const [filters, setFilters] = useState({
     min_match_score: '',
     min_retention_score: '',
@@ -61,6 +65,9 @@ export default function RecruiterCandidates() {
 
     setLoading(true);
     try {
+      // Choose endpoint based on search method
+      const endpoint = useSemanticSearch ? '/api/chroma/search' : '/api/recruiter/search-candidates';
+      
       // Build query parameters
       const queryParams = new URLSearchParams({
         job_id: selectedJob,
@@ -69,7 +76,12 @@ export default function RecruiterCandidates() {
         )
       });
 
-      const response = await fetch(`/api/recruiter/search-candidates?${queryParams}`, {
+      // Add semantic query if using ChromaDB
+      if (useSemanticSearch && semanticQuery) {
+        queryParams.set('query', semanticQuery);
+      }
+
+      const response = await fetch(`${endpoint}?${queryParams}`, {
         method: 'GET',
         credentials: 'include'
       });
@@ -181,6 +193,33 @@ export default function RecruiterCandidates() {
     setSelectedReasoning(null);
   };
 
+  const syncToChromaDB = async () => {
+    setSyncingChroma(true);
+    setSyncStatus('Syncing candidates to ChromaDB...');
+    
+    try {
+      const response = await fetch('/api/chroma/sync', {
+        method: 'POST'
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSyncStatus(`✅ Synced ${data.synced} candidates to ChromaDB!`);
+        setTimeout(() => setSyncStatus(''), 3000);
+      } else {
+        setSyncStatus(`❌ Sync failed: ${data.error}`);
+        setTimeout(() => setSyncStatus(''), 5000);
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+      setSyncStatus(`❌ Error: ${error.message}`);
+      setTimeout(() => setSyncStatus(''), 5000);
+    } finally {
+      setSyncingChroma(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar role="recruiter" />
@@ -210,12 +249,60 @@ export default function RecruiterCandidates() {
             <h2 className="text-2xl font-bold text-gray-900">
               🔍 Smart Search
             </h2>
-            <button
-              onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
-              className="btn-secondary text-sm"
-            >
-              {showAdvancedSearch ? '▼ Hide Advanced' : '▶ Show Advanced Filters'}
-            </button>
+            <div className="flex gap-3 items-center">
+              {/* ChromaDB Sync Button - For demo purposes */}
+              <button
+                onClick={syncToChromaDB}
+                disabled={syncingChroma}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
+                title="Sync candidates to ChromaDB vector database for advanced semantic search"
+              >
+                {syncingChroma ? '⏳ Syncing...' : '� Sync to Vector DB'}
+              </button>
+
+              {/* Semantic Search Toggle - Optional advanced feature */}
+              <button
+                onClick={() => setUseSemanticSearch(!useSemanticSearch)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  useSemanticSearch
+                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+                title={useSemanticSearch ? 'Using ChromaDB Vector Search (Advanced)' : 'Using Standard Search (Smart Matching Enabled)'}
+              >
+                {useSemanticSearch ? '🔮 Vector Search' : '🎯 Standard Search'}
+              </button>
+              
+              <button
+                onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
+                className="btn-secondary text-sm"
+              >
+                {showAdvancedSearch ? '▼ Hide Filters' : '▶ Show Filters'}
+              </button>
+            </div>
+          </div>
+
+          {/* Sync Status Message */}
+          {syncStatus && (
+            <div className={`mb-4 p-3 rounded-lg text-sm ${
+              syncStatus.includes('✅') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}>
+              {syncStatus}
+            </div>
+          )}
+
+          {/* Info: Semantic matching is always ON - no query needed */}
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">💡</span>
+              <div>
+                <h3 className="font-semibold text-blue-900 mb-1">Smart Skill Matching Active</h3>
+                <p className="text-sm text-blue-700">
+                  Our AI understands skill relationships. If a job needs "React" and candidate has "Next.js", 
+                  we automatically recognize the match! Match percentages are calculated intelligently.
+                </p>
+              </div>
+            </div>
           </div>
           
           {/* Basic Filters */}
@@ -518,25 +605,58 @@ export default function RecruiterCandidates() {
                       )}
 
                       <div className="mb-3">
-                        <p className="text-sm font-medium text-gray-900 mb-2">Matched Skills:</p>
+                        <p className="text-sm font-medium text-gray-900 mb-2">✅ Matched Skills:</p>
                         <div className="flex flex-wrap gap-2">
-                          {candidate.matched_skills?.map((skill, idx) => (
-                            <span
-                              key={idx}
-                              className="px-3 py-1 bg-green-100 border border-green-500 text-green-700 rounded-full text-sm font-medium"
-                            >
-                              ✓ {skill}
-                            </span>
-                          ))}
+                          {candidate.matched_skills && candidate.matched_skills.length > 0 ? (
+                            candidate.matched_skills.map((skill, idx) => (
+                              <span
+                                key={idx}
+                                className="px-3 py-1 bg-green-100 border border-green-500 text-green-700 rounded-full text-sm font-medium"
+                              >
+                                ✓ {skill}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-sm text-gray-500">No skills matched</span>
+                          )}
                         </div>
                       </div>
+
+                      {candidate.unmatched_skills && candidate.unmatched_skills.length > 0 && (
+                        <div className="mb-3">
+                          <p className="text-sm font-medium text-gray-900 mb-2">⚠️ Missing Skills:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {candidate.unmatched_skills.map((skill, idx) => (
+                              <span
+                                key={idx}
+                                className="px-3 py-1 bg-red-50 border border-red-300 text-red-600 rounded-full text-sm font-medium"
+                              >
+                                ✗ {skill}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="ml-4 flex flex-col gap-2">
                       <div className="bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-purple-500/50">
                         <div className="text-2xl font-bold">{candidate.match_score}%</div>
-                        <div className="text-xs">Skills Match</div>
+                        <div className="text-xs">
+                          {useSemanticSearch ? 'Combined Match' : 'Skills Match'}
+                        </div>
                       </div>
+
+                      {useSemanticSearch && candidate.semantic_score !== undefined && (
+                        <div className="bg-gradient-to-br from-indigo-600 to-blue-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-indigo-500/50">
+                          <div className="text-2xl font-bold">{candidate.semantic_score}%</div>
+                          <div className="text-xs flex items-center justify-center gap-1">
+                            Semantic
+                            <span title="AI Vector Similarity">🔮</span>
+                          </div>
+                        </div>
+                      )}
+
                       <div 
                         onClick={() => candidate.retention_reasoning && openReasoningModal(candidate)}
                         className={`bg-gradient-to-br from-pink-600 to-purple-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-pink-500/50 ${candidate.retention_reasoning ? 'cursor-pointer hover:scale-105 transition-transform' : ''}`}

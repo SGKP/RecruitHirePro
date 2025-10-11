@@ -6,6 +6,7 @@ import Student from '@/models/Student';
 import Job from '@/models/Job';
 import User from '@/models/User';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { calculateSemanticSkillMatch } from '@/lib/skillSemantics';
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -52,17 +53,15 @@ export async function GET(request) {
 
     // Calculate match scores for each student (with AI-powered retention)
     const candidatesWithScores = await Promise.all(students.map(async student => {
-      // Calculate skill match score (100% of match score)
+      // ✨ SEMANTIC SKILL MATCHING - Understands related skills
       const studentSkills = student.resume_parsed_data?.skills || [];
       const requiredSkills = job.required_skills || [];
       
-      const matchedSkills = requiredSkills.filter(skill =>
-        studentSkills.some(s => s.toLowerCase().includes(skill.toLowerCase()))
-      );
-      
-      const skillMatchScore = requiredSkills.length > 0
-        ? (matchedSkills.length / requiredSkills.length) * 100
-        : 0;
+      // Use semantic matching instead of simple keyword matching
+      const skillMatchResult = calculateSemanticSkillMatch(requiredSkills, studentSkills);
+      const skillMatchScore = skillMatchResult.score;
+      const matchedSkills = skillMatchResult.matchedSkills;
+      const unmatchedSkills = skillMatchResult.unmatchedSkills;
 
       // Extract education data
       const education = student.resume_parsed_data?.education || {};
@@ -97,6 +96,7 @@ export async function GET(request) {
         ai_powered: aiPowered,
         skills: studentSkills,
         matched_skills: matchedSkills,
+        unmatched_skills: unmatchedSkills, // Show which skills are missing
         resume_url: student.resume_url,
         github_username: student.github_data?.username,
         github_repos: student.github_data?.repos_count || 0,
