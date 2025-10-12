@@ -8,6 +8,8 @@ const studentSchema = new mongoose.Schema({
   },
   phone: String,
   linkedin_url: String,
+  profile_photo_url: String,
+  id_card_url: String,
   current_year: {
     type: String,
     enum: ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Graduate'],
@@ -54,6 +56,52 @@ const studentSchema = new mongoose.Schema({
     risk_tolerance: String,
     collaboration_style: String
   },
+  recommendations: [{
+    recommender_name: {
+      type: String,
+      required: true
+    },
+    recommender_email: {
+      type: String,
+      required: true
+    },
+    recommender_role: {
+      type: String,
+      enum: ['Professor', 'Club Mentor', 'Project Guide', 'Teaching Assistant', 'Placement Officer', 'HOD', 'Dean', 'Industry Mentor', 'Senior Student', 'Other'],
+      required: true
+    },
+    organization: String, // College/Company name
+    relationship: String, // How they know the student
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5
+    },
+    skills_rating: {
+      technical: Number, // 1-5
+      communication: Number, // 1-5
+      teamwork: Number, // 1-5
+      leadership: Number, // 1-5
+      problem_solving: Number // 1-5
+    },
+    recommendation_text: {
+      type: String,
+      required: true
+    },
+    would_hire_again: {
+      type: Boolean,
+      default: true
+    },
+    verified: {
+      type: Boolean,
+      default: false
+    },
+    verification_token: String,
+    created_at: {
+      type: Date,
+      default: Date.now
+    }
+  }],
   profile_completion: {
     type: Number,
     default: 0

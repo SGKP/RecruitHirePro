@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 
 export default function RecruiterCandidates() {
@@ -290,20 +291,6 @@ export default function RecruiterCandidates() {
               {syncStatus}
             </div>
           )}
-
-          {/* Info: Semantic matching is always ON - no query needed */}
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">💡</span>
-              <div>
-                <h3 className="font-semibold text-blue-900 mb-1">Smart Skill Matching Active</h3>
-                <p className="text-sm text-blue-700">
-                  Our AI understands skill relationships. If a job needs "React" and candidate has "Next.js", 
-                  we automatically recognize the match! Match percentages are calculated intelligently.
-                </p>
-              </div>
-            </div>
-          </div>
           
           {/* Basic Filters */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -640,10 +627,13 @@ export default function RecruiterCandidates() {
                     </div>
 
                     <div className="ml-4 flex flex-col gap-2">
-                      <div className="bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-purple-500/50">
-                        <div className="text-2xl font-bold">{candidate.match_score}%</div>
-                        <div className="text-xs">
-                          {useSemanticSearch ? 'Combined Match' : 'Skills Match'}
+                      <div className="bg-gradient-to-br from-green-600 to-blue-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-green-500/50">
+                        <div className="text-2xl font-bold">
+                          {Math.round((candidate.match_score * 0.83) + (candidate.retention_score * 0.17))}%
+                        </div>
+                        <div className="text-xs">Overall Match</div>
+                        <div className="text-[10px] opacity-80 mt-0.5">
+                          {candidate.match_score}% Skills · {candidate.retention_score}% Retention
                         </div>
                       </div>
 
@@ -657,22 +647,21 @@ export default function RecruiterCandidates() {
                         </div>
                       )}
 
-                      <div 
-                        onClick={() => candidate.retention_reasoning && openReasoningModal(candidate)}
-                        className={`bg-gradient-to-br from-pink-600 to-purple-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-pink-500/50 ${candidate.retention_reasoning ? 'cursor-pointer hover:scale-105 transition-transform' : ''}`}
-                        title={candidate.retention_reasoning ? "Click to view detailed analysis" : ""}
-                      >
-                        <div className="text-2xl font-bold">{candidate.retention_score}%</div>
-                        <div className="text-xs flex items-center justify-center gap-1">
-                          Retention
-                          {candidate.ai_powered && (
-                            <span className="text-yellow-300" title="AI-Powered Analysis">✨</span>
-                          )}
-                          {candidate.retention_reasoning && (
+                      {candidate.retention_reasoning && (
+                        <div 
+                          onClick={() => openReasoningModal(candidate)}
+                          className="bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-lg px-3 py-1.5 text-center shadow-lg shadow-purple-500/50 cursor-pointer hover:scale-105 transition-transform"
+                          title="Click to view detailed retention analysis"
+                        >
+                          <div className="text-xs flex items-center justify-center gap-1">
+                            View AI Analysis
+                            {candidate.ai_powered && (
+                              <span className="text-yellow-300" title="AI-Powered Analysis">✨</span>
+                            )}
                             <span className="ml-1">🔍</span>
-                          )}
+                          </div>
                         </div>
-                      </div>
+                      )}
                       {candidate.gpa_numeric && (
                         <div className="bg-gradient-to-br from-blue-600 to-cyan-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-blue-500/50">
                           <div className="text-xl font-bold">{candidate.gpa_numeric.toFixed(2)}</div>
@@ -683,6 +672,12 @@ export default function RecruiterCandidates() {
                   </div>
 
                   <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-700">
+                    <Link
+                      href={`/recruiter/student-profile/${candidate.student_id || candidate._id}`}
+                      className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-lg hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/50 transition-all text-sm font-semibold"
+                    >
+                      👤 View Full Profile
+                    </Link>
                     <button
                       onClick={() => handleShortlist(candidate)}
                       disabled={shortlistedIds.has(candidate.student_id || candidate._id)}

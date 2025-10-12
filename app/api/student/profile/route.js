@@ -32,11 +32,14 @@ export async function GET() {
       phone: student.phone,
       linkedin_url: student.linkedin_url,
       current_year: student.current_year,
+      profile_photo_url: student.profile_photo_url,
+      id_card_url: student.id_card_url,
+      skills: student.resume_parsed_data?.skills?.length || 0,
       has_resume_data: !!student.resume_parsed_data,
       has_github_data: !!student.github_data
     });
 
-    return NextResponse.json({ student });
+    return NextResponse.json(student); // Return student directly, not wrapped
 
   } catch (error) {
     console.error('Get Profile API Error:', error);
@@ -63,9 +66,10 @@ export async function PUT(request) {
     }
 
     const body = await request.json();
-    const { phone, linkedin_url, current_year, gpa, degree, university, graduation_year, major, skills, achievements } = body;
+    const { name, phone, linkedin_url, current_year, gpa, degree, university, graduation_year, major, skills, achievements } = body;
 
     console.log('📥 PUT Profile - Received data:', {
+      name,
       phone,
       linkedin_url,
       current_year,
@@ -84,6 +88,12 @@ export async function PUT(request) {
     
     if (!student) {
       return NextResponse.json({ error: 'Student profile not found' }, { status: 404 });
+    }
+
+    // Update user name if provided
+    if (name !== undefined && name.trim()) {
+      await User.findByIdAndUpdate(decoded.userId, { name: name.trim() });
+      console.log('✅ User name updated to:', name.trim());
     }
 
     // Update basic fields
