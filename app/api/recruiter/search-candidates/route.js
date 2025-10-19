@@ -238,7 +238,7 @@ async function calculateAIRetentionScore(culturalFitness) {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
     const prompt = `Analyze this candidate's cultural fitness profile and predict retention probability (0-100).
 

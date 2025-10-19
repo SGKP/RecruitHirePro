@@ -147,52 +147,55 @@ export default function AITalentCopilot() {
       <Sidebar role="student" />
       <div className="ml-64">
         {/* Header */}
-        <header className="navbar-modern border-b border-green-500/30">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gradient bg-gradient-to-r from-green-400 to-emerald-400">
-                AI Talent Co-Pilot
-              </h1>
-              <p className="text-gray-300 text-sm">Personalized Career Coaching powered by AI</p>
+        <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-pink-900 border-b border-purple-500/50 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                  <span className="text-4xl">🤖</span>
+                  AI Talent Co-Pilot
+                </h1>
+                <p className="text-purple-200 mt-1">Your personal AI career coach & advisor</p>
+              </div>
+              <button
+                onClick={() => router.push('/student/dashboard')}
+                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium border border-white/30 transition-all"
+              >
+                ← Back
+              </button>
             </div>
-            <button
-              onClick={() => router.push('/student/dashboard')}
-              className="btn-secondary"
-            >
-              ← Dashboard
-            </button>
           </div>
         </header>
 
-        <div className="container mx-auto px-4 py-6 max-w-5xl">
+        <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Chat Container */}
-        <div className="card-modern p-6 mb-6" style={{ height: '500px', display: 'flex', flexDirection: 'column' }}>
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 mb-6 border border-purple-500/30 shadow-xl" style={{ height: '550px', display: 'flex', flexDirection: 'column' }}>
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto mb-4 space-y-4">
+          <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
             {messages.map((msg, idx) => (
               <div
                 key={idx}
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-lg p-4 ${
+                  className={`max-w-[80%] rounded-xl p-4 shadow-lg ${
                     msg.role === 'user'
-                      ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white'
-                      : 'bg-black/30 border border-green-500/30 text-gray-200'
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                      : 'bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-2 border-purple-500/30 text-white backdrop-blur-sm'
                   }`}
                 >
-                  <div className="whitespace-pre-wrap">{msg.content}</div>
+                  <div className="whitespace-pre-wrap font-medium leading-relaxed">{msg.content}</div>
                 </div>
               </div>
             ))}
             
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-black/30 border border-green-500/30 rounded-lg p-4">
+                <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-2 border-purple-500/30 rounded-xl p-4 backdrop-blur-sm">
                   <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                    <div className="w-3 h-3 bg-purple-400 rounded-full animate-bounce"></div>
+                    <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                   </div>
                 </div>
               </div>
@@ -202,36 +205,38 @@ export default function AITalentCopilot() {
           </div>
 
           {/* Input Area */}
-          <div className="border-t border-gray-700 pt-4">
-            <div className="flex gap-2">
+          <div className="border-t border-purple-500/30 pt-4">
+            <div className="flex gap-3">
               <input
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                 placeholder="Ask me anything about your career..."
-                className="input-modern flex-1"
+                className="flex-1 px-4 py-3 bg-white/10 border-2 border-white/20 rounded-xl text-white placeholder-gray-400 backdrop-blur-sm focus:border-purple-400 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all duration-300"
               />
               <button
                 onClick={handleSendMessage}
                 disabled={!inputMessage.trim() || isTyping}
-                className="btn-primary px-6"
+                className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
               >
-                Send
+                Send ✨
               </button>
             </div>
           </div>
         </div>
 
         {/* Quick Questions */}
-        <div className="card-modern p-6">
-          <h3 className="text-lg font-semibold text-gray-200 mb-4">Quick Questions</h3>
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 mb-6 border border-purple-500/30 shadow-xl">
+          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <span>⚡</span> Quick Questions
+          </h3>
           <div className="flex flex-wrap gap-3">
             {quickQuestions.map((question, idx) => (
               <button
                 key={idx}
                 onClick={() => setInputMessage(question)}
-                className="px-4 py-2 bg-green-600/20 border border-green-500/50 text-green-200 rounded-lg hover:bg-green-600/30 hover:scale-105 transition-all text-sm"
+                className="px-5 py-3 bg-gradient-to-r from-purple-600/30 to-pink-600/30 border-2 border-purple-500/50 text-white rounded-xl hover:from-purple-600/50 hover:to-pink-600/50 hover:scale-105 transition-all font-medium shadow-lg"
               >
                 {question}
               </button>
@@ -240,21 +245,21 @@ export default function AITalentCopilot() {
         </div>
 
         {/* Features Info */}
-        <div className="grid md:grid-cols-3 gap-6 mt-6">
-          <div className="card-modern p-6 text-center hover:scale-105 transition-transform">
-            <div className="text-3xl mb-3">🎯</div>
-            <h4 className="font-semibold text-gray-200 mb-2">Predictive Analysis</h4>
-            <p className="text-sm text-gray-400">AI predicts your potential and suggests improvements</p>
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="bg-gradient-to-br from-blue-600/20 to-blue-700/20 border-2 border-blue-500/30 backdrop-blur-sm rounded-xl p-8 text-center hover:scale-105 transition-transform shadow-xl">
+            <div className="text-5xl mb-4">🎯</div>
+            <h4 className="font-bold text-white text-lg mb-3">Predictive Analysis</h4>
+            <p className="text-blue-200">AI predicts your potential and suggests improvements</p>
           </div>
-          <div className="card-modern p-6 text-center hover:scale-105 transition-transform">
-            <div className="text-3xl mb-3">📚</div>
-            <h4 className="font-semibold text-gray-200 mb-2">Personalized Coaching</h4>
-            <p className="text-sm text-gray-400">Get tailored advice based on your unique profile</p>
+          <div className="bg-gradient-to-br from-purple-600/20 to-purple-700/20 border-2 border-purple-500/30 backdrop-blur-sm rounded-xl p-8 text-center hover:scale-105 transition-transform shadow-xl">
+            <div className="text-5xl mb-4">📚</div>
+            <h4 className="font-bold text-white text-lg mb-3">Personalized Coaching</h4>
+            <p className="text-purple-200">Get tailored advice based on your unique profile</p>
           </div>
-          <div className="card-modern p-6 text-center hover:scale-105 transition-transform">
-            <div className="text-3xl mb-3">💼</div>
-            <h4 className="font-semibold text-gray-200 mb-2">Career Guidance</h4>
-            <p className="text-sm text-gray-400">Real-time insights for your career journey</p>
+          <div className="bg-gradient-to-br from-pink-600/20 to-pink-700/20 border-2 border-pink-500/30 backdrop-blur-sm rounded-xl p-8 text-center hover:scale-105 transition-transform shadow-xl">
+            <div className="text-5xl mb-4">💼</div>
+            <h4 className="font-bold text-white text-lg mb-3">Career Guidance</h4>
+            <p className="text-pink-200">Real-time insights for your career journey</p>
           </div>
         </div>
       </div>

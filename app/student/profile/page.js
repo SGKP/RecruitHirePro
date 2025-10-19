@@ -336,13 +336,13 @@ export default function StudentProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Sidebar role="student" />
       <div className="ml-64">
         {/* LinkedIn-Style Profile Header */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6 mx-8 mt-8">
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden mb-6 mx-8 mt-8 border border-purple-500/30">
           {/* Cover Photo */}
-          <div className="h-48 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600"></div>
+          <div className="h-48 bg-gradient-to-r from-purple-900 via-purple-800 to-pink-900"></div>
           
           {/* Profile Section */}
           <div className="px-8 pb-8">
@@ -356,8 +356,8 @@ export default function StudentProfile() {
                     className="w-40 h-40 rounded-full border-4 border-white shadow-xl object-cover"
                   />
                 ) : (
-                  <div className="w-40 h-40 rounded-full border-4 border-white shadow-xl bg-purple-100 flex items-center justify-center">
-                    <span className="text-6xl text-purple-600">
+                  <div className="w-40 h-40 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center">
+                    <span className="text-6xl text-white">
                       {profile?.user_id?.name?.charAt(0).toUpperCase() || 'U'}
                     </span>
                   </div>
@@ -391,21 +391,21 @@ export default function StudentProfile() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="text-3xl font-bold text-gray-900 bg-transparent border-b-2 border-transparent hover:border-gray-300 focus:border-blue-600 focus:outline-none transition-colors w-full max-w-md"
+                    className="text-3xl font-bold text-white bg-transparent border-b-2 border-transparent hover:border-purple-400 focus:border-purple-500 focus:outline-none transition-colors w-full max-w-md"
                     placeholder="Enter your name"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Click to edit your name</p>
+                  <p className="text-xs text-purple-300 mt-1">Click to edit your name</p>
                 </div>
                 
-                <p className="text-xl text-gray-600 mt-1">
+                <p className="text-xl text-gray-300 mt-1">
                   {formData.degree || 'Student'} {formData.university && `at ${formData.university}`}
                 </p>
-                <p className="text-gray-500 mt-2">
+                <p className="text-gray-400 mt-2">
                   {profile?.user_id?.email}
                 </p>
                 
                 {/* Quick Info */}
-                <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-600">
+                <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-300">
                   {formData.current_year && (
                     <span className="flex items-center gap-1">
                       🎓 {formData.current_year}
@@ -454,28 +454,30 @@ export default function StudentProfile() {
         </div>
 
         <div className="max-w-4xl mx-auto px-6 py-8">
-          <div className="card-modern p-8">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-purple-500/30 shadow-xl">
             {/* Quick Actions */}
-            <div className="mb-8 pb-8 border-b border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+            <div className="mb-8 pb-8 border-b border-purple-500/30">
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <span>⚡</span> Quick Actions
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Resume Upload */}
-              <div className="card-modern p-6 bg-blue-50 border-blue-200">
+              <div className="bg-gradient-to-br from-blue-600/20 to-blue-700/20 rounded-lg p-6 border border-blue-500/30">
                 <div className="flex items-start gap-3">
                   <div className="text-3xl">📄</div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-gray-900 mb-2">Upload Resume</h3>
-                    <p className="text-sm text-gray-600 mb-4">Auto-fill profile from PDF</p>
+                    <h3 className="font-bold text-white mb-2">Upload Resume</h3>
+                    <p className="text-sm text-gray-300 mb-4">Auto-fill profile from PDF</p>
                     <input
                       type="file"
                       accept=".pdf"
                       onChange={handleResumeUpload}
                       disabled={uploading}
-                      className="w-full text-sm text-gray-700 bg-white border-2 border-gray-300 rounded-lg p-2"
+                      className="w-full text-sm text-white bg-white/10 border-2 border-white/20 rounded-lg p-2"
                     />
-                    {uploading && <p className="text-sm text-blue-600 font-medium mt-2">Uploading & parsing...</p>}
+                    {uploading && <p className="text-sm text-blue-400 font-medium mt-2">Uploading & parsing...</p>}
                     {profile?.resume_url && (
-                      <a href={profile.resume_url} target="_blank" className="text-sm text-blue-600 hover:text-blue-700 font-medium mt-2 block">
+                      <a href={profile.resume_url} target="_blank" className="text-sm text-blue-400 hover:text-blue-300 font-medium mt-2 block">
                         📎 View Current Resume
                       </a>
                     )}
@@ -484,22 +486,22 @@ export default function StudentProfile() {
               </div>
 
               {/* Student ID Card Upload */}
-              <div className="card-modern p-6 bg-green-50 border-green-200">
+              <div className="bg-gradient-to-br from-green-600/20 to-green-700/20 rounded-lg p-6 border border-green-500/30">
                 <div className="flex items-start gap-3">
                   <div className="text-3xl">🪪</div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-gray-900 mb-2">Student ID Card</h3>
-                    <p className="text-sm text-gray-600 mb-4">Upload your student ID</p>
+                    <h3 className="font-bold text-white mb-2">Student ID Card</h3>
+                    <p className="text-sm text-gray-300 mb-4">Upload your student ID</p>
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp,application/pdf"
                       onChange={handleIdCardUpload}
                       disabled={uploadingIdCard}
-                      className="w-full text-sm text-gray-700 bg-white border-2 border-gray-300 rounded-lg p-2"
+                      className="w-full text-sm text-white bg-white/10 border-2 border-white/20 rounded-lg p-2"
                     />
-                    {uploadingIdCard && <p className="text-sm text-green-600 font-medium mt-2">Uploading ID card...</p>}
+                    {uploadingIdCard && <p className="text-sm text-green-400 font-medium mt-2">Uploading ID card...</p>}
                     {profile?.id_card_url && (
-                      <a href={profile.id_card_url} target="_blank" className="text-sm text-green-600 hover:text-green-700 font-medium mt-2 block">
+                      <a href={profile.id_card_url} target="_blank" className="text-sm text-green-400 hover:text-green-300 font-medium mt-2 block">
                         🪪 View Current ID Card
                       </a>
                     )}
@@ -508,30 +510,30 @@ export default function StudentProfile() {
               </div>
 
               {/* GitHub Connect */}
-              <div className="card-modern p-6 bg-purple-50 border-purple-200">
+              <div className="bg-gradient-to-br from-purple-600/20 to-purple-700/20 rounded-lg p-6 border border-purple-500/30">
                 <div className="flex items-start gap-3">
                   <div className="text-3xl">🐙</div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-gray-900 mb-2">Connect GitHub</h3>
-                    <p className="text-sm text-gray-600 mb-4">Fetch repos & languages</p>
+                    <h3 className="font-bold text-white mb-2">Connect GitHub</h3>
+                    <p className="text-sm text-gray-300 mb-4">Fetch repos & languages</p>
                     <div className="flex gap-2">
                       <input
                         type="text"
                         value={githubUsername}
                         onChange={(e) => setGithubUsername(e.target.value)}
                         placeholder="Your GitHub username"
-                        className="input-modern flex-1 text-sm py-2"
+                        className="flex-1 text-sm py-2 px-3 bg-white/10 border-2 border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                       />
                       <button
                         onClick={handleConnectGithub}
                         disabled={connectingGithub}
-                        className="btn-primary text-sm disabled:opacity-50"
+                        className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50"
                       >
                         {connectingGithub ? '...' : '✓'}
                       </button>
                     </div>
                     {profile?.github_data?.username && (
-                      <p className="text-sm text-green-600 font-medium mt-2">✓ Connected: {profile.github_data.username} ({profile.github_data.repos_count} repos)</p>
+                      <p className="text-sm text-green-400 font-medium mt-2">✓ Connected: {profile.github_data.username} ({profile.github_data.repos_count} repos)</p>
                     )}
                   </div>
                 </div>
@@ -539,12 +541,12 @@ export default function StudentProfile() {
 
               {/* GitHub Analytics Pro Button */}
               {(profile?.github_username || profile?.github_data?.username) && (
-                <div className="card-modern p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
+                <div className="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 rounded-lg p-6 border border-indigo-500/30">
                   <div className="flex items-start gap-3">
                     <div className="text-3xl">📊</div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-gray-900 mb-2">GitHub Analytics Pro</h3>
-                      <p className="text-sm text-gray-600 mb-4">View comprehensive stats & charts</p>
+                      <h3 className="font-bold text-white mb-2">GitHub Analytics Pro</h3>
+                      <p className="text-sm text-gray-300 mb-4">View comprehensive stats & charts</p>
                       <button
                         onClick={() => router.push('/student/github-analytics')}
                         className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg font-semibold"
@@ -563,61 +565,63 @@ export default function StudentProfile() {
 
             {/* Basic Info */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Basic Information</h2>
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <span>📋</span> Basic Information
+              </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-purple-300 mb-2">
                   Phone Number
                 </label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="input-modern"
+                  className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                   placeholder="+1 234 567 8900"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-purple-300 mb-2">
                   LinkedIn URL
                 </label>
                 <input
                   type="url"
                   value={formData.linkedin_url}
                   onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
-                  className="input-modern"
+                  className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                   placeholder="https://linkedin.com/in/yourprofile"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-purple-300 mb-2">
                   Current Year
                 </label>
                 <select
                   value={formData.current_year}
                   onChange={(e) => setFormData({ ...formData, current_year: e.target.value })}
-                  className="input-modern"
+                  className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 >
-                  <option value="">Select Year</option>
-                  <option value="1st Year">1st Year</option>
-                  <option value="2nd Year">2nd Year</option>
-                  <option value="3rd Year">3rd Year</option>
-                  <option value="4th Year">4th Year</option>
-                  <option value="Graduate">Graduate</option>
+                  <option value="" className="bg-gray-800">Select Year</option>
+                  <option value="1st Year" className="bg-gray-800">1st Year</option>
+                  <option value="2nd Year" className="bg-gray-800">2nd Year</option>
+                  <option value="3rd Year" className="bg-gray-800">3rd Year</option>
+                  <option value="4th Year" className="bg-gray-800">4th Year</option>
+                  <option value="Graduate" className="bg-gray-800">Graduate</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-purple-300 mb-2">
                   GPA
                 </label>
                 <input
                   type="text"
                   value={formData.gpa}
                   onChange={(e) => setFormData({ ...formData, gpa: e.target.value })}
-                  className="input-modern"
+                  className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                   placeholder="3.8"
                 />
               </div>
@@ -625,57 +629,59 @@ export default function StudentProfile() {
           </div>
 
           {/* Education */}
-          <div className="mb-8 pb-8 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Education</h2>
+          <div className="mb-8 pb-8 border-b border-purple-500/30">
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+              <span>🎓</span> Education
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-purple-300 mb-2">
                   Degree
                 </label>
                 <input
                   type="text"
                   value={formData.degree}
                   onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
-                  className="input-modern"
+                  className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                   placeholder="Bachelor of Science"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-purple-300 mb-2">
                   Major/Field of Study
                 </label>
                 <input
                   type="text"
                   value={formData.major}
                   onChange={(e) => setFormData({ ...formData, major: e.target.value })}
-                  className="input-modern"
+                  className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                   placeholder="Computer Science"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-purple-300 mb-2">
                   University
                 </label>
                 <input
                   type="text"
                   value={formData.university}
                   onChange={(e) => setFormData({ ...formData, university: e.target.value })}
-                  className="input-modern"
+                  className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                   placeholder="University Name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-purple-300 mb-2">
                   Graduation Year
                 </label>
                 <input
                   type="text"
                   value={formData.graduation_year}
                   onChange={(e) => setFormData({ ...formData, graduation_year: e.target.value })}
-                  className="input-modern"
+                  className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                   placeholder="2025"
                 />
               </div>
@@ -683,26 +689,28 @@ export default function StudentProfile() {
           </div>
 
           {/* Skills Section */}
-          <div className="mb-8 pb-8 border-b border-gray-200">
+          <div className="mb-8 pb-8 border-b border-purple-500/30">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Skills</h2>
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                <span>💡</span> Skills
+              </h2>
               <button
                 onClick={addSkill}
-                className="btn-primary text-sm"
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg text-sm"
               >
                 + Add Skill
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
               {formData.skills.length === 0 ? (
-                <p className="text-gray-600 text-sm">No skills added. Upload resume or add manually.</p>
+                <p className="text-gray-400 text-sm">No skills added. Upload resume or add manually.</p>
               ) : (
                 formData.skills.map((skill, idx) => (
-                  <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-blue-100 border border-blue-300 text-blue-700 rounded-lg font-medium">
+                  <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-medium border border-indigo-400/30">
                     <span>{skill}</span>
                     <button
                       onClick={() => removeSkill(idx)}
-                      className="text-blue-700 hover:text-red-600 font-bold text-lg"
+                      className="text-white hover:text-red-300 font-bold text-lg"
                     >
                       ×
                     </button>
@@ -715,10 +723,12 @@ export default function StudentProfile() {
           {/* Achievements */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Achievements</h2>
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                <span>🏆</span> Achievements
+              </h2>
               <button
                 onClick={addAchievement}
-                className="btn-primary text-sm"
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg text-sm"
               >
                 + Add Achievement
               </button>
@@ -726,12 +736,12 @@ export default function StudentProfile() {
 
             <div className="space-y-4">
               {formData.achievements.map((achievement, index) => (
-                <div key={index} className="card-modern p-6 border border-gray-200">
+                <div key={index} className="bg-white/5 rounded-lg p-6 border border-white/10">
                   <div className="flex justify-between items-start mb-4">
-                    <h3 className="font-semibold text-gray-900">Achievement #{index + 1}</h3>
+                    <h3 className="font-semibold text-white">Achievement #{index + 1}</h3>
                     <button
                       onClick={() => removeAchievement(index)}
-                      className="text-red-600 hover:text-red-700 text-sm font-medium"
+                      className="text-red-400 hover:text-red-300 text-sm font-medium"
                     >
                       Remove
                     </button>
@@ -743,7 +753,7 @@ export default function StudentProfile() {
                         value={achievement.title}
                         onChange={(e) => updateAchievement(index, 'title', e.target.value)}
                         placeholder="Achievement Title"
-                        className="input-modern"
+                        className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                       />
                     </div>
                     <div className="md:col-span-2">
@@ -752,7 +762,7 @@ export default function StudentProfile() {
                         onChange={(e) => updateAchievement(index, 'description', e.target.value)}
                         placeholder="Description"
                         rows="3"
-                        className="input-modern"
+                        className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                       />
                     </div>
                     <div>
@@ -760,7 +770,7 @@ export default function StudentProfile() {
                         type="date"
                         value={achievement.date}
                         onChange={(e) => updateAchievement(index, 'date', e.target.value)}
-                        className="input-modern"
+                        className="w-full px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white focus:outline-none focus:border-purple-500"
                       />
                     </div>
                   </div>
@@ -768,7 +778,7 @@ export default function StudentProfile() {
               ))}
 
               {formData.achievements.length === 0 && (
-                <p className="text-center text-gray-600 py-12 bg-gray-50 rounded-xl">
+                <p className="text-center text-gray-400 py-12 bg-white/5 rounded-xl border border-white/10">
                   No achievements added yet. Click "Add Achievement" to get started!
                 </p>
               )}
@@ -778,20 +788,22 @@ export default function StudentProfile() {
           {/* Recommendations Section */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">💬 Recommendations & Feedback</h2>
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                <span>💬</span> Recommendations & Feedback
+              </h2>
               <div className="flex gap-2">
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                <span className="px-3 py-1 bg-blue-600 text-white rounded-full text-sm font-medium">
                   {profile?.recommendations?.length || 0} Recommendations
                 </span>
               </div>
             </div>
 
             {/* Share Link */}
-            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 mb-6 border border-purple-200">
-              <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg p-6 mb-6 border border-purple-500/30">
+              <h3 className="font-bold text-white mb-3 flex items-center gap-2">
                 <span>🔗</span> Get Recommendations
               </h3>
-              <p className="text-sm text-gray-700 mb-4">
+              <p className="text-sm text-gray-300 mb-4">
                 Share this link with your professors, mentors, or colleagues to request recommendations:
               </p>
               <div className="flex gap-2">
@@ -799,14 +811,14 @@ export default function StudentProfile() {
                   type="text"
                   value={`${window.location.origin}/recommend/${profile?._id}`}
                   readOnly
-                  className="flex-1 px-4 py-2 bg-white border-2 border-gray-300 rounded-lg text-sm"
+                  className="flex-1 px-4 py-2 bg-white/10 border-2 border-white/20 rounded-lg text-white text-sm"
                 />
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(`${window.location.origin}/recommend/${profile?._id}`);
                     alert('✅ Link copied to clipboard!');
                   }}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-semibold"
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors text-sm font-semibold"
                 >
                   📋 Copy Link
                 </button>
@@ -889,9 +901,9 @@ export default function StudentProfile() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="btn-primary disabled:opacity-50"
+              className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-bold text-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-xl shadow-purple-500/30 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? 'Saving...' : '💾 Save Changes'}
             </button>
           </div>
         </div>

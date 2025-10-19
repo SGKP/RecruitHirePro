@@ -80,29 +80,32 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Sidebar role="student" />
       
       {/* Main Content - Add left margin for sidebar */}
       <div className="ml-64">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-5">
+        <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-pink-900 border-b border-purple-500/50 shadow-lg">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Welcome Back!</h1>
-              <p className="text-gray-600 mt-1">Hey {profile?.user_id?.name}, explore new opportunities</p>
+              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                <span className="text-4xl">👋</span>
+                Welcome Back!
+              </h1>
+              <p className="text-purple-200 mt-1">Hey {profile?.user_id?.name}, explore new opportunities</p>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => router.push('/student/profile')}
-                className="btn-primary"
+                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium border border-white/30 transition-all"
               >
                 ✏️ Edit Profile
               </button>
               <button
                 onClick={handleLogout}
-                className="btn-secondary"
+                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium border border-white/30 transition-all"
               >
                 Logout
               </button>
@@ -113,82 +116,64 @@ export default function StudentDashboard() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="card-modern p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-8 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-600 text-sm font-medium">Recommended Jobs</p>
-                <p className="text-3xl font-bold text-blue-900 mt-2">{jobs.length}</p>
+                <p className="text-purple-200 text-lg font-semibold">Recommended Jobs</p>
+                <p className="text-5xl font-bold text-white mt-3">{jobs.length}</p>
+                <p className="text-purple-200 text-sm mt-2">Available opportunities matching your profile</p>
               </div>
-              <div className="text-4xl">💼</div>
-            </div>
-          </div>
-          
-          <div className="card-modern p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-600 text-sm font-medium">Profile Strength</p>
-                <p className="text-3xl font-bold text-green-900 mt-2">{profile?.skills?.length || 0}</p>
-                <p className="text-xs text-green-700">Skills Added</p>
-              </div>
-              <div className="text-4xl">⭐</div>
-            </div>
-          </div>
-          
-          <div className="card-modern p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-600 text-sm font-medium">Profile Completion</p>
-                <p className="text-3xl font-bold text-purple-900 mt-2">85%</p>
-              </div>
-              <div className="text-4xl">📊</div>
+              <div className="text-7xl">💼</div>
             </div>
           </div>
         </div>
 
         {/* Recommended Jobs */}
-        <div className="card-modern p-8">
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-purple-500/30 shadow-xl">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Recommended Jobs for You</h2>
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+              <span>💼</span> Recommended Jobs for You
+            </h2>
             <button
               onClick={() => router.push('/student/jobs')}
-              className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
+              className="text-purple-300 hover:text-purple-200 font-semibold text-sm"
             >
               View All →
             </button>
           </div>
           
           {jobs.length === 0 ? (
-            <div className="text-center py-16 bg-gray-50 rounded-xl">
+            <div className="text-center py-16 bg-white/5 rounded-xl border border-white/10">
               <div className="text-6xl mb-4">🔍</div>
-              <p className="text-gray-700 text-lg font-medium">No jobs available at the moment</p>
-              <p className="text-gray-500 mt-2">Check back later for new opportunities!</p>
+              <p className="text-white text-lg font-medium">No jobs available at the moment</p>
+              <p className="text-gray-400 mt-2">Check back later for new opportunities!</p>
             </div>
           ) : (
             <div className="grid gap-5">
               {jobs.map((job) => (
                 <div
                   key={job._id}
-                  className="card-modern p-6 hover:shadow-lg transition-all border border-gray-200"
+                  className="bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg p-6 hover:shadow-2xl transition-all border border-purple-500/20 hover:border-purple-500/40"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{job.title}</h3>
-                      <p className="text-gray-600 mb-3 line-clamp-2">{job.description}</p>
+                      <h3 className="text-xl font-bold text-white mb-2">{job.title}</h3>
+                      <p className="text-gray-300 mb-3 line-clamp-2">{job.description}</p>
                       <div className="flex flex-wrap gap-2 mb-3">
-                        <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+                        <span className="px-3 py-1 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg text-sm font-medium shadow-lg">
                           📍 {job.location}
                         </span>
-                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                        <span className="px-3 py-1 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg text-sm font-medium shadow-lg">
                           💰 {job.salary_range}
                         </span>
-                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                        <span className="px-3 py-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-sm font-medium shadow-lg">
                           📈 {job.experience_level}
                         </span>
                       </div>
                     </div>
                     {job.match_score && (
-                      <div className="flex flex-col items-center bg-gradient-to-br from-green-100 to-emerald-100 border-2 border-green-300 text-green-700 rounded-xl px-5 py-3 ml-4">
+                      <div className="flex flex-col items-center bg-gradient-to-br from-green-600 to-green-700 text-white rounded-xl px-5 py-3 ml-4 shadow-lg">
                         <span className="text-3xl font-bold">{Math.round(job.match_score)}%</span>
                         <span className="text-xs font-semibold mt-1">Match</span>
                       </div>
@@ -196,32 +181,32 @@ export default function StudentDashboard() {
                   </div>
 
                   <div className="mb-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">Required Skills:</p>
+                    <p className="text-sm font-semibold text-purple-300 mb-2">Required Skills:</p>
                     <div className="flex flex-wrap gap-2">
                       {job.required_skills?.slice(0, 5).map((skill, idx) => (
                         <span
                           key={idx}
-                          className="px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 rounded-lg text-sm"
+                          className="px-3 py-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-sm font-medium border border-indigo-400/30"
                         >
                           {skill}
                         </span>
                       ))}
                       {job.required_skills?.length > 5 && (
-                        <span className="px-3 py-1 text-gray-500 text-sm">
+                        <span className="px-3 py-1 text-gray-400 text-sm">
                           +{job.required_skills.length - 5} more
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                    <p className="text-sm text-gray-500">
+                  <div className="flex justify-between items-center pt-4 border-t border-purple-500/30">
+                    <p className="text-sm text-gray-400">
                       Posted: {new Date(job.created_at).toLocaleDateString()}
                     </p>
                     <button
                       onClick={() => handleApply(job._id)}
                       disabled={applying === job._id}
-                      className="btn-primary disabled:opacity-50"
+                      className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {applying === job._id ? 'Applying...' : 'Apply Now'}
                     </button>
@@ -236,7 +221,7 @@ export default function StudentDashboard() {
       {/* Floating AI Chatbot Button */}
       <button
         onClick={() => router.push('/student/ai-copilot')}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center text-3xl z-50"
+        className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center text-3xl z-50"
         title="Launch AI Co-Pilot"
       >
         🤖

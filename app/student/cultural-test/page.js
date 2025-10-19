@@ -207,6 +207,12 @@ export default function CulturalTest() {
           options: ['Daily standups', 'Weekly updates', 'Milestone-based', 'When asked']
         }
       ]
+    },
+    {
+      name: 'Gamified Assessment',
+      description: 'Interactive games and challenges',
+      color: 'indigo',
+      questions: []
     }
   ];
 
@@ -245,19 +251,29 @@ export default function CulturalTest() {
   };
 
   const currentCategoryData = categories[currentCategory];
-  const progress = ((currentCategory + 1) / categories.length) * 100;
-  const answeredInCategory = currentCategoryData.questions.filter(q => answers[q.id]).length;
+  
+  // Calculate overall progress based on answered questions across all categories
+  const totalQuestions = categories.reduce((sum, cat) => sum + cat.questions.length, 0);
+  const answeredQuestions = Object.values(answers).filter(answer => answer && answer.trim() !== '').length;
+  const progress = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
+  
+  // Category-specific progress
+  const answeredInCategory = currentCategoryData.questions.length > 0 
+    ? currentCategoryData.questions.filter(q => answers[q.id]).length 
+    : 0;
   const totalInCategory = currentCategoryData.questions.length;
 
   const Question = ({ id, question, options }) => (
-    <div className="mb-6">
-      <label className="block text-gray-900 font-medium mb-3 text-lg">{question}</label>
+    <div className="mb-8">
+      <label className="block text-white font-semibold mb-4 text-lg">{question}</label>
       <div className="space-y-3">
         {options.map((option) => (
           <label 
             key={option} 
-            className={`flex items-center p-4 bg-white rounded-lg cursor-pointer transition-all hover:scale-[1.02] ${
-              answers[id] === option ? 'border-2 border-blue-500 bg-blue-50' : 'border border-gray-200'
+            className={`flex items-center p-4 rounded-xl cursor-pointer transition-all transform hover:scale-[1.02] hover:-translate-y-1 ${
+              answers[id] === option 
+                ? 'border-2 border-purple-400 bg-purple-500/30 shadow-lg shadow-purple-500/50 backdrop-blur-sm' 
+                : 'border-2 border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-sm'
             }`}
             onClick={(e) => {
               e.preventDefault();
@@ -270,9 +286,9 @@ export default function CulturalTest() {
               value={option}
               checked={answers[id] === option}
               onChange={() => {}}
-              className="mr-3 text-blue-600 pointer-events-none w-5 h-5"
+              className="mr-4 text-purple-600 pointer-events-none w-5 h-5"
             />
-            <span className="text-gray-900">{option}</span>
+            <span className="text-white font-medium">{option}</span>
           </label>
         ))}
       </div>
@@ -280,34 +296,40 @@ export default function CulturalTest() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Sidebar role="student" />
       <div className="ml-64">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 shadow-sm">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <h1 className="text-2xl font-bold text-gray-900">🎯 Cultural Fitness Test</h1>
-            <p className="text-gray-700 mt-1">25 questions to understand your work preferences</p>
+        <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-pink-900 border-b border-purple-500/50 shadow-lg">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+              <span className="text-4xl">🎯</span>
+              Cultural Fitness Test
+            </h1>
+            <p className="text-purple-200 mt-1">25 questions to understand your work preferences</p>
           </div>
         </header>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-gray-900 text-sm font-medium">Overall Progress</span>
-            <span className="text-gray-700 text-sm">{currentCategory + 1} / {categories.length} categories</span>
+        <div className="mb-8 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-purple-500/30 shadow-xl">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-white text-sm font-semibold">Overall Progress</span>
+            <span className="text-purple-300 text-sm font-medium">{answeredQuestions} / {totalQuestions} questions answered</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
             <div
-              className="h-3 rounded-full transition-all bg-gradient-to-r from-blue-500 to-purple-500"
+              className="h-4 rounded-full transition-all bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 shadow-lg"
               style={{ width: `${progress}%` }}
             ></div>
+          </div>
+          <div className="mt-2 text-right">
+            <span className="text-2xl font-bold text-white">{Math.round(progress)}%</span>
           </div>
         </div>
 
         {/* Category Tabs */}
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+        <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
           {categories.map((cat, idx) => {
             const categoryAnswered = cat.questions.filter(q => answers[q.id]).length;
             const categoryTotal = cat.questions.length;
@@ -317,12 +339,12 @@ export default function CulturalTest() {
               <button
                 key={idx}
                 onClick={() => setCurrentCategory(idx)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all font-medium ${
+                className={`px-5 py-3 rounded-xl whitespace-nowrap transition-all font-bold shadow-lg text-base ${
                   currentCategory === idx
-                    ? `bg-blue-600 text-white shadow-lg`
+                    ? `bg-gradient-to-r from-purple-600 to-pink-600 text-white border-2 border-purple-400`
                     : isComplete
-                    ? 'bg-green-100 border-2 border-green-500 text-green-700 hover:bg-green-200'
-                    : 'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-green-600 to-green-700 text-white border-2 border-green-400 hover:from-green-700 hover:to-green-800'
+                    : 'bg-gradient-to-r from-gray-600 to-gray-700 border-2 border-gray-500 text-white hover:from-gray-500 hover:to-gray-600'
                 }`}
               >
                 {cat.name} ({categoryAnswered}/{categoryTotal})
@@ -331,44 +353,75 @@ export default function CulturalTest() {
           })}
         </div>
 
-        <div className="card-modern p-8 border border-gray-200">
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-purple-500/30 shadow-xl">
           {error && (
-            <div className="mb-6 p-4 bg-red-100 border-2 border-red-500 text-red-700 rounded-lg">
+            <div className="mb-6 p-4 bg-red-500/20 border-2 border-red-400/50 text-red-200 rounded-xl backdrop-blur-sm">
               {error}
             </div>
           )}
 
           {/* Category Header */}
-          <div className="mb-8 pb-6 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{currentCategoryData.name}</h2>
-            <p className="text-gray-700 text-lg">{currentCategoryData.description}</p>
-            <div className="mt-4">
-              <div className="flex justify-between text-sm text-gray-700 font-medium mb-1">
-                <span>Category Progress</span>
-                <span>{answeredInCategory} / {totalInCategory} answered</span>
+          <div className="mb-8 pb-6 border-b border-purple-500/30">
+            <h2 className="text-3xl font-bold text-white mb-2">{currentCategoryData.name}</h2>
+            <p className="text-gray-300 text-lg">{currentCategoryData.description}</p>
+            {currentCategoryData.questions.length > 0 && (
+              <div className="mt-4">
+                <div className="flex justify-between text-sm text-gray-200 font-semibold mb-2">
+                  <span>Category Progress</span>
+                  <span>{answeredInCategory} / {totalInCategory} answered</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-3">
+                  <div
+                    className={`h-3 rounded-full transition-all bg-gradient-to-r from-green-500 to-green-600 shadow-lg`}
+                    style={{ width: `${(answeredInCategory / totalInCategory) * 100}%` }}
+                  ></div>
+                </div>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className={`h-2 rounded-full transition-all bg-${currentCategoryData.color}-500`}
-                  style={{ width: `${(answeredInCategory / totalInCategory) * 100}%` }}
-                ></div>
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Questions */}
+          {/* Questions or Gamified Section */}
           <form onSubmit={handleSubmit}>
-            {currentCategoryData.questions.map((q) => (
-              <Question key={q.id} {...q} />
-            ))}
+            {currentCategoryData.questions.length > 0 ? (
+              currentCategoryData.questions.map((q) => (
+                <Question key={q.id} {...q} />
+              ))
+            ) : (
+              /* Gamified Assessment Placeholder */
+              <div className="text-center py-16">
+                <div className="mb-6">
+                  <div className="text-8xl mb-4">🎮</div>
+                  <h3 className="text-3xl font-bold text-white mb-3">Gamified Assessment Section</h3>
+                  <p className="text-gray-300 text-lg mb-8">Interactive games and challenges will be added here</p>
+                </div>
+                
+                {/* Results Section Placeholder */}
+                <div className="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border-2 border-indigo-500/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-sm">
+                  <h4 className="text-2xl font-bold text-white mb-4 flex items-center justify-center gap-2">
+                    <span>📊</span> Assessment Results
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
+                      <div className="text-4xl font-bold text-green-400">0</div>
+                      <div className="text-sm text-gray-300">Games Completed</div>
+                    </div>
+                    <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
+                      <div className="text-4xl font-bold text-blue-400">0%</div>
+                      <div className="text-sm text-gray-300">Overall Score</div>
+                    </div>
+                  </div>
+                  <p className="text-gray-400 text-sm italic">Results will be displayed here after completion</p>
+                </div>
+              </div>
+            )}
 
             {/* Navigation */}
-            <div className="mt-8 flex justify-between items-center pt-6 border-t border-gray-200">
+            <div className="mt-8 flex justify-between items-center pt-6 border-t border-purple-500/30">
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => router.push('/student/dashboard')}
-                  className="btn-secondary"
+                  className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium border border-white/30 transition-all"
                 >
                   Back to Dashboard
                 </button>
@@ -376,7 +429,7 @@ export default function CulturalTest() {
                   <button
                     type="button"
                     onClick={() => setCurrentCategory(currentCategory - 1)}
-                    className="btn-secondary"
+                    className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium border border-white/30 transition-all"
                   >
                     Previous Category
                   </button>
@@ -388,15 +441,15 @@ export default function CulturalTest() {
                   <button
                     type="button"
                     onClick={() => setCurrentCategory(currentCategory + 1)}
-                    className="btn-primary"
+                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-bold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
                   >
-                    Next Category
+                    Next Category →
                   </button>
                 ) : (
                   <button
                     type="submit"
                     disabled={loading || Object.values(answers).filter(a => !a).length > 0}
-                    className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-8 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-bold hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
                   >
                     {loading ? 'Submitting...' : '✓ Submit Test'}
                   </button>

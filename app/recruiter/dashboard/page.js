@@ -24,7 +24,8 @@ export default function RecruiterDashboard() {
 
       if (analyticsRes.ok) {
         const data = await analyticsRes.json();
-        setAnalytics(data);
+        // API returns { analytics: {...} }, so extract the analytics object
+        setAnalytics(data.analytics);
       }
 
       if (jobsRes.ok) {
@@ -90,7 +91,7 @@ export default function RecruiterDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-600 text-sm font-medium">Total Jobs Posted</p>
-                <p className="text-3xl font-bold text-purple-900 mt-2">{analytics?.totalJobs || 0}</p>
+                <p className="text-3xl font-bold text-purple-900 mt-2">{analytics?.total_jobs || 0}</p>
               </div>
               <div className="text-4xl">💼</div>
             </div>
@@ -100,7 +101,7 @@ export default function RecruiterDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-600 text-sm font-medium">Total Candidates</p>
-                <p className="text-3xl font-bold text-blue-900 mt-2">{analytics?.totalStudents || 0}</p>
+                <p className="text-3xl font-bold text-blue-900 mt-2">{analytics?.total_students || 0}</p>
               </div>
               <div className="text-4xl">👥</div>
             </div>
@@ -110,7 +111,7 @@ export default function RecruiterDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-600 text-sm font-medium">Active Hirings</p>
-                <p className="text-3xl font-bold text-green-900 mt-2">{jobs.length}</p>
+                <p className="text-3xl font-bold text-green-900 mt-2">{analytics?.active_jobs || 0}</p>
               </div>
               <div className="text-4xl">✅</div>
             </div>

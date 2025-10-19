@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Application from '@/models/Application';
+import Student from '@/models/Student';
 import { verify } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -38,10 +39,25 @@ export async function GET(request) {
       );
     }
 
-    // Fetch all applications for this student
-    const applications = await Application.find({ student_id: decoded.userId })
+    // Find the student profile
+    const student = await Student.findOne({ user_id: decoded.userId });
+    
+    if (!student) {
+      console.log('Student not found for user_id:', decoded.userId);
+      return NextResponse.json(
+        { error: 'Student profile not found' },
+        { status: 404 }
+      );
+    }
+
+    console.log('Fetching applications for student_id:', student._id);
+
+    // Fetch all applications for this student using student._id
+    const applications = await Application.find({ student_id: student._id })
       .populate('job_id')
       .sort({ applied_at: -1 }); // Most recent first
+
+    console.log('Found applications:', applications.length);
 
     return NextResponse.json({ 
       success: true,
