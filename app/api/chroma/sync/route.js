@@ -30,13 +30,13 @@ export async function POST(request) {
     // Get all students with populated user data
     const students = await Student.find().populate('user_id');
     
-    console.log(`🔄 Starting ChromaDB sync for ${students.length} candidates...`);
+    console.log(` Starting ChromaDB sync for ${students.length} candidates...`);
 
     // Sync to ChromaDB
     const result = await syncAllCandidatesToChroma(students);
 
     if (result.success) {
-      console.log(`✅ Successfully synced ${result.count} candidates to ChromaDB`);
+      console.log(` Successfully synced ${result.count} candidates to ChromaDB`);
       
       // Get updated stats
       const stats = await getChromaStats();
@@ -54,7 +54,7 @@ export async function POST(request) {
       }, { status: 500 });
     }
   } catch (error) {
-    console.error('❌ ChromaDB Sync Error:', error);
+    console.error(' ChromaDB Sync Error:', error);
     return NextResponse.json({
       success: false,
       error: error.message

@@ -77,7 +77,7 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error('❌ Error adding recommendation:', error);
+    console.error(' Error adding recommendation:', error);
     return NextResponse.json({ error: 'Failed to submit recommendation' }, { status: 500 });
   }
 }
@@ -111,7 +111,7 @@ export async function GET(request) {
     });
 
   } catch (error) {
-    console.error('❌ Error fetching recommendations:', error);
+    console.error(' Error fetching recommendations:', error);
     return NextResponse.json({ error: 'Failed to fetch recommendations' }, { status: 500 });
   }
 }
@@ -152,7 +152,7 @@ export async function PUT(request) {
     return NextResponse.json({ error: 'Recommendation not found' }, { status: 404 });
 
   } catch (error) {
-    console.error('❌ Error verifying recommendation:', error);
+    console.error(' Error verifying recommendation:', error);
     return NextResponse.json({ error: 'Failed to verify recommendation' }, { status: 500 });
   }
 }

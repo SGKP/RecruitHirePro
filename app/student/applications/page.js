@@ -66,7 +66,7 @@ export default function StudentApplications() {
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold text-white mb-1 flex items-center gap-3">
-                  <span className="text-4xl">📋</span>
+                  <span className="text-4xl"></span>
                   My Applications
                 </h1>
                 <p className="text-purple-200">Track your job application status and progress</p>
@@ -87,7 +87,7 @@ export default function StudentApplications() {
               <div className="relative inline-flex">
                 <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600"></div>
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <span className="text-2xl">📋</span>
+                  <span className="text-2xl"></span>
                 </div>
               </div>
               <p className="mt-6 text-lg text-white font-medium">Loading your applications...</p>
@@ -95,14 +95,14 @@ export default function StudentApplications() {
             </div>
           ) : applications.length === 0 ? (
             <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-16 text-center border border-purple-500/30 shadow-2xl">
-              <div className="text-8xl mb-6">📭</div>
+              <div className="text-8xl mb-6"></div>
               <h2 className="text-3xl font-bold text-white mb-3">No Applications Yet</h2>
               <p className="text-gray-300 text-lg mb-8 max-w-md mx-auto">You haven't applied to any jobs yet. Start browsing exciting opportunities and take the first step towards your dream career!</p>
               <button
                 onClick={() => router.push('/student/jobs')}
                 className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-xl shadow-purple-500/30 hover:shadow-2xl hover:scale-105"
               >
-                🚀 Browse Jobs Now
+                 Browse Jobs Now
               </button>
             </div>
           ) : (
@@ -110,19 +110,19 @@ export default function StudentApplications() {
               {/* Summary Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-6 shadow-lg">
-                  <div className="text-4xl mb-2">📊</div>
+                  <div className="text-4xl mb-2"></div>
                   <div className="text-3xl font-bold text-white">{applications.length}</div>
                   <div className="text-purple-200 text-sm">Total Applications</div>
                 </div>
                 <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-xl p-6 shadow-lg">
-                  <div className="text-4xl mb-2">✅</div>
+                  <div className="text-4xl mb-2"></div>
                   <div className="text-3xl font-bold text-white">
                     {applications.filter(a => ['accepted', 'shortlisted'].includes(a.status?.toLowerCase())).length}
                   </div>
                   <div className="text-green-200 text-sm">Shortlisted/Accepted</div>
                 </div>
                 <div className="bg-gradient-to-br from-yellow-600 to-yellow-700 rounded-xl p-6 shadow-lg">
-                  <div className="text-4xl mb-2">⏳</div>
+                  <div className="text-4xl mb-2"></div>
                   <div className="text-3xl font-bold text-white">
                     {applications.filter(a => ['pending', 'applied'].includes(a.status?.toLowerCase())).length}
                   </div>
@@ -154,20 +154,20 @@ export default function StudentApplications() {
                       
                       <div className="flex flex-wrap gap-3 mb-4">
                         <span className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg text-sm font-medium shadow-lg shadow-purple-500/30">
-                          📍 {application.job_id?.location || 'Location N/A'}
+                           {application.job_id?.location || 'Location N/A'}
                         </span>
                         <span className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg text-sm font-medium shadow-lg shadow-green-500/30">
-                          💰 {application.job_id?.salary_range || 'Salary N/A'}
+                           {application.job_id?.salary_range || 'Salary N/A'}
                         </span>
                         <span className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-sm font-medium shadow-lg shadow-blue-500/30">
-                          🎓 {application.job_id?.experience_level || 'Experience N/A'}
+                           {application.job_id?.experience_level || 'Experience N/A'}
                         </span>
                       </div>
 
                       {application.job_id?.required_skills && application.job_id.required_skills.length > 0 && (
                         <div className="mb-4 bg-white/5 rounded-lg p-4 border border-white/10">
                           <p className="text-sm font-semibold text-purple-300 mb-3 flex items-center gap-2">
-                            <span>💼</span> Required Skills
+                            <span></span> Required Skills
                           </p>
                           <div className="flex flex-wrap gap-2">
                             {application.job_id.required_skills.map((skill, idx) => (
@@ -187,13 +187,13 @@ export default function StudentApplications() {
                   <div className="flex justify-between items-center pt-4 border-t border-purple-500/30">
                     <div className="text-sm text-gray-200 flex gap-6">
                       <p className="flex items-center gap-2">
-                        <span className="text-purple-400">📅</span>
+                        <span className="text-purple-400"></span>
                         <span className="font-medium">Applied:</span>
                         <span className="text-white">{new Date(application.applied_at || application.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                       </p>
                       {application.match_score && (
                         <p className="flex items-center gap-2">
-                          <span className="text-green-400">🎯</span>
+                          <span className="text-green-400"></span>
                           <span className="font-medium">Match Score:</span>
                           <span className="text-white font-bold">{Math.round(application.match_score)}%</span>
                         </p>

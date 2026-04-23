@@ -28,7 +28,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Student profile not found' }, { status: 404 });
     }
 
-    console.log('📤 GET Profile - Sending data:', {
+    console.log(' GET Profile - Sending data:', {
       phone: student.phone,
       linkedin_url: student.linkedin_url,
       current_year: student.current_year,
@@ -68,7 +68,7 @@ export async function PUT(request) {
     const body = await request.json();
     const { name, phone, linkedin_url, current_year, gpa, degree, university, graduation_year, major, skills, achievements } = body;
 
-    console.log('📥 PUT Profile - Received data:', {
+    console.log(' PUT Profile - Received data:', {
       name,
       phone,
       linkedin_url,
@@ -93,7 +93,7 @@ export async function PUT(request) {
     // Update user name if provided
     if (name !== undefined && name.trim()) {
       await User.findByIdAndUpdate(decoded.userId, { name: name.trim() });
-      console.log('✅ User name updated to:', name.trim());
+      console.log(' User name updated to:', name.trim());
     }
 
     // Update basic fields
@@ -102,7 +102,7 @@ export async function PUT(request) {
     if (current_year !== undefined) student.current_year = current_year;
     if (achievements !== undefined) student.achievements = achievements;
 
-    console.log('💾 Updating student fields:', {
+    console.log(' Updating student fields:', {
       phone: student.phone,
       linkedin_url: student.linkedin_url,
       current_year: student.current_year
@@ -130,7 +130,7 @@ export async function PUT(request) {
 
     await student.save();
 
-    console.log('✅ Profile saved successfully');
+    console.log(' Profile saved successfully');
 
     return NextResponse.json({
       message: 'Profile updated successfully',

@@ -61,25 +61,25 @@ export default function AITalentCopilot() {
 
     if (lowerMessage.includes('skill') || lowerMessage.includes('learn')) {
       const skills = student?.skills || [];
-      response = `📊 **Skill Analysis:**\n\nYou currently have ${skills.length} skills in your profile. Based on market demand:\n\n**Your Strengths:**\n${skills.slice(0, 5).map(s => `✓ ${s}`).join('\n')}\n\n**Recommended to Learn:**\n• Cloud Computing (AWS/Azure)\n• Machine Learning\n• System Design\n• DevOps (Docker, Kubernetes)\n\nThese skills are in high demand and will increase your match rate by 25-40%.`;
+      response = ` **Skill Analysis:**\n\nYou currently have ${skills.length} skills in your profile. Based on market demand:\n\n**Your Strengths:**\n${skills.slice(0, 5).map(s => `✓ ${s}`).join('\n')}\n\n**Recommended to Learn:**\n• Cloud Computing (AWS/Azure)\n• Machine Learning\n• System Design\n• DevOps (Docker, Kubernetes)\n\nThese skills are in high demand and will increase your match rate by 25-40%.`;
     } 
     else if (lowerMessage.includes('career') || lowerMessage.includes('path')) {
-      response = `🎯 **Career Path Recommendation:**\n\nBased on your profile (GPA: ${student?.gpa || 'N/A'}, Skills: ${student?.skills?.length || 0}), I recommend:\n\n**Short-term (0-2 years):**\n1. Software Engineer - Entry Level\n2. Full Stack Developer\n3. Frontend Developer\n\n**Mid-term (2-5 years):**\n• Senior Engineer\n• Tech Lead\n• Solution Architect\n\n**Focus Areas:**\n• Build 3-5 strong projects\n• Contribute to open source\n• Get certified in cloud platforms`;
+      response = ` **Career Path Recommendation:**\n\nBased on your profile (GPA: ${student?.gpa || 'N/A'}, Skills: ${student?.skills?.length || 0}), I recommend:\n\n**Short-term (0-2 years):**\n1. Software Engineer - Entry Level\n2. Full Stack Developer\n3. Frontend Developer\n\n**Mid-term (2-5 years):**\n• Senior Engineer\n• Tech Lead\n• Solution Architect\n\n**Focus Areas:**\n• Build 3-5 strong projects\n• Contribute to open source\n• Get certified in cloud platforms`;
     }
     else if (lowerMessage.includes('interview') || lowerMessage.includes('prepare')) {
-      response = `💼 **Interview Preparation Guide:**\n\n**For Technical Interviews:**\n1. Practice 50+ LeetCode problems (Easy → Medium)\n2. Master system design basics\n3. Review your projects deeply\n\n**For Cultural Fit:**\nBased on your cultural test (Retention: ${student?.retention_score || 'Not taken'}%), emphasize:\n• Teamwork experiences\n• Learning from failures\n• Adaptability examples\n\n**Common Questions:**\n• "Tell me about yourself" - 2 min pitch\n• "Why this company?" - Research thoroughly\n• "Biggest challenge?" - Use STAR method`;
+      response = ` **Interview Preparation Guide:**\n\n**For Technical Interviews:**\n1. Practice 50+ LeetCode problems (Easy → Medium)\n2. Master system design basics\n3. Review your projects deeply\n\n**For Cultural Fit:**\nBased on your cultural test (Retention: ${student?.retention_score || 'Not taken'}%), emphasize:\n• Teamwork experiences\n• Learning from failures\n• Adaptability examples\n\n**Common Questions:**\n• "Tell me about yourself" - 2 min pitch\n• "Why this company?" - Research thoroughly\n• "Biggest challenge?" - Use STAR method`;
     }
     else if (lowerMessage.includes('resume') || lowerMessage.includes('cv')) {
-      response = `📝 **Resume Improvement Tips:**\n\n**Current Status:**\n• Skills listed: ${student?.skills?.length || 0}\n• Achievements: ${student?.achievements?.length || 0}\n• GPA: ${student?.gpa || 'N/A'}\n\n**Improvements:**\n1. Add quantifiable achievements (increased by X%, reduced by Y%)\n2. Use action verbs (Developed, Implemented, Optimized)\n3. Include project metrics (users, performance, scale)\n4. Highlight leadership roles\n5. Add certifications/courses\n\n**Format:**\n• Keep it 1 page\n• Use bullet points\n• Reverse chronological order\n• ATS-friendly (no tables/graphics)`;
+      response = ` **Resume Improvement Tips:**\n\n**Current Status:**\n• Skills listed: ${student?.skills?.length || 0}\n• Achievements: ${student?.achievements?.length || 0}\n• GPA: ${student?.gpa || 'N/A'}\n\n**Improvements:**\n1. Add quantifiable achievements (increased by X%, reduced by Y%)\n2. Use action verbs (Developed, Implemented, Optimized)\n3. Include project metrics (users, performance, scale)\n4. Highlight leadership roles\n5. Add certifications/courses\n\n**Format:**\n• Keep it 1 page\n• Use bullet points\n• Reverse chronological order\n• ATS-friendly (no tables/graphics)`;
     }
     else if (lowerMessage.includes('job') || lowerMessage.includes('match')) {
-      response = `🎯 **Job Matching Insights:**\n\n**Your Profile Strength:** ${calculateProfileStrength()}%\n\n**Best Matches:**\n1. Entry-level Software Engineer (85% match)\n2. Full Stack Developer (78% match)\n3. Backend Developer (72% match)\n\n**Why these matches?**\n• Your skills align with requirements\n• GPA meets criteria\n• Cultural fit score is strong\n\n**To improve matches:**\n• Complete cultural test if not done\n• Add more projects\n• Learn trending technologies\n• Connect GitHub (shows coding activity)`;
+      response = ` **Job Matching Insights:**\n\n**Your Profile Strength:** ${calculateProfileStrength()}%\n\n**Best Matches:**\n1. Entry-level Software Engineer (85% match)\n2. Full Stack Developer (78% match)\n3. Backend Developer (72% match)\n\n**Why these matches?**\n• Your skills align with requirements\n• GPA meets criteria\n• Cultural fit score is strong\n\n**To improve matches:**\n• Complete cultural test if not done\n• Add more projects\n• Learn trending technologies\n• Connect GitHub (shows coding activity)`;
     }
     else if (lowerMessage.includes('salary') || lowerMessage.includes('compensation')) {
-      response = `💰 **Salary Expectations:**\n\nBased on your profile:\n\n**Entry Level (0-2 years):**\n• Software Engineer: $70,000 - $95,000\n• Full Stack Developer: $75,000 - $100,000\n• Frontend Developer: $65,000 - $90,000\n\n**Factors affecting salary:**\n✓ Skills (${student?.skills?.length || 0} currently)\n✓ GPA (${student?.gpa || 'N/A'})\n✓ Projects quality\n✓ Company size & location\n✓ Negotiation skills\n\n**Tip:** Never reveal expected salary first. Research company ranges and ask about their budget.`;
+      response = ` **Salary Expectations:**\n\nBased on your profile:\n\n**Entry Level (0-2 years):**\n• Software Engineer: $70,000 - $95,000\n• Full Stack Developer: $75,000 - $100,000\n• Frontend Developer: $65,000 - $90,000\n\n**Factors affecting salary:**\n✓ Skills (${student?.skills?.length || 0} currently)\n✓ GPA (${student?.gpa || 'N/A'})\n✓ Projects quality\n✓ Company size & location\n✓ Negotiation skills\n\n**Tip:** Never reveal expected salary first. Research company ranges and ask about their budget.`;
     }
     else {
-      response = `🤔 I understand you're asking about "${userMessage}".\n\nI can help you with:\n\n1. **Skills Analysis** - What to learn next\n2. **Career Planning** - Short & long-term paths\n3. **Interview Prep** - Technical & behavioral\n4. **Resume Tips** - Make it stand out\n5. **Job Matching** - Find best opportunities\n6. **Salary Guidance** - Know your worth\n\nWhich area interests you most?`;
+      response = ` I understand you're asking about "${userMessage}".\n\nI can help you with:\n\n1. **Skills Analysis** - What to learn next\n2. **Career Planning** - Short & long-term paths\n3. **Interview Prep** - Technical & behavioral\n4. **Resume Tips** - Make it stand out\n5. **Job Matching** - Find best opportunities\n6. **Salary Guidance** - Know your worth\n\nWhich area interests you most?`;
     }
 
     return response;
@@ -152,7 +152,7 @@ export default function AITalentCopilot() {
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                  <span className="text-4xl">🤖</span>
+                  <span className="text-4xl"></span>
                   AI Talent Co-Pilot
                 </h1>
                 <p className="text-purple-200 mt-1">Your personal AI career coach & advisor</p>
@@ -220,7 +220,7 @@ export default function AITalentCopilot() {
                 disabled={!inputMessage.trim() || isTyping}
                 className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
               >
-                Send ✨
+                Send 
               </button>
             </div>
           </div>
@@ -229,7 +229,7 @@ export default function AITalentCopilot() {
         {/* Quick Questions */}
         <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 mb-6 border border-purple-500/30 shadow-xl">
           <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <span>⚡</span> Quick Questions
+            <span></span> Quick Questions
           </h3>
           <div className="flex flex-wrap gap-3">
             {quickQuestions.map((question, idx) => (
@@ -247,17 +247,17 @@ export default function AITalentCopilot() {
         {/* Features Info */}
         <div className="grid md:grid-cols-3 gap-6">
           <div className="bg-gradient-to-br from-blue-600/20 to-blue-700/20 border-2 border-blue-500/30 backdrop-blur-sm rounded-xl p-8 text-center hover:scale-105 transition-transform shadow-xl">
-            <div className="text-5xl mb-4">🎯</div>
+            <div className="text-5xl mb-4"></div>
             <h4 className="font-bold text-white text-lg mb-3">Predictive Analysis</h4>
             <p className="text-blue-200">AI predicts your potential and suggests improvements</p>
           </div>
           <div className="bg-gradient-to-br from-purple-600/20 to-purple-700/20 border-2 border-purple-500/30 backdrop-blur-sm rounded-xl p-8 text-center hover:scale-105 transition-transform shadow-xl">
-            <div className="text-5xl mb-4">📚</div>
+            <div className="text-5xl mb-4"></div>
             <h4 className="font-bold text-white text-lg mb-3">Personalized Coaching</h4>
             <p className="text-purple-200">Get tailored advice based on your unique profile</p>
           </div>
           <div className="bg-gradient-to-br from-pink-600/20 to-pink-700/20 border-2 border-pink-500/30 backdrop-blur-sm rounded-xl p-8 text-center hover:scale-105 transition-transform shadow-xl">
-            <div className="text-5xl mb-4">💼</div>
+            <div className="text-5xl mb-4"></div>
             <h4 className="font-bold text-white text-lg mb-3">Career Guidance</h4>
             <p className="text-pink-200">Real-time insights for your career journey</p>
           </div>

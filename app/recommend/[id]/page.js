@@ -62,7 +62,7 @@ export default function RecommendationForm() {
       const data = await response.json();
 
       if (response.ok) {
-        alert('✅ Recommendation submitted successfully! Thank you!');
+        alert(' Recommendation submitted successfully! Thank you!');
         // Reset form
         setFormData({
           recommender_name: '',
@@ -120,7 +120,7 @@ export default function RecommendationForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Your Information */}
             <div className="bg-blue-50 rounded-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">👤 Your Information</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4"> Your Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Your Name *</label>
@@ -189,7 +189,7 @@ export default function RecommendationForm() {
 
             {/* Overall Rating */}
             <div className="bg-purple-50 rounded-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">⭐ Overall Rating</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4"> Overall Rating</h3>
               <div className="flex items-center gap-4">
                 <label className="text-sm font-semibold text-gray-700">Rate this student (1-5):</label>
                 <div className="flex gap-2">
@@ -200,7 +200,7 @@ export default function RecommendationForm() {
                       onClick={() => setFormData({...formData, rating: star})}
                       className={`text-3xl ${star <= formData.rating ? 'text-yellow-500' : 'text-gray-300'}`}
                     >
-                      ★
+                      
                     </button>
                   ))}
                 </div>
@@ -210,14 +210,14 @@ export default function RecommendationForm() {
 
             {/* Skills Rating */}
             <div className="bg-green-50 rounded-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">📊 Skills Assessment (1-5)</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4"> Skills Assessment (1-5)</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { key: 'technical', label: '💻 Technical Skills' },
-                  { key: 'communication', label: '💬 Communication' },
-                  { key: 'teamwork', label: '🤝 Teamwork' },
-                  { key: 'leadership', label: '👑 Leadership' },
-                  { key: 'problem_solving', label: '🧩 Problem Solving' }
+                  { key: 'technical', label: ' Technical Skills' },
+                  { key: 'communication', label: ' Communication' },
+                  { key: 'teamwork', label: ' Teamwork' },
+                  { key: 'leadership', label: ' Leadership' },
+                  { key: 'problem_solving', label: ' Problem Solving' }
                 ].map(skill => (
                   <div key={skill.key}>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">{skill.label}</label>
@@ -241,7 +241,7 @@ export default function RecommendationForm() {
 
             {/* Recommendation Text */}
             <div className="bg-yellow-50 rounded-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">✍️ Your Recommendation *</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">️ Your Recommendation *</h3>
               <textarea
                 value={formData.recommendation_text}
                 onChange={(e) => setFormData({...formData, recommendation_text: e.target.value})}
@@ -276,7 +276,7 @@ export default function RecommendationForm() {
                 disabled={submitting}
                 className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50"
               >
-                {submitting ? 'Submitting...' : '✅ Submit Recommendation'}
+                {submitting ? 'Submitting...' : ' Submit Recommendation'}
               </button>
             </div>
           </form>

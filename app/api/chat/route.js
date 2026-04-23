@@ -68,11 +68,11 @@ This helps you identify where to focus recruitment efforts.`;
 Click "View Candidates" on any job to see applicants.`;
       } else if (message.toLowerCase().includes('analytics') || message.toLowerCase().includes('data')) {
         response = `Your Analytics Dashboard provides:
-📊 Skill Supply vs Demand charts
-🎓 University distribution of candidates
-📚 Degree distribution analysis
-⚠️ Critical skill shortage alerts
-🤖 AI-powered recruitment insights
+ Skill Supply vs Demand charts
+ University distribution of candidates
+ Degree distribution analysis
+️ Critical skill shortage alerts
+ AI-powered recruitment insights
 
 This data helps make informed hiring decisions.`;
       } else {

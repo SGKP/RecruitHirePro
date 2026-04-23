@@ -171,7 +171,7 @@ export async function GET(request) {
 
     if (!student.resume) {
       recommendations.push({
-        icon: '📄',
+        icon: '',
         title: 'Upload Your Resume',
         description: 'A complete resume increases your profile visibility by 3x',
         action_text: 'Upload Now',
@@ -181,7 +181,7 @@ export async function GET(request) {
 
     if (skills.length < 5) {
       recommendations.push({
-        icon: '🎯',
+        icon: '',
         title: 'Add More Skills',
         description: 'List at least 5 skills to improve job matching',
         action_text: 'Update Skills',
@@ -191,7 +191,7 @@ export async function GET(request) {
 
     if (!student.cultural_fit_score) {
       recommendations.push({
-        icon: '🧠',
+        icon: '',
         title: 'Take Cultural Fit Test',
         description: 'Companies value cultural fit. Complete the assessment to stand out',
         action_text: 'Take Test',
@@ -201,7 +201,7 @@ export async function GET(request) {
 
     if (totalApplications < 3) {
       recommendations.push({
-        icon: '💼',
+        icon: '',
         title: 'Apply to More Jobs',
         description: 'Increase your chances by applying to at least 5-10 jobs',
         action_text: 'Browse Jobs',
@@ -211,7 +211,7 @@ export async function GET(request) {
 
     if (!student.github_url) {
       recommendations.push({
-        icon: '💻',
+        icon: '',
         title: 'Connect GitHub',
         description: 'Showcase your projects and code to recruiters',
         action_text: 'Connect',

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Modern Clean UI Design System */
+/* Modern Clean UI Design System & Glassmorphism */
 :root {
   --color-primary: #2563eb;
   --color-primary-hover: #1d4ed8;
@@ -47,95 +47,112 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: rgba(203, 213, 225, 0.5);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(148, 163, 184, 0.8);
 }
 
 /* Selection Color */
 ::selection {
-  background: #dbeafe;
+  background: rgba(59, 130, 246, 0.2);
   color: #1e40af;
 }
 
 @layer components {
-  /* Modern Card Component */
-  .card-modern {
-    background: white;
-    border: 1px solid #e2e8f0;
+  /* Premium Glassmorphism Panel */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
     border-radius: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+  }
+
+  /* Modern Card Component (Updated to Glass) */
+  .card-modern {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   
   .card-modern:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.08);
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.9);
   }
 
-  /* Primary Button - Blue */
+  /* Primary Button - Vibrant Gradient */
   .btn-primary {
     padding: 12px 24px;
     border-radius: 12px;
     font-weight: 600;
     color: white;
-    background: #2563eb;
+    background: linear-gradient(135deg, #3b82f6, #4f46e5);
     border: none;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   }
   
   .btn-primary:hover {
-    background: #1d4ed8;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, #2563eb, #4338ca);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    transform: translateY(-2px);
   }
 
   .btn-primary:active {
     transform: translateY(0);
   }
 
-  /* Secondary Button - Outline */
+  /* Secondary Button - Glass Outline */
   .btn-secondary {
     padding: 12px 24px;
     border-radius: 12px;
     font-weight: 600;
-    border: 2px solid #2563eb;
+    border: 2px solid rgba(59, 130, 246, 0.3);
     color: #2563eb;
-    background: white;
-    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
     cursor: pointer;
   }
   
   .btn-secondary:hover {
-    background: #eff6ff;
-    border-color: #1d4ed8;
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
     color: #1d4ed8;
   }
 
-  /* Modern Input Field */
+  /* Modern Input Field with Glass Effect */
   .input-modern {
     width: 100%;
     padding: 12px 16px;
     border-radius: 12px;
-    border: 2px solid #e2e8f0;
-    background: white;
+    border: 2px solid rgba(226, 232, 240, 0.8);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(4px);
     color: #1e293b;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     font-size: 15px;
   }
   
   .input-modern:focus {
     outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    border-color: #3b82f6;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
   }
   
   .input-modern::placeholder {
@@ -144,7 +161,7 @@ body {
 
   /* Gradient Text */
   .text-gradient {
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    background: linear-gradient(135deg, #2563eb, #8b5cf6, #ec4899);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -152,8 +169,12 @@ body {
 
   /* Modern Navbar */
   .navbar-modern {
-    background: white;
-    border-bottom: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    position: sticky;
+    top: 0;
+    z-index: 50;
   }
 }

@@ -40,7 +40,7 @@ export default function StudentJobs() {
       const data = await response.json();
 
       if (response.ok) {
-        alert('✅ Application submitted successfully!');
+        alert(' Application submitted successfully!');
       } else {
         alert(data.error || 'Failed to apply');
       }
@@ -61,7 +61,7 @@ export default function StudentJobs() {
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                  <span className="text-4xl">💼</span>
+                  <span className="text-4xl"></span>
                   Browse Jobs
                 </h1>
                 <p className="text-purple-200 mt-1">Find your perfect career opportunity</p>
@@ -82,14 +82,14 @@ export default function StudentJobs() {
             <div className="relative inline-flex">
               <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600"></div>
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <span className="text-2xl">💼</span>
+                <span className="text-2xl"></span>
               </div>
             </div>
             <p className="mt-6 text-lg text-white font-medium">Loading jobs...</p>
           </div>
         ) : jobs.length === 0 ? (
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-16 text-center border border-purple-500/30 shadow-2xl">
-            <div className="text-7xl mb-6">📭</div>
+            <div className="text-7xl mb-6"></div>
             <h2 className="text-2xl font-bold text-white mb-3">No Jobs Available</h2>
             <p className="text-gray-300">Check back later for new opportunities!</p>
           </div>
@@ -107,22 +107,22 @@ export default function StudentJobs() {
                     
                     <div className="flex flex-wrap gap-2 mb-4">
                       <span className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg text-sm font-medium shadow-lg shadow-purple-500/30">
-                        📍 {job.location}
+                         {job.location}
                       </span>
                       <span className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg text-sm font-medium shadow-lg shadow-green-500/30">
-                        💰 {job.salary_range}
+                         {job.salary_range}
                       </span>
                       <span className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-sm font-medium shadow-lg shadow-blue-500/30">
-                        🎓 {job.experience_level}
+                         {job.experience_level}
                       </span>
                       <span className="px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-700 text-white rounded-lg text-sm font-medium shadow-lg shadow-yellow-500/30">
-                        👥 {job.applications_count || 0} applicants
+                         {job.applications_count || 0} applicants
                       </span>
                     </div>
 
                     <div className="mb-4 bg-white/5 rounded-lg p-4 border border-white/10">
                       <p className="text-sm font-semibold text-purple-300 mb-3 flex items-center gap-2">
-                        <span>💼</span> Required Skills
+                        <span></span> Required Skills
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {job.required_skills?.map((skill, idx) => (
@@ -147,7 +147,7 @@ export default function StudentJobs() {
 
                 <div className="flex justify-between items-center pt-4 border-t border-purple-500/30">
                   <p className="text-sm text-gray-200 flex items-center gap-2">
-                    <span className="text-purple-400">📅</span>
+                    <span className="text-purple-400"></span>
                     <span className="font-medium">Posted:</span>
                     <span className="text-white">{new Date(job.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                   </p>

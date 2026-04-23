@@ -36,3 +36,6 @@ next-env.d.ts
 # documentation files (local only)
 *.md
 !README.md
+
+# AI model cache
+ai-cache/

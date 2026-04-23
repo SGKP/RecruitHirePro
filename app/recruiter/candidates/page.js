@@ -3,7 +3,16 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Search, Filter, ChevronDown, ChevronUp, Star, MapPin, 
+  GraduationCap, Mail, Phone, ExternalLink, RefreshCw,
+  BrainCircuit, Database, X, Check, ArrowRight
+} from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import PageTransition from '@/components/PageTransition';
+import AnimatedCard from '@/components/AnimatedCard';
+import AnimatedCyberBackground from '@/components/AnimatedCyberBackground';
 
 export default function RecruiterCandidates() {
   const router = useRouter();
@@ -66,10 +75,8 @@ export default function RecruiterCandidates() {
 
     setLoading(true);
     try {
-      // Choose endpoint based on search method
       const endpoint = useSemanticSearch ? '/api/chroma/search' : '/api/recruiter/search-candidates';
       
-      // Build query parameters
       const queryParams = new URLSearchParams({
         job_id: selectedJob,
         ...Object.fromEntries(
@@ -77,7 +84,6 @@ export default function RecruiterCandidates() {
         )
       });
 
-      // Add semantic query if using ChromaDB
       if (useSemanticSearch && semanticQuery) {
         queryParams.set('query', semanticQuery);
       }
@@ -104,17 +110,9 @@ export default function RecruiterCandidates() {
 
   const clearFilters = () => {
     setFilters({
-      min_match_score: '',
-      min_retention_score: '',
-      min_gpa: '',
-      max_gpa: '',
-      degree: '',
-      university: '',
-      skills: '',
-      graduation_year: '',
-      min_github_repos: '',
-      location: '',
-      interests: ''
+      min_match_score: '', min_retention_score: '', min_gpa: '', max_gpa: '',
+      degree: '', university: '', skills: '', graduation_year: '',
+      min_github_repos: '', location: '', interests: ''
     });
   };
 
@@ -143,11 +141,7 @@ export default function RecruiterCandidates() {
 
     const studentId = candidate.student_id || candidate._id;
     
-    if (!studentId) {
-      alert('Cannot find student ID');
-      console.error('Candidate data:', candidate);
-      return;
-    }
+    if (!studentId) return;
 
     try {
       const response = await fetch('/api/recruiter/shortlist', {
@@ -160,641 +154,316 @@ export default function RecruiterCandidates() {
         })
       });
 
-      const data = await response.json();
-
       if (response.ok) {
-        // Add to shortlisted set
         setShortlistedIds(prev => new Set([...prev, studentId]));
-        
-        // Remove from candidates list
         setCandidates(prev => prev.filter(c => (c.student_id || c._id) !== studentId));
-        
-        alert(`✅ ${candidate.name} has been shortlisted!`);
-      } else {
-        alert(data.error || 'Failed to shortlist');
       }
     } catch (error) {
       console.error('Error shortlisting:', error);
-      alert('Error shortlisting candidate');
     }
-  };
-
-  const openReasoningModal = (candidate) => {
-    setSelectedReasoning({
-      name: candidate.name,
-      score: candidate.retention_score,
-      reasoning: candidate.retention_reasoning || 'No detailed reasoning available.',
-      aiPowered: candidate.ai_powered
-    });
-    setShowReasoningModal(true);
-  };
-
-  const closeReasoningModal = () => {
-    setShowReasoningModal(false);
-    setSelectedReasoning(null);
   };
 
   const syncToChromaDB = async () => {
     setSyncingChroma(true);
     setSyncStatus('Syncing candidates to ChromaDB...');
-    
     try {
-      const response = await fetch('/api/chroma/sync', {
-        method: 'POST'
-      });
-
+      const response = await fetch('/api/chroma/sync', { method: 'POST' });
       const data = await response.json();
-
       if (response.ok) {
-        setSyncStatus(`✅ Synced ${data.synced} candidates to ChromaDB!`);
-        setTimeout(() => setSyncStatus(''), 3000);
+        setSyncStatus(`Synced ${data.synced} candidates!`);
       } else {
-        setSyncStatus(`❌ Sync failed: ${data.error}`);
-        setTimeout(() => setSyncStatus(''), 5000);
+        setSyncStatus(`Sync failed: ${data.error}`);
       }
     } catch (error) {
-      console.error('Sync error:', error);
-      setSyncStatus(`❌ Error: ${error.message}`);
-      setTimeout(() => setSyncStatus(''), 5000);
+      setSyncStatus(`Error: ${error.message}`);
     } finally {
+      setTimeout(() => setSyncStatus(''), 5000);
       setSyncingChroma(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen relative font-sans text-gray-800">
+      <AnimatedCyberBackground />
       <Sidebar role="recruiter" />
-      <div className="ml-64">
-        {/* Header */}
-        <header className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-6 py-5">
+      
+      <div className="ml-64 relative z-10">
+        <header className="navbar-modern">
+          <div className="max-w-7xl mx-auto px-8 py-5">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Search Candidates</h1>
-                <p className="text-gray-600 mt-1">Find the best talent for your openings</p>
+                <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-700">
+                  Candidate Discovery
+                </h1>
+                <p className="text-gray-500 font-medium mt-1">Find the best talent for your openings using AI</p>
               </div>
-              <button
-                onClick={() => router.push('/recruiter/dashboard')}
-                className="btn-secondary"
-              >
-                ← Back
+              <button onClick={() => router.push('/recruiter/dashboard')} className="btn-secondary">
+                Back to Dashboard
               </button>
             </div>
           </div>
         </header>
 
-        <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Search Filters */}
-        <div className="card-modern p-8 mb-8 border border-gray-200">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              🔍 Smart Search
-            </h2>
-            <div className="flex gap-3 items-center">
-              {/* ChromaDB Sync Button - For demo purposes */}
-              <button
-                onClick={syncToChromaDB}
-                disabled={syncingChroma}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all"
-                title="Sync candidates to ChromaDB vector database for advanced semantic search"
-              >
-                {syncingChroma ? '⏳ Syncing...' : '� Sync to Vector DB'}
-              </button>
+        <PageTransition className="max-w-7xl mx-auto px-8 py-8">
+          <AnimatedCard index={0} className="p-8 mb-8 border border-white/60">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <Search className="text-blue-600" />
+                Smart Search
+              </h2>
+              <div className="flex gap-3 items-center">
+                <button
+                  onClick={syncToChromaDB}
+                  disabled={syncingChroma}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 transition-all border border-indigo-200"
+                >
+                  <RefreshCw size={16} className={syncingChroma ? 'animate-spin' : ''} />
+                  {syncingChroma ? 'Syncing...' : 'Sync Vector DB'}
+                </button>
 
-              {/* Semantic Search Toggle - Optional advanced feature */}
-              <button
-                onClick={() => setUseSemanticSearch(!useSemanticSearch)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  useSemanticSearch
-                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-                title={useSemanticSearch ? 'Using ChromaDB Vector Search (Advanced)' : 'Using Standard Search (Smart Matching Enabled)'}
-              >
-                {useSemanticSearch ? '🔮 Vector Search' : '🎯 Standard Search'}
-              </button>
-              
-              <button
-                onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
-                className="btn-secondary text-sm"
-              >
-                {showAdvancedSearch ? '▼ Hide Filters' : '▶ Show Filters'}
-              </button>
-            </div>
-          </div>
-
-          {/* Sync Status Message */}
-          {syncStatus && (
-            <div className={`mb-4 p-3 rounded-lg text-sm ${
-              syncStatus.includes('✅') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-            }`}>
-              {syncStatus}
-            </div>
-          )}
-          
-          {/* Basic Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Select Job *
-              </label>
-              <select
-                value={selectedJob}
-                onChange={(e) => setSelectedJob(e.target.value)}
-                className="input-modern"
-              >
-                <option value="">Choose a job...</option>
-                {jobs.map((job) => (
-                  <option key={job._id} value={job._id}>
-                    {job.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Min Match Score (%)
-              </label>
-              <input
-                type="number"
-                value={filters.min_match_score}
-                onChange={(e) => handleFilterChange('min_match_score', e.target.value)}
-                className="input-modern"
-                placeholder="e.g., 50"
-                min="0"
-                max="100"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Min GPA
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                value={filters.min_gpa}
-                onChange={(e) => handleFilterChange('min_gpa', e.target.value)}
-                className="input-modern"
-                placeholder="e.g., 3.0"
-                min="0"
-                max="4.0"
-              />
-            </div>
-          </div>
-
-          {/* Advanced Filters */}
-          {showAdvancedSearch && (
-            <div className="border-t border-gray-700 pt-6 mt-6">
-              <h3 className="text-lg font-semibold text-gray-200 mb-4">🎯 Advanced Filters</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* Degree */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Degree
-                  </label>
-                  <input
-                    type="text"
-                    value={filters.degree}
-                    onChange={(e) => handleFilterChange('degree', e.target.value)}
-                    className="input-modern"
-                    placeholder="e.g., Computer Science, MBA"
-                  />
-                </div>
-
-                {/* University */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    University
-                  </label>
-                  <input
-                    type="text"
-                    value={filters.university}
-                    onChange={(e) => handleFilterChange('university', e.target.value)}
-                    className="input-modern"
-                    placeholder="e.g., MIT, Stanford"
-                  />
-                </div>
-
-                {/* Graduation Year */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Graduation Year
-                  </label>
-                  <input
-                    type="number"
-                    value={filters.graduation_year}
-                    onChange={(e) => handleFilterChange('graduation_year', e.target.value)}
-                    className="input-modern"
-                    placeholder="e.g., 2024"
-                    min="2020"
-                    max="2030"
-                  />
-                </div>
-
-                {/* Skills */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Skills (comma-separated)
-                  </label>
-                  <input
-                    type="text"
-                    value={filters.skills}
-                    onChange={(e) => handleFilterChange('skills', e.target.value)}
-                    className="input-modern"
-                    placeholder="e.g., Python, React, Node.js"
-                  />
-                </div>
-
-                {/* Location */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    value={filters.location}
-                    onChange={(e) => handleFilterChange('location', e.target.value)}
-                    className="input-modern"
-                    placeholder="e.g., New York, Remote"
-                  />
-                </div>
-
-                {/* Max GPA */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Max GPA
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={filters.max_gpa}
-                    onChange={(e) => handleFilterChange('max_gpa', e.target.value)}
-                    className="input-modern"
-                    placeholder="e.g., 4.0"
-                    min="0"
-                    max="4.0"
-                  />
-                </div>
-
-                {/* Min GitHub Repos */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Min GitHub Repositories
-                  </label>
-                  <input
-                    type="number"
-                    value={filters.min_github_repos}
-                    onChange={(e) => handleFilterChange('min_github_repos', e.target.value)}
-                    className="input-modern"
-                    placeholder="e.g., 5"
-                    min="0"
-                  />
-                </div>
-
-                {/* Interests */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Interests (comma-separated)
-                  </label>
-                  <input
-                    type="text"
-                    value={filters.interests}
-                    onChange={(e) => handleFilterChange('interests', e.target.value)}
-                    className="input-modern"
-                    placeholder="e.g., AI, Data Science"
-                  />
-                </div>
-
-                {/* Retention Score */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Min Retention Score (%)
-                  </label>
-                  <input
-                    type="number"
-                    value={filters.min_retention_score}
-                    onChange={(e) => handleFilterChange('min_retention_score', e.target.value)}
-                    className="input-modern"
-                    placeholder="e.g., 60"
-                    min="0"
-                    max="100"
-                  />
-                </div>
+                <button
+                  onClick={() => setUseSemanticSearch(!useSemanticSearch)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+                    useSemanticSearch
+                      ? 'bg-purple-600 text-white border-purple-500 shadow-lg shadow-purple-500/30'
+                      : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <BrainCircuit size={16} />
+                  {useSemanticSearch ? 'Semantic Search Active' : 'Standard Search'}
+                </button>
+                
+                <button
+                  onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
+                  className="flex items-center gap-2 btn-secondary text-sm"
+                >
+                  <Filter size={16} />
+                  {showAdvancedSearch ? 'Hide Filters' : 'Show Filters'}
+                </button>
               </div>
             </div>
-          )}
 
-          {/* Action Buttons */}
-          <div className="flex gap-4 mt-6">
-            <button
-              onClick={applyFilters}
-              disabled={!selectedJob || loading}
-              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? '🔄 Searching...' : '🔍 Search Candidates'}
-            </button>
-            <button
-              onClick={clearFilters}
-              className="btn-secondary"
-            >
-              🗑️ Clear Filters
-            </button>
-          </div>
-
-          {/* Active Filters Display */}
-          {Object.values(filters).some(v => v !== '') && (
-            <div className="mt-4 p-4 bg-purple-900/20 rounded-lg border border-purple-500/30">
-              <div className="text-sm text-gray-300 font-medium mb-2">Active Filters:</div>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(filters).filter(([_, value]) => value !== '').map(([key, value]) => (
-                  <span key={key} className="px-3 py-1 bg-purple-500/30 text-purple-200 rounded-full text-sm flex items-center gap-2">
-                    {key.replace(/_/g, ' ')}: {value}
-                    <button
-                      onClick={() => handleFilterChange(key, '')}
-                      className="text-purple-300 hover:text-white"
-                    >
-                      ✕
-                    </button>
-                  </span>
-                ))}
+            <AnimatePresence>
+              {syncStatus && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="mb-4 p-3 rounded-lg text-sm bg-blue-50 text-blue-800 border border-blue-200 font-medium"
+                >
+                  {syncStatus}
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Select Job *</label>
+                <select
+                  value={selectedJob}
+                  onChange={(e) => setSelectedJob(e.target.value)}
+                  className="input-modern bg-white/80"
+                >
+                  <option value="">Choose a job...</option>
+                  {jobs.map((job) => (
+                    <option key={job._id} value={job._id}>{job.title}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Min Match (%)</label>
+                <input
+                  type="number" value={filters.min_match_score}
+                  onChange={(e) => handleFilterChange('min_match_score', e.target.value)}
+                  className="input-modern bg-white/80" placeholder="e.g., 50"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Min GPA</label>
+                <input
+                  type="number" step="0.1" value={filters.min_gpa}
+                  onChange={(e) => handleFilterChange('min_gpa', e.target.value)}
+                  className="input-modern bg-white/80" placeholder="e.g., 3.0"
+                />
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Candidates Results */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">
-            👥 Candidates ({candidates.length})
-          </h2>
+            <AnimatePresence>
+              {showAdvancedSearch && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="border-t border-gray-200/50 pt-6 mt-6">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">Advanced Filters</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* Inputs */}
+                      {['degree', 'university', 'graduation_year', 'skills', 'location', 'max_gpa', 'min_github_repos', 'interests', 'min_retention_score'].map((field) => (
+                        <div key={field}>
+                          <label className="block text-sm font-bold text-gray-700 mb-2 capitalize">
+                            {field.replace(/_/g, ' ')}
+                          </label>
+                          <input
+                            type="text"
+                            value={filters[field]}
+                            onChange={(e) => handleFilterChange(field, e.target.value)}
+                            className="input-modern bg-white/80"
+                            placeholder={`Enter ${field.replace(/_/g, ' ')}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="flex gap-4 mt-6">
+              <button onClick={applyFilters} disabled={!selectedJob || loading} className="btn-primary flex-1">
+                {loading ? 'Searching...' : 'Search Candidates'}
+              </button>
+              <button onClick={clearFilters} className="btn-secondary">Clear Filters</button>
+            </div>
+          </AnimatedCard>
+
+          {/* Results */}
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Results ({candidates.length})</h2>
+          </div>
 
           {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-700 font-medium">Searching candidates...</p>
+            <div className="flex justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
             </div>
           ) : candidates.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-700 text-lg font-medium">
+            <div className="text-center py-20 glass-panel border border-white/60">
+              <p className="text-gray-500 text-lg font-bold">
                 {selectedJob ? 'No candidates match your criteria' : 'Select a job to view candidates'}
               </p>
             </div>
           ) : (
             <div className="grid gap-6">
-              {candidates.map((candidate) => (
-                <div
-                  key={candidate.student_id}
-                  className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/20 transition-all"
-                >
+              {candidates.map((candidate, i) => (
+                <AnimatedCard key={candidate.student_id || candidate._id} index={i + 1} className="p-6 border border-white/60">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {candidate.name}
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700 mb-3 font-medium">
-                        <p>{candidate.email}</p>
-                        <p>GPA: {candidate.gpa}</p>
-                        <p>Year: {candidate.graduation_year}</p>
-                        <p>{candidate.university}</p>
-                        {candidate.phone && candidate.phone !== 'N/A' && (
-                          <p>{candidate.phone}</p>
-                        )}
-                        {candidate.current_year && candidate.current_year !== 'N/A' && (
-                          <p>{candidate.current_year}</p>
-                        )}
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">{candidate.name}</h3>
+                      <div className="flex flex-wrap gap-4 text-sm text-gray-600 font-medium mb-4">
+                        <div className="flex items-center gap-1"><Mail size={16} className="text-gray-400"/> {candidate.email}</div>
+                        <div className="flex items-center gap-1"><GraduationCap size={16} className="text-gray-400"/> {candidate.university}</div>
+                        <div className="flex items-center gap-1"><Star size={16} className="text-yellow-400"/> GPA: {candidate.gpa}</div>
                       </div>
                       
-                      {candidate.linkedin_url && (
-                        <div className="mb-3">
-                          <a
-                            href={candidate.linkedin_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-700 text-sm hover:underline font-medium"
-                          >
-                            LinkedIn Profile →
-                          </a>
-                        </div>
-                      )}
-
-                      {candidate.achievements && candidate.achievements.length > 0 && (
-                        <div className="mb-3">
-                          <p className="text-sm font-medium text-gray-900 mb-1">Achievements:</p>
-                          <div className="space-y-1">
-                            {candidate.achievements.map((ach, idx) => (
-                              <p key={idx} className="text-sm text-gray-700">• {ach.title}</p>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="mb-3">
-                        <p className="text-sm font-medium text-gray-900 mb-2">✅ Matched Skills:</p>
+                      <div className="mb-4">
+                        <p className="text-sm font-bold text-gray-900 mb-2">Matched Skills:</p>
                         <div className="flex flex-wrap gap-2">
-                          {candidate.matched_skills && candidate.matched_skills.length > 0 ? (
-                            candidate.matched_skills.map((skill, idx) => (
-                              <span
-                                key={idx}
-                                className="px-3 py-1 bg-green-100 border border-green-500 text-green-700 rounded-full text-sm font-medium"
-                              >
-                                ✓ {skill}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-sm text-gray-500">No skills matched</span>
-                          )}
+                          {candidate.matched_skills?.map((skill, idx) => (
+                            <span key={idx} className="px-3 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg text-xs font-bold flex items-center gap-1">
+                              <Check size={12}/> {skill}
+                            </span>
+                          ))}
                         </div>
                       </div>
-
-                      {candidate.unmatched_skills && candidate.unmatched_skills.length > 0 && (
-                        <div className="mb-3">
-                          <p className="text-sm font-medium text-gray-900 mb-2">⚠️ Missing Skills:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {candidate.unmatched_skills.map((skill, idx) => (
-                              <span
-                                key={idx}
-                                className="px-3 py-1 bg-red-50 border border-red-300 text-red-600 rounded-full text-sm font-medium"
-                              >
-                                ✗ {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
                     </div>
 
-                    <div className="ml-4 flex flex-col gap-2">
-                      <div className="bg-gradient-to-br from-green-600 to-blue-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-green-500/50">
-                        <div className="text-2xl font-bold">
+                    <div className="ml-6 flex flex-col gap-3">
+                      <div className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-xl px-5 py-3 text-center shadow-lg shadow-blue-500/30">
+                        <div className="text-3xl font-extrabold">
                           {Math.round((candidate.match_score * 0.83) + (candidate.retention_score * 0.17))}%
                         </div>
-                        <div className="text-xs">Overall Match</div>
-                        <div className="text-[10px] opacity-80 mt-0.5">
-                          {candidate.match_score}% Skills · {candidate.retention_score}% Retention
-                        </div>
+                        <div className="text-xs font-bold tracking-wider uppercase opacity-90 mt-1">Overall Match</div>
                       </div>
 
-                      {useSemanticSearch && candidate.semantic_score !== undefined && (
-                        <div className="bg-gradient-to-br from-indigo-600 to-blue-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-indigo-500/50">
-                          <div className="text-2xl font-bold">{candidate.semantic_score}%</div>
-                          <div className="text-xs flex items-center justify-center gap-1">
-                            Semantic
-                            <span title="AI Vector Similarity">🔮</span>
-                          </div>
-                        </div>
-                      )}
-
                       {candidate.retention_reasoning && (
-                        <div 
-                          onClick={() => openReasoningModal(candidate)}
-                          className="bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-lg px-3 py-1.5 text-center shadow-lg shadow-purple-500/50 cursor-pointer hover:scale-105 transition-transform"
-                          title="Click to view detailed retention analysis"
+                        <button 
+                          onClick={() => {
+                            setSelectedReasoning({
+                              name: candidate.name,
+                              score: candidate.retention_score,
+                              reasoning: candidate.retention_reasoning,
+                              aiPowered: candidate.ai_powered
+                            });
+                            setShowReasoningModal(true);
+                          }}
+                          className="bg-white border border-purple-200 hover:border-purple-400 text-purple-700 rounded-xl px-4 py-2 text-center text-sm font-bold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2"
                         >
-                          <div className="text-xs flex items-center justify-center gap-1">
-                            View AI Analysis
-                            {candidate.ai_powered && (
-                              <span className="text-yellow-300" title="AI-Powered Analysis">✨</span>
-                            )}
-                            <span className="ml-1">🔍</span>
-                          </div>
-                        </div>
-                      )}
-                      {candidate.gpa_numeric && (
-                        <div className="bg-gradient-to-br from-blue-600 to-cyan-600 text-white rounded-lg px-4 py-2 text-center shadow-lg shadow-blue-500/50">
-                          <div className="text-xl font-bold">{candidate.gpa_numeric.toFixed(2)}</div>
-                          <div className="text-xs">GPA</div>
-                        </div>
+                          <BrainCircuit size={16} />
+                          AI Analysis
+                        </button>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-700">
+                  <div className="flex flex-wrap gap-3 pt-5 border-t border-gray-100">
                     <Link
                       href={`/recruiter/student-profile/${candidate.student_id || candidate._id}`}
-                      className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-lg hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/50 transition-all text-sm font-semibold"
+                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors shadow-lg shadow-blue-500/30 flex items-center gap-2"
                     >
-                      👤 View Full Profile
+                      View Profile <ArrowRight size={16}/>
                     </Link>
                     <button
                       onClick={() => handleShortlist(candidate)}
                       disabled={shortlistedIds.has(candidate.student_id || candidate._id)}
-                      className={`px-4 py-2 rounded-lg hover:scale-105 transition-all text-sm ${
+                      className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
                         shortlistedIds.has(candidate.student_id || candidate._id)
-                          ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:shadow-lg hover:shadow-green-500/50'
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white border-2 border-green-500 text-green-600 hover:bg-green-50'
                       }`}
                     >
-                      {shortlistedIds.has(candidate.student_id || candidate._id) ? '✓ Shortlisted' : 'Shortlist'}
+                      <Star size={16} className={shortlistedIds.has(candidate.student_id || candidate._id) ? 'fill-current' : ''} />
+                      {shortlistedIds.has(candidate.student_id || candidate._id) ? 'Shortlisted' : 'Shortlist'}
                     </button>
-                    {candidate.resume_url && (
-                      <a
-                        href={candidate.resume_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50 transition-all text-sm"
-                      >
-                        View Resume
-                      </a>
-                    )}
-                    <a
-                      href={`mailto:${candidate.email}?subject=Opportunity at RecruitPro&body=Hi ${candidate.name},%0D%0A%0D%0AWe are interested in your profile for our ${jobs.find(j => j._id === selectedJob)?.title} position.`}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:scale-105 hover:shadow-lg hover:shadow-blue-500/50 transition-all text-sm"
-                    >
-                      Contact
-                    </a>
-                    {candidate.github_username && (
-                      <a
-                        href={`https://github.com/${candidate.github_username}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:scale-105 hover:shadow-lg transition-all text-sm"
-                      >
-                        GitHub
-                      </a>
-                    )}
                   </div>
-                </div>
+                </AnimatedCard>
               ))}
             </div>
           )}
-        </div>
-      </div>
+        </PageTransition>
 
-      {/* Retention Reasoning Modal */}
-      {showReasoningModal && selectedReasoning && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-          onClick={closeReasoningModal}
-        >
-          <div 
-            className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-6 rounded-t-xl">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">
-                    🎯 Retention Analysis
-                  </h2>
-                  <p className="text-pink-100">{selectedReasoning.name}</p>
-                </div>
-                <button
-                  onClick={closeReasoningModal}
-                  className="text-white hover:text-pink-200 text-3xl leading-none"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="mt-4 flex items-center gap-4">
-                <div className="bg-white bg-opacity-20 rounded-lg px-4 py-2">
-                  <div className="text-3xl font-bold">{selectedReasoning.score}%</div>
-                  <div className="text-xs text-pink-100">Retention Score</div>
-                </div>
-                {selectedReasoning.aiPowered && (
-                  <div className="bg-yellow-400 bg-opacity-20 text-yellow-100 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-                    <span>✨</span>
-                    AI-Powered Analysis
+        <AnimatePresence>
+          {showReasoningModal && selectedReasoning && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+              onClick={() => setShowReasoningModal(false)}
+            >
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h2 className="text-2xl font-extrabold mb-1">Retention Analysis</h2>
+                      <p className="text-purple-200 font-medium">{selectedReasoning.name}</p>
+                    </div>
+                    <button onClick={() => setShowReasoningModal(false)} className="text-white/70 hover:text-white transition-colors">
+                      <X size={24} />
+                    </button>
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                📊 Detailed Analysis:
-              </h3>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-                  {selectedReasoning.reasoning}
-                </p>
-              </div>
-
-              {selectedReasoning.aiPowered && (
-                <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm text-blue-900">
-                    <strong>💡 Note:</strong> This analysis was generated using Google Gemini AI based on the candidate's cultural fitness assessment responses. It analyzes 25 questions across 5 categories: Team Dynamics, Work Style, Learning & Growth, Career Goals, and Work Environment.
+                  <div className="mt-6 flex items-center gap-4">
+                    <div className="bg-white/20 rounded-xl px-5 py-3 border border-white/20">
+                      <div className="text-3xl font-extrabold">{selectedReasoning.score}%</div>
+                      <div className="text-xs font-bold uppercase tracking-wider text-purple-200 mt-1">Score</div>
+                    </div>
+                    {selectedReasoning.aiPowered && (
+                      <div className="bg-yellow-400/20 border border-yellow-400/50 text-yellow-100 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
+                        <BrainCircuit size={16} /> AI-Powered
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="p-8">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Detailed Breakdown</h3>
+                  <p className="text-gray-700 leading-relaxed font-medium bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    {selectedReasoning.reasoning}
                   </p>
                 </div>
-              )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="bg-gray-50 px-6 py-4 rounded-b-xl border-t border-gray-200">
-              <button
-                onClick={closeReasoningModal}
-                className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:scale-105 transition-transform font-medium"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

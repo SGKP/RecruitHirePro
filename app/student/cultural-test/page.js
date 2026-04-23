@@ -303,7 +303,7 @@ export default function CulturalTest() {
         <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-pink-900 border-b border-purple-500/50 shadow-lg">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <span className="text-4xl">🎯</span>
+              <span className="text-4xl"></span>
               Cultural Fitness Test
             </h1>
             <p className="text-purple-200 mt-1">25 questions to understand your work preferences</p>
@@ -390,7 +390,7 @@ export default function CulturalTest() {
               /* Gamified Assessment Placeholder */
               <div className="text-center py-16">
                 <div className="mb-6">
-                  <div className="text-8xl mb-4">🎮</div>
+                  <div className="text-8xl mb-4"></div>
                   <h3 className="text-3xl font-bold text-white mb-3">Gamified Assessment Section</h3>
                   <p className="text-gray-300 text-lg mb-8">Interactive games and challenges will be added here</p>
                 </div>
@@ -398,7 +398,7 @@ export default function CulturalTest() {
                 {/* Results Section Placeholder */}
                 <div className="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border-2 border-indigo-500/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-sm">
                   <h4 className="text-2xl font-bold text-white mb-4 flex items-center justify-center gap-2">
-                    <span>📊</span> Assessment Results
+                    <span></span> Assessment Results
                   </h4>
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">

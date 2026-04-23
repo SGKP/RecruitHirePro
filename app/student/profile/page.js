@@ -37,17 +37,17 @@ export default function StudentProfile() {
       const response = await fetch('/api/student/profile');
       if (response.ok) {
         const data = await response.json(); // Direct data, no wrapper
-        console.log('📊 Profile data received:', data);
+        console.log(' Profile data received:', data);
         setProfile(data);
         const edu = data.resume_parsed_data?.education || {};
         
-        console.log('📞 Phone from DB:', data.phone);
-        console.log('🔗 LinkedIn from DB:', data.linkedin_url);
-        console.log('📅 Year from DB:', data.current_year);
-        console.log('📚 Education data:', edu);
-        console.log('📸 Photo URL:', data.profile_photo_url);
-        console.log('🆔 ID Card URL:', data.id_card_url);
-        console.log('🎯 Skills:', data.resume_parsed_data?.skills);
+        console.log(' Phone from DB:', data.phone);
+        console.log(' LinkedIn from DB:', data.linkedin_url);
+        console.log(' Year from DB:', data.current_year);
+        console.log(' Education data:', edu);
+        console.log(' Photo URL:', data.profile_photo_url);
+        console.log(' ID Card URL:', data.id_card_url);
+        console.log(' Skills:', data.resume_parsed_data?.skills);
         
         // Auto-fill form data from resume
         setFormData({
@@ -64,8 +64,8 @@ export default function StudentProfile() {
           achievements: data.achievements || []
         });
         
-        console.log('✅ Form data auto-filled from resume');
-        console.log('✅ Skills in formData:', data.resume_parsed_data?.skills);
+        console.log(' Form data auto-filled from resume');
+        console.log(' Skills in formData:', data.resume_parsed_data?.skills);
         
         setGithubUsername(data.github_data?.username || '');
       }
@@ -108,26 +108,26 @@ export default function StudentProfile() {
         const autoFilled = data.auto_filled || {};
         
         // Build detailed alert message
-        let alertMsg = `✅ Resume uploaded & parsed successfully!\n\n`;
-        alertMsg += `📞 Phone: ${autoFilled.phone || 'Not found'}\n`;
-        alertMsg += `📧 Email: ${autoFilled.email || 'Not found'}\n`;
-        alertMsg += `🔗 LinkedIn: ${autoFilled.linkedin_url || 'Not found'}\n`;
-        alertMsg += `🐙 GitHub: ${autoFilled.github_url || 'Not found'}\n`;
-        alertMsg += `📅 Current Year: ${autoFilled.current_year || 'Not found'}\n\n`;
+        let alertMsg = ` Resume uploaded & parsed successfully!\n\n`;
+        alertMsg += ` Phone: ${autoFilled.phone || 'Not found'}\n`;
+        alertMsg += ` Email: ${autoFilled.email || 'Not found'}\n`;
+        alertMsg += ` LinkedIn: ${autoFilled.linkedin_url || 'Not found'}\n`;
+        alertMsg += ` GitHub: ${autoFilled.github_url || 'Not found'}\n`;
+        alertMsg += ` Current Year: ${autoFilled.current_year || 'Not found'}\n\n`;
         
-        alertMsg += `📄 Skills: ${skills.length} found\n`;
+        alertMsg += ` Skills: ${skills.length} found\n`;
         alertMsg += `   ${skills.slice(0, 10).join(', ')}${skills.length > 10 ? '...' : ''}\n\n`;
         
-        alertMsg += `🎓 Education:\n`;
+        alertMsg += ` Education:\n`;
         alertMsg += `   University: ${edu.university || 'Not found'}\n`;
         alertMsg += `   Degree: ${edu.degree || 'Not found'}\n`;
         alertMsg += `   Major: ${edu.major || 'Not found'}\n`;
         alertMsg += `   GPA: ${edu.gpa || 'Not found'}\n`;
         alertMsg += `   Graduation: ${edu.graduation_year || 'Not found'}\n\n`;
         
-        alertMsg += `💼 Experience: ${exp.length} entries\n`;
-        alertMsg += `🏅 Certifications: ${certs.length} found\n`;
-        alertMsg += `🏆 Achievements: ${achievementsCount} extracted\n`;
+        alertMsg += ` Experience: ${exp.length} entries\n`;
+        alertMsg += ` Certifications: ${certs.length} found\n`;
+        alertMsg += ` Achievements: ${achievementsCount} extracted\n`;
         
         // Show achievement titles
         if (achievementsData.length > 0) {
@@ -140,17 +140,17 @@ export default function StudentProfile() {
           }
         }
         
-        alertMsg += `\n✅ All data auto-filled! Review below.`;
+        alertMsg += `\n All data auto-filled! Review below.`;
         
         alert(alertMsg);
         
         await fetchProfile(); // Reload profile with ALL parsed data
       } else {
-        alert('❌ ' + (data.error || 'Failed to upload resume'));
+        alert(' ' + (data.error || 'Failed to upload resume'));
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('❌ Error uploading resume: ' + error.message);
+      alert(' Error uploading resume: ' + error.message);
     } finally {
       setUploading(false);
     }
@@ -184,14 +184,14 @@ export default function StudentProfile() {
       const data = await response.json();
 
       if (response.ok) {
-        alert('✅ Photo uploaded successfully!');
+        alert(' Photo uploaded successfully!');
         await fetchProfile(); // Reload to show new photo
       } else {
-        alert('❌ ' + (data.error || 'Failed to upload photo'));
+        alert(' ' + (data.error || 'Failed to upload photo'));
       }
     } catch (error) {
       console.error('Error uploading photo:', error);
-      alert('❌ Error uploading photo: ' + error.message);
+      alert(' Error uploading photo: ' + error.message);
     } finally {
       setUploadingPhoto(false);
     }
@@ -225,14 +225,14 @@ export default function StudentProfile() {
       const data = await response.json();
 
       if (response.ok) {
-        alert('✅ ID Card uploaded successfully!');
+        alert(' ID Card uploaded successfully!');
         await fetchProfile(); // Reload to show new ID card
       } else {
-        alert('❌ ' + (data.error || 'Failed to upload ID card'));
+        alert(' ' + (data.error || 'Failed to upload ID card'));
       }
     } catch (error) {
       console.error('Error uploading ID card:', error);
-      alert('❌ Error uploading ID card: ' + error.message);
+      alert(' Error uploading ID card: ' + error.message);
     } finally {
       setUploadingIdCard(false);
     }
@@ -255,7 +255,7 @@ export default function StudentProfile() {
       const data = await response.json();
 
       if (response.ok) {
-        alert('✅ GitHub connected successfully!');
+        alert(' GitHub connected successfully!');
         await fetchProfile(); // Reload profile with GitHub data
       } else {
         alert(data.error || 'Failed to connect GitHub');
@@ -269,7 +269,7 @@ export default function StudentProfile() {
 
   const handleSave = async () => {
     setSaving(true);
-    console.log('💾 Saving profile data:', formData);
+    console.log(' Saving profile data:', formData);
     try {
       const response = await fetch('/api/student/profile', {
         method: 'PUT',
@@ -278,16 +278,16 @@ export default function StudentProfile() {
       });
 
       const result = await response.json();
-      console.log('💾 Save response:', result);
+      console.log(' Save response:', result);
 
       if (response.ok) {
-        alert('✅ Profile updated successfully!');
+        alert(' Profile updated successfully!');
         await fetchProfile(); // Wait for reload to complete
       } else {
-        alert('❌ Failed to update profile: ' + (result.error || 'Unknown error'));
+        alert(' Failed to update profile: ' + (result.error || 'Unknown error'));
       }
     } catch (error) {
-      console.error('❌ Save error:', error);
+      console.error(' Save error:', error);
       alert('Error updating profile: ' + error.message);
     } finally {
       setSaving(false);
@@ -408,12 +408,12 @@ export default function StudentProfile() {
                 <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-300">
                   {formData.current_year && (
                     <span className="flex items-center gap-1">
-                      🎓 {formData.current_year}
+                       {formData.current_year}
                     </span>
                   )}
                   {formData.phone && (
                     <span className="flex items-center gap-1">
-                      📱 {formData.phone}
+                       {formData.phone}
                     </span>
                   )}
                   {formData.linkedin_url && (
@@ -423,7 +423,7 @@ export default function StudentProfile() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-blue-600 hover:underline"
                     >
-                      🔗 LinkedIn
+                       LinkedIn
                     </a>
                   )}
                 </div>
@@ -444,7 +444,7 @@ export default function StudentProfile() {
                       rel="noopener noreferrer"
                       className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                     >
-                      📄 View Resume
+                       View Resume
                     </a>
                   )}
                 </div>
@@ -458,13 +458,13 @@ export default function StudentProfile() {
             {/* Quick Actions */}
             <div className="mb-8 pb-8 border-b border-purple-500/30">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                <span>⚡</span> Quick Actions
+                <span></span> Quick Actions
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Resume Upload */}
               <div className="bg-gradient-to-br from-blue-600/20 to-blue-700/20 rounded-lg p-6 border border-blue-500/30">
                 <div className="flex items-start gap-3">
-                  <div className="text-3xl">📄</div>
+                  <div className="text-3xl"></div>
                   <div className="flex-1">
                     <h3 className="font-bold text-white mb-2">Upload Resume</h3>
                     <p className="text-sm text-gray-300 mb-4">Auto-fill profile from PDF</p>
@@ -478,7 +478,7 @@ export default function StudentProfile() {
                     {uploading && <p className="text-sm text-blue-400 font-medium mt-2">Uploading & parsing...</p>}
                     {profile?.resume_url && (
                       <a href={profile.resume_url} target="_blank" className="text-sm text-blue-400 hover:text-blue-300 font-medium mt-2 block">
-                        📎 View Current Resume
+                         View Current Resume
                       </a>
                     )}
                   </div>
@@ -488,7 +488,7 @@ export default function StudentProfile() {
               {/* Student ID Card Upload */}
               <div className="bg-gradient-to-br from-green-600/20 to-green-700/20 rounded-lg p-6 border border-green-500/30">
                 <div className="flex items-start gap-3">
-                  <div className="text-3xl">🪪</div>
+                  <div className="text-3xl"></div>
                   <div className="flex-1">
                     <h3 className="font-bold text-white mb-2">Student ID Card</h3>
                     <p className="text-sm text-gray-300 mb-4">Upload your student ID</p>
@@ -502,7 +502,7 @@ export default function StudentProfile() {
                     {uploadingIdCard && <p className="text-sm text-green-400 font-medium mt-2">Uploading ID card...</p>}
                     {profile?.id_card_url && (
                       <a href={profile.id_card_url} target="_blank" className="text-sm text-green-400 hover:text-green-300 font-medium mt-2 block">
-                        🪪 View Current ID Card
+                         View Current ID Card
                       </a>
                     )}
                   </div>
@@ -512,7 +512,7 @@ export default function StudentProfile() {
               {/* GitHub Connect */}
               <div className="bg-gradient-to-br from-purple-600/20 to-purple-700/20 rounded-lg p-6 border border-purple-500/30">
                 <div className="flex items-start gap-3">
-                  <div className="text-3xl">🐙</div>
+                  <div className="text-3xl"></div>
                   <div className="flex-1">
                     <h3 className="font-bold text-white mb-2">Connect GitHub</h3>
                     <p className="text-sm text-gray-300 mb-4">Fetch repos & languages</p>
@@ -543,7 +543,7 @@ export default function StudentProfile() {
               {(profile?.github_username || profile?.github_data?.username) && (
                 <div className="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 rounded-lg p-6 border border-indigo-500/30">
                   <div className="flex items-start gap-3">
-                    <div className="text-3xl">📊</div>
+                    <div className="text-3xl"></div>
                     <div className="flex-1">
                       <h3 className="font-bold text-white mb-2">GitHub Analytics Pro</h3>
                       <p className="text-sm text-gray-300 mb-4">View comprehensive stats & charts</p>
@@ -551,10 +551,10 @@ export default function StudentProfile() {
                         onClick={() => router.push('/student/github-analytics')}
                         className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:via-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg font-semibold"
                       >
-                        🚀 View Analytics Dashboard
+                         View Analytics Dashboard
                       </button>
                       <p className="text-xs text-gray-500 mt-2 text-center">
-                        📈 Pie charts • Languages • Commits • Stars • Contributors
+                         Pie charts • Languages • Commits • Stars • Contributors
                       </p>
                     </div>
                   </div>
@@ -566,7 +566,7 @@ export default function StudentProfile() {
             {/* Basic Info */}
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                <span>📋</span> Basic Information
+                <span></span> Basic Information
               </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -631,7 +631,7 @@ export default function StudentProfile() {
           {/* Education */}
           <div className="mb-8 pb-8 border-b border-purple-500/30">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-              <span>🎓</span> Education
+              <span></span> Education
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -692,7 +692,7 @@ export default function StudentProfile() {
           <div className="mb-8 pb-8 border-b border-purple-500/30">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                <span>💡</span> Skills
+                <span></span> Skills
               </h2>
               <button
                 onClick={addSkill}
@@ -724,7 +724,7 @@ export default function StudentProfile() {
           <div className="mb-8">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                <span>🏆</span> Achievements
+                <span></span> Achievements
               </h2>
               <button
                 onClick={addAchievement}
@@ -789,7 +789,7 @@ export default function StudentProfile() {
           <div className="mb-8">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                <span>💬</span> Recommendations & Feedback
+                <span></span> Recommendations & Feedback
               </h2>
               <div className="flex gap-2">
                 <span className="px-3 py-1 bg-blue-600 text-white rounded-full text-sm font-medium">
@@ -801,7 +801,7 @@ export default function StudentProfile() {
             {/* Share Link */}
             <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg p-6 mb-6 border border-purple-500/30">
               <h3 className="font-bold text-white mb-3 flex items-center gap-2">
-                <span>🔗</span> Get Recommendations
+                <span></span> Get Recommendations
               </h3>
               <p className="text-sm text-gray-300 mb-4">
                 Share this link with your professors, mentors, or colleagues to request recommendations:
@@ -816,11 +816,11 @@ export default function StudentProfile() {
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(`${window.location.origin}/recommend/${profile?._id}`);
-                    alert('✅ Link copied to clipboard!');
+                    alert(' Link copied to clipboard!');
                   }}
                   className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors text-sm font-semibold"
                 >
-                  📋 Copy Link
+                   Copy Link
                 </button>
               </div>
             </div>
@@ -845,7 +845,7 @@ export default function StudentProfile() {
                         <div className="flex gap-1">
                           {[...Array(5)].map((_, i) => (
                             <span key={i} className={`text-lg ${i < rec.rating ? 'text-yellow-500' : 'text-gray-300'}`}>
-                              ★
+                              
                             </span>
                           ))}
                         </div>
@@ -860,11 +860,11 @@ export default function StudentProfile() {
                     {/* Skills Ratings */}
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-4">
                       {[
-                        { label: '💻 Technical', value: rec.skills_rating?.technical },
-                        { label: '💬 Communication', value: rec.skills_rating?.communication },
-                        { label: '🤝 Teamwork', value: rec.skills_rating?.teamwork },
-                        { label: '👑 Leadership', value: rec.skills_rating?.leadership },
-                        { label: '🧩 Problem Solving', value: rec.skills_rating?.problem_solving }
+                        { label: ' Technical', value: rec.skills_rating?.technical },
+                        { label: ' Communication', value: rec.skills_rating?.communication },
+                        { label: ' Teamwork', value: rec.skills_rating?.teamwork },
+                        { label: ' Leadership', value: rec.skills_rating?.leadership },
+                        { label: ' Problem Solving', value: rec.skills_rating?.problem_solving }
                       ].map((skill, idx) => (
                         <div key={idx} className="bg-gray-50 rounded p-2 text-center">
                           <div className="text-xs text-gray-600">{skill.label}</div>
@@ -903,7 +903,7 @@ export default function StudentProfile() {
               disabled={saving}
               className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-bold text-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-xl shadow-purple-500/30 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? 'Saving...' : '💾 Save Changes'}
+              {saving ? 'Saving...' : ' Save Changes'}
             </button>
           </div>
         </div>

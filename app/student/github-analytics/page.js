@@ -125,17 +125,17 @@ export default function GitHubAnalytics() {
                 <div className="flex gap-4 mt-3 text-sm">
                   {profile.location && (
                     <span className="flex items-center gap-1">
-                      <span>📍</span> {profile.location}
+                      <span></span> {profile.location}
                     </span>
                   )}
                   {profile.company && (
                     <span className="flex items-center gap-1">
-                      <span>🏢</span> {profile.company}
+                      <span></span> {profile.company}
                     </span>
                   )}
                   {profile.blog && (
                     <a href={profile.blog} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:underline">
-                      <span>🔗</span> Website
+                      <span></span> Website
                     </a>
                   )}
                 </div>
@@ -155,7 +155,7 @@ export default function GitHubAnalytics() {
                   <p className="text-gray-600 text-sm">Total Repositories</p>
                   <p className="text-3xl font-bold text-gray-900 mt-1">{statistics.total_repos}</p>
                 </div>
-                <div className="text-4xl">📦</div>
+                <div className="text-4xl"></div>
               </div>
               <p className="text-xs text-gray-500 mt-2">
                 {statistics.original_repos} original, {statistics.forked_repos} forked
@@ -168,7 +168,7 @@ export default function GitHubAnalytics() {
                   <p className="text-gray-600 text-sm">Total Stars</p>
                   <p className="text-3xl font-bold text-gray-900 mt-1">{statistics.total_stars}</p>
                 </div>
-                <div className="text-4xl">⭐</div>
+                <div className="text-4xl"></div>
               </div>
               <p className="text-xs text-gray-500 mt-2">Across all repositories</p>
             </div>
@@ -179,7 +179,7 @@ export default function GitHubAnalytics() {
                   <p className="text-gray-600 text-sm">Total Commits</p>
                   <p className="text-3xl font-bold text-gray-900 mt-1">{statistics.total_commits_recent}</p>
                 </div>
-                <div className="text-4xl">💻</div>
+                <div className="text-4xl"></div>
               </div>
               <p className="text-xs text-gray-500 mt-2">Recent activity</p>
             </div>
@@ -190,7 +190,7 @@ export default function GitHubAnalytics() {
                   <p className="text-gray-600 text-sm">Followers</p>
                   <p className="text-3xl font-bold text-gray-900 mt-1">{profile.followers}</p>
                 </div>
-                <div className="text-4xl">👥</div>
+                <div className="text-4xl"></div>
               </div>
               <p className="text-xs text-gray-500 mt-2">Following {profile.following}</p>
             </div>
@@ -317,7 +317,7 @@ export default function GitHubAnalytics() {
 
           {/* Top Repositories */}
           <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">🏆 Top Repositories</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4"> Top Repositories</h3>
             {top_repos.length > 0 ? (
               <div className="space-y-4">
                 {top_repos.map((repo, index) => (
@@ -340,8 +340,8 @@ export default function GitHubAnalytics() {
                               {repo.language}
                             </span>
                           )}
-                          <span>⭐ {repo.stars}</span>
-                          <span>🍴 {repo.forks}</span>
+                          <span> {repo.stars}</span>
+                          <span> {repo.forks}</span>
                           <span className="text-xs">
                             Updated: {new Date(repo.updated_at).toLocaleDateString()}
                           </span>
@@ -359,7 +359,7 @@ export default function GitHubAnalytics() {
           {/* Organizations */}
           {organizations.length > 0 && (
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">🏢 Organizations</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4"> Organizations</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {organizations.map((org, index) => (
                   <div key={index} className="flex items-center gap-3 p-3 border rounded-lg hover:shadow-md transition-shadow">

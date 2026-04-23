@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { 
   BarChart, Bar, PieChart, Pie, LineChart, Line, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell 
 } from 'recharts';
 import Sidebar from '@/components/Sidebar';
+import PageTransition from '@/components/PageTransition';
+import AnimatedCard from '@/components/AnimatedCard';
+import AnimatedCyberBackground from '@/components/AnimatedCyberBackground';
+import { BarChart2, Briefcase, FileText, Users, TrendingUp, AlertTriangle, Lightbulb, ArrowLeft } from 'lucide-react';
 
 export default function RecruiterAnalyticsPage() {
   const router = useRouter();
@@ -39,26 +42,6 @@ export default function RecruiterAnalyticsPage() {
     }
   };
 
-  const handleLogout = async () => {
-    await fetch('/api/auth/logout', { 
-      method: 'POST',
-      credentials: 'include' 
-    });
-    router.push('/');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-700 text-xl font-medium">Loading analytics...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Prepare data for Skill Gap Bar Chart
   const skillGapData = analytics?.skill_gaps?.slice(0, 8).map(gap => ({
     skill: gap.skill.charAt(0).toUpperCase() + gap.skill.slice(1),
     Demand: gap.demand,
@@ -66,432 +49,304 @@ export default function RecruiterAnalyticsPage() {
     Gap: gap.gap
   })) || [];
 
-  // Prepare data for University Distribution Pie Chart
   const universityData = analytics?.university_distribution?.slice(0, 6).map(uni => ({
     name: uni.name || 'Unknown',
     value: uni.count
   })) || [];
 
-  // Prepare data for Degree Distribution
   const degreeData = analytics?.degree_distribution?.slice(0, 5).map(deg => ({
     name: deg.name || 'Unknown',
     value: deg.count
   })) || [];
 
-  // Colors for charts
-  const COLORS = ['#2563eb', '#ec4899', '#f59e0b', '#10b981', '#8b5cf6', '#06b6d4', '#ef4444', '#14b8a6'];
+  const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#06b6d4', '#ef4444', '#14b8a6'];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen relative font-sans text-gray-800">
+      <AnimatedCyberBackground />
       <Sidebar role="recruiter" />
       
-      {/* Main Content with left margin for sidebar */}
-      <div className="ml-64">
-        <header className="bg-white border-b border-gray-200 shadow-sm">
-          <div className="container mx-auto px-6 py-6">
+      <div className="ml-64 relative z-10">
+        <header className="navbar-modern">
+          <div className="max-w-7xl mx-auto px-8 py-5">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">📊 Analytics Dashboard</h1>
-                <p className="text-gray-600 mt-1">Real-time recruitment insights and metrics</p>
+                <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-700">
+                  Analytics Dashboard
+                </h1>
+                <p className="text-gray-500 font-medium mt-1">Real-time recruitment insights and metrics</p>
               </div>
-              <button onClick={handleLogout} className="btn-secondary">
-                Logout
+              <button
+                onClick={() => router.push('/recruiter/dashboard')}
+                className="btn-secondary flex items-center gap-2"
+              >
+                <ArrowLeft size={20} />
+                Dashboard
               </button>
             </div>
           </div>
         </header>
 
-        <div className="container mx-auto px-6 py-8">
-        {/* Key Metrics */}
-        <div className="grid md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">💼</span>
-              </div>
+        <PageTransition className="max-w-7xl mx-auto px-8 py-8">
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
             </div>
-            <div className="text-gray-600 text-sm mb-1 font-medium">Total Jobs</div>
-            <div className="text-3xl font-bold text-gray-900">{analytics?.total_jobs || 0}</div>
-            <div className="text-green-600 text-xs mt-2 font-medium">✓ Active: {analytics?.active_jobs || 0}</div>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📝</span>
-              </div>
-            </div>
-            <div className="text-gray-600 text-sm mb-1 font-medium">Applications</div>
-            <div className="text-3xl font-bold text-gray-900">{analytics?.total_applications || 0}</div>
-            <div className="text-gray-600 text-xs mt-2 font-medium">Avg: {analytics?.average_applications_per_job || 0}/job</div>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">👥</span>
-              </div>
-            </div>
-            <div className="text-gray-600 text-sm mb-1 font-medium">Candidates</div>
-            <div className="text-3xl font-bold text-gray-900">{analytics?.total_students || 0}</div>
-            <div className="text-gray-600 text-xs mt-2 font-medium">In talent pool</div>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📈</span>
-              </div>
-            </div>
-            <div className="text-gray-600 text-sm mb-1 font-medium">Conversion</div>
-            <div className="text-3xl font-bold text-gray-900">
-              {analytics?.conversion_rate || 0}%
-            </div>
-            <div className="text-green-600 text-xs mt-2 font-medium">Acceptance rate</div>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">⚠️</span>
-              </div>
-            </div>
-            <div className="text-gray-600 text-sm mb-1 font-medium">Skill Gaps</div>
-            <div className="text-3xl font-bold text-gray-900">
-              {analytics?.skill_gaps?.filter(g => g.gap_percentage > 50).length || 0}
-            </div>
-            <div className="text-red-600 text-xs mt-2 font-medium">Critical shortage</div>
-          </div>
-        </div>
-
-        {/* Application Funnel */}
-        <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <span className="text-2xl">🎯</span>
-            Application Funnel
-          </h2>
-          {analytics?.application_funnel && analytics.application_funnel.length > 0 ? (
-            <div className="space-y-4">
-              {analytics.application_funnel.map((stage, index) => (
-                <div key={stage.stage} className="relative">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-900 font-medium">{stage.stage}</span>
-                    <span className="text-gray-700">{stage.count} ({stage.percentage}%)</span>
+          ) : (
+            <>
+              {/* Key Metrics */}
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+                <AnimatedCard index={0} className="p-6 border border-white/60">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                      <Briefcase size={24} />
+                    </div>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-8 relative overflow-hidden">
-                    <div 
-                      className={`h-8 rounded-full transition-all duration-500 flex items-center px-4 ${
-                        index === 0 ? 'bg-gradient-to-r from-purple-500 to-pink-500' :
-                        index === 1 ? 'bg-gradient-to-r from-blue-500 to-cyan-500' :
-                        index === 2 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' :
-                        'bg-gradient-to-r from-green-500 to-emerald-500'
-                      }`}
-                      style={{ width: `${stage.percentage}%` }}
-                    >
-                      <span className="text-white font-bold text-sm">{stage.percentage}%</span>
+                  <div className="text-gray-500 text-sm font-bold uppercase tracking-wider mb-1">Total Jobs</div>
+                  <div className="text-3xl font-extrabold text-gray-900">{analytics?.total_jobs || 0}</div>
+                  <div className="text-green-600 text-xs mt-2 font-bold flex items-center gap-1">✓ Active: {analytics?.active_jobs || 0}</div>
+                </AnimatedCard>
+                
+                <AnimatedCard index={1} className="p-6 border border-white/60">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+                      <FileText size={24} />
+                    </div>
+                  </div>
+                  <div className="text-gray-500 text-sm font-bold uppercase tracking-wider mb-1">Applications</div>
+                  <div className="text-3xl font-extrabold text-gray-900">{analytics?.total_applications || 0}</div>
+                  <div className="text-gray-600 text-xs mt-2 font-bold">Avg: {analytics?.average_applications_per_job || 0}/job</div>
+                </AnimatedCard>
+                
+                <AnimatedCard index={2} className="p-6 border border-white/60">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+                      <Users size={24} />
+                    </div>
+                  </div>
+                  <div className="text-gray-500 text-sm font-bold uppercase tracking-wider mb-1">Candidates</div>
+                  <div className="text-3xl font-extrabold text-gray-900">{analytics?.total_students || 0}</div>
+                  <div className="text-gray-600 text-xs mt-2 font-bold">In talent pool</div>
+                </AnimatedCard>
+                
+                <AnimatedCard index={3} className="p-6 border border-white/60">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-green-600">
+                      <TrendingUp size={24} />
+                    </div>
+                  </div>
+                  <div className="text-gray-500 text-sm font-bold uppercase tracking-wider mb-1">Conversion</div>
+                  <div className="text-3xl font-extrabold text-gray-900">{analytics?.conversion_rate || 0}%</div>
+                  <div className="text-green-600 text-xs mt-2 font-bold">Acceptance rate</div>
+                </AnimatedCard>
+                
+                <AnimatedCard index={4} className="p-6 border border-white/60">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
+                      <AlertTriangle size={24} />
+                    </div>
+                  </div>
+                  <div className="text-gray-500 text-sm font-bold uppercase tracking-wider mb-1">Skill Gaps</div>
+                  <div className="text-3xl font-extrabold text-gray-900">
+                    {analytics?.skill_gaps?.filter(g => g.gap_percentage > 50).length || 0}
+                  </div>
+                  <div className="text-red-600 text-xs mt-2 font-bold">Critical shortage</div>
+                </AnimatedCard>
+              </div>
+
+              {/* Main Charts Row */}
+              <div className="grid lg:grid-cols-2 gap-8 mb-8">
+                {/* Application Funnel */}
+                <AnimatedCard index={5} className="p-8 border border-white/60">
+                  <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <BarChart2 className="text-blue-600" />
+                    Application Funnel
+                  </h2>
+                  {analytics?.application_funnel && analytics.application_funnel.length > 0 ? (
+                    <div className="space-y-6">
+                      {analytics.application_funnel.map((stage, index) => (
+                        <div key={stage.stage} className="relative">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-gray-900 font-bold">{stage.stage}</span>
+                            <span className="text-gray-600 font-medium">{stage.count} ({stage.percentage}%)</span>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-8 relative overflow-hidden shadow-inner">
+                            <div 
+                              className={`h-8 rounded-full transition-all duration-1000 flex items-center px-4 ${
+                                index === 0 ? 'bg-gradient-to-r from-blue-500 to-indigo-500' :
+                                index === 1 ? 'bg-gradient-to-r from-purple-500 to-pink-500' :
+                                index === 2 ? 'bg-gradient-to-r from-orange-500 to-red-500' :
+                                'bg-gradient-to-r from-green-500 to-emerald-500'
+                              }`}
+                              style={{ width: `${stage.percentage}%` }}
+                            >
+                              <span className="text-white font-bold text-sm">{stage.percentage}%</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500 font-medium">No application data available</div>
+                  )}
+                  <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-100">
+                    <div className="text-center">
+                      <div className="text-2xl font-extrabold text-blue-600">{analytics?.shortlist_rate || 0}%</div>
+                      <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">Shortlist Rate</div>
+                    </div>
+                    <div className="text-center border-l border-r border-gray-100">
+                      <div className="text-2xl font-extrabold text-green-600">{analytics?.conversion_rate || 0}%</div>
+                      <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">Conversion Rate</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-extrabold text-orange-600">{analytics?.average_time_to_apply || 0}d</div>
+                      <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">Avg Time</div>
+                    </div>
+                  </div>
+                </AnimatedCard>
+
+                {/* Applications Trend */}
+                <AnimatedCard index={6} className="p-8 border border-white/60">
+                  <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <TrendingUp className="text-purple-600" />
+                    Applications Trend (30 Days)
+                  </h2>
+                  {analytics?.applications_over_time && analytics.applications_over_time.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart data={analytics.applications_over_time}>
+                        <defs>
+                          <linearGradient id="colorApps" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                        <XAxis dataKey="date" stroke="#9ca3af" axisLine={false} tickLine={false} />
+                        <YAxis stroke="#9ca3af" axisLine={false} tickLine={false} />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#ffffff', border: 'none', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="applications" 
+                          stroke="#8b5cf6" 
+                          strokeWidth={3}
+                          fillOpacity={1} 
+                          fill="url(#colorApps)" 
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-[300px] flex items-center justify-center text-gray-500 font-medium">
+                      No recent application data
+                    </div>
+                  )}
+                </AnimatedCard>
+              </div>
+
+              <div className="grid lg:grid-cols-2 gap-8 mb-8">
+                {/* Skill Gap Chart */}
+                <AnimatedCard index={7} className="p-8 border border-white/60">
+                  <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <AlertTriangle className="text-orange-600" />
+                    Skill Supply vs Demand
+                  </h2>
+                  {skillGapData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={skillGapData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                        <XAxis dataKey="skill" stroke="#9ca3af" axisLine={false} tickLine={false} />
+                        <YAxis stroke="#9ca3af" axisLine={false} tickLine={false} />
+                        <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} />
+                        <Legend iconType="circle" />
+                        <Bar dataKey="Demand" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Supply" fill="#10b981" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-[300px] flex items-center justify-center text-gray-500 font-medium">No skill data available</div>
+                  )}
+                </AnimatedCard>
+
+                {/* University Chart */}
+                <AnimatedCard index={8} className="p-8 border border-white/60">
+                  <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <Users className="text-blue-600" />
+                    Candidate Universities
+                  </h2>
+                  {universityData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={universityData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={80}
+                          outerRadius={110}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {universityData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} />
+                        <Legend iconType="circle" />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-[300px] flex items-center justify-center text-gray-500 font-medium">No university data available</div>
+                  )}
+                </AnimatedCard>
+              </div>
+
+              {/* AI Insights */}
+              <AnimatedCard index={9} className="p-8 border border-purple-200 bg-gradient-to-br from-purple-50/80 to-indigo-50/80 mb-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <Lightbulb className="text-yellow-500" />
+                  AI-Powered Recruitment Insights
+                </h3>
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="bg-white/60 p-6 rounded-2xl border border-white">
+                    <h4 className="font-extrabold text-green-700 mb-4 flex items-center gap-2">✓ Key Strengths</h4>
+                    <div className="space-y-3">
+                      {analytics?.skill_gaps?.filter(g => g.gap_percentage <= 0).length > 0 ? (
+                        analytics.skill_gaps.filter(g => g.gap_percentage <= 0).slice(0, 3).map((gap, idx) => (
+                          <div key={idx} className="flex gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 flex-shrink-0" />
+                            <p className="text-gray-700 font-medium">
+                              <span className="capitalize font-bold text-gray-900">{gap.skill}</span>: Excellent supply ({gap.supply} candidates for {gap.demand} positions)
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-600 font-medium">Focus on building your candidate pool</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="bg-white/60 p-6 rounded-2xl border border-white">
+                    <h4 className="font-extrabold text-red-700 mb-4 flex items-center gap-2"> Action Required</h4>
+                    <div className="space-y-3">
+                      {analytics?.skill_gaps?.filter(g => g.gap_percentage > 50).length > 0 ? (
+                        analytics.skill_gaps.filter(g => g.gap_percentage > 50).slice(0, 3).map((gap, idx) => (
+                          <div key={idx} className="flex gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 flex-shrink-0" />
+                            <p className="text-gray-700 font-medium">
+                              Urgently recruit <span className="capitalize font-bold text-gray-900">{gap.skill}</span> talent (need {gap.gap} more)
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-600 font-medium">All critical skills are well covered!</p>
+                      )}
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">No application data available</div>
+              </AnimatedCard>
+
+            </>
           )}
-          <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{analytics?.shortlist_rate || 0}%</div>
-              <div className="text-sm text-gray-600">Shortlist Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-emerald-600">{analytics?.conversion_rate || 0}%</div>
-              <div className="text-sm text-gray-600">Conversion Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{analytics?.average_time_to_apply || 0} days</div>
-              <div className="text-sm text-gray-600">Avg Time to Apply</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Applications Over Time */}
-        <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <span className="text-2xl">📈</span>
-            Applications Trend (Last 30 Days)
-          </h2>
-          {analytics?.applications_over_time && analytics.applications_over_time.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={analytics.applications_over_time}>
-                <defs>
-                  <linearGradient id="colorApplications" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="date" stroke="#9ca3af" />
-                <YAxis stroke="#9ca3af" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                  labelStyle={{ color: '#f3f4f6' }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="applications" 
-                  stroke="#3b82f6" 
-                  fillOpacity={1} 
-                  fill="url(#colorApplications)" 
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-[300px] flex items-center justify-center text-gray-500">
-              No recent application data
-            </div>
-          )}
-        </div>
-
-        {/* Top Performing Jobs */}
-        <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <span className="text-2xl">🏆</span>
-            Top Performing Jobs
-          </h2>
-          {analytics?.top_jobs && analytics.top_jobs.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200 bg-gray-50">
-                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">Job Title</th>
-                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">Location</th>
-                    <th className="text-center py-3 px-4 text-gray-700 font-semibold">Applications</th>
-                    <th className="text-center py-3 px-4 text-gray-700 font-semibold">Shortlisted</th>
-                    <th className="text-center py-3 px-4 text-gray-700 font-semibold">Success Rate</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {analytics.top_jobs.map((job, index) => (
-                    <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="py-3 px-4 text-gray-900 font-medium">{job.title}</td>
-                      <td className="py-3 px-4 text-gray-600">{job.location}</td>
-                      <td className="py-3 px-4 text-center">
-                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                          {job.applications}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                          {job.shortlisted}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          job.applications > 0 && (job.shortlisted / job.applications) > 0.3
-                            ? 'bg-green-100 text-green-700'
-                            : job.applications > 0 && (job.shortlisted / job.applications) > 0.15
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : 'bg-red-100 text-red-700'
-                        }`}>
-                          {job.applications > 0 ? Math.round((job.shortlisted / job.applications) * 100) : 0}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">No job performance data available</div>
-          )}
-        </div>
-
-        {/* Main Charts Row */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {/* Skill Supply vs Demand Bar Chart */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <span className="text-2xl">💡</span>
-              Skill Supply vs Demand
-            </h2>
-            {skillGapData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={skillGapData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="skill" stroke="#9ca3af" />
-                  <YAxis stroke="#9ca3af" />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                    labelStyle={{ color: '#f3f4f6' }}
-                  />
-                  <Legend />
-                  <Bar dataKey="Demand" fill="#a855f7" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="Supply" fill="#10b981" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[300px] flex items-center justify-center text-gray-500">
-                No skill data available
-              </div>
-            )}
-            <p className="text-sm text-gray-600 mt-4 text-center">
-              Purple = Jobs needing skill | Green = Students having skill
-            </p>
-          </div>
-
-          {/* University Distribution Pie Chart */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <span className="text-2xl">🎓</span>
-              Candidate Universities
-            </h2>
-            {universityData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={universityData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {universityData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[300px] flex items-center justify-center text-gray-500">
-                No university data available
-              </div>
-            )}
-            <p className="text-sm text-gray-600 mt-4 text-center">
-              Distribution of candidates across universities
-            </p>
-          </div>
-        </div>
-
-        {/* Degree Distribution */}
-        <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <span className="text-2xl">📚</span>
-            Degree Distribution
-          </h2>
-          {degreeData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={degreeData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis type="number" stroke="#9ca3af" />
-                <YAxis dataKey="name" type="category" stroke="#9ca3af" width={150} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                  labelStyle={{ color: '#f3f4f6' }}
-                />
-                <Bar dataKey="value" fill="#10b981" radius={[0, 8, 8, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-[250px] flex items-center justify-center text-gray-500">
-              No degree data available
-            </div>
-          )}
-        </div>
-
-        {/* Critical Skill Gaps Table */}
-        <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <span className="text-2xl">🚨</span>
-            Critical Skill Shortages (Action Required)
-          </h2>
-          {analytics?.skill_gaps && analytics.skill_gaps.filter(g => g.gap_percentage > 30).length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200 bg-gray-50">
-                    <th className="text-left py-3 px-4 text-gray-700 font-semibold">Skill</th>
-                    <th className="text-center py-3 px-4 text-gray-700 font-semibold">Jobs Need</th>
-                    <th className="text-center py-3 px-4 text-gray-700 font-semibold">Students Have</th>
-                    <th className="text-center py-3 px-4 text-gray-700 font-semibold">Shortage</th>
-                    <th className="text-right py-3 px-4 text-gray-700 font-semibold">Gap %</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {analytics.skill_gaps
-                    .filter(gap => gap.gap_percentage > 30)
-                    .sort((a, b) => b.gap_percentage - a.gap_percentage)
-                    .map((gap, idx) => (
-                      <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 px-4 font-semibold capitalize text-gray-900">{gap.skill}</td>
-                        <td className="py-3 px-4 text-center text-purple-600">{gap.demand}</td>
-                        <td className="py-3 px-4 text-center text-green-600">{gap.supply}</td>
-                        <td className="py-3 px-4 text-center text-red-600 font-bold">{gap.gap}</td>
-                        <td className="py-3 px-4 text-right">
-                          <span className={`px-3 py-1 rounded-full font-semibold ${
-                            gap.gap_percentage > 70 ? 'bg-red-100 text-red-700' :
-                            gap.gap_percentage > 50 ? 'bg-orange-100 text-orange-700' :
-                            'bg-yellow-100 text-yellow-700'
-                          }`}>
-                            {gap.gap_percentage}%
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-gray-600 text-center py-8">
-              ✅ No critical skill shortages! All skills have good candidate supply.
-            </p>
-          )}
-        </div>
-
-        {/* AI-Powered Recommendations */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200 shadow-sm">
-          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <span className="text-2xl">🤖</span>
-            AI-Powered Recruitment Insights
-          </h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h4 className="font-semibold text-green-700 mb-2">✓ Strengths</h4>
-              {analytics?.skill_gaps?.filter(g => g.gap_percentage <= 0).length > 0 ? (
-                analytics.skill_gaps
-                  .filter(g => g.gap_percentage <= 0)
-                  .slice(0, 3)
-                  .map((gap, idx) => (
-                    <p key={idx} className="text-gray-700 text-sm">
-                      • <span className="capitalize font-semibold">{gap.skill}</span>: Excellent supply ({gap.supply} candidates for {gap.demand} positions)
-                    </p>
-                  ))
-              ) : (
-                <p className="text-gray-600 text-sm">Focus on building your candidate pool</p>
-              )}
-            </div>
-            <div className="space-y-3">
-              <h4 className="font-semibold text-red-700 mb-2">⚡ Action Items</h4>
-              {analytics?.skill_gaps?.filter(g => g.gap_percentage > 50).length > 0 ? (
-                analytics.skill_gaps
-                  .filter(g => g.gap_percentage > 50)
-                  .slice(0, 3)
-                  .map((gap, idx) => (
-                    <p key={idx} className="text-gray-700 text-sm">
-                      • Urgently recruit <span className="capitalize font-semibold">{gap.skill}</span> talent (need {gap.gap} more)
-                    </p>
-                  ))
-              ) : (
-                <p className="text-gray-600 text-sm">All critical skills are well covered!</p>
-              )}
-                        </div>
-          </div>
-        </div>
-        </div>
+        </PageTransition>
       </div>
     </div>
   );

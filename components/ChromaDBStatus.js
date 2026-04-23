@@ -34,13 +34,13 @@ export default function ChromaDBStatus() {
       const data = await response.json();
       
       if (data.success) {
-        setMessage(`✅ ${data.message}`);
+        setMessage(` ${data.message}`);
         fetchStats(); // Refresh stats
       } else {
-        setMessage(`❌ ${data.error || 'Sync failed'}`);
+        setMessage(` ${data.error || 'Sync failed'}`);
       }
     } catch (error) {
-      setMessage(`❌ Error: ${error.message}`);
+      setMessage(` Error: ${error.message}`);
     } finally {
       setSyncing(false);
     }
@@ -119,14 +119,14 @@ export default function ChromaDBStatus() {
                   Syncing...
                 </>
               ) : (
-                '🔄 Sync All Candidates'
+                ' Sync All Candidates'
               )}
             </button>
 
             {/* Message */}
             {message && (
               <div className={`mt-3 p-3 rounded-lg text-xs ${
-                message.startsWith('✅') 
+                message.startsWith('') 
                   ? 'bg-green-50 text-green-700 border border-green-200' 
                   : 'bg-red-50 text-red-700 border border-red-200'
               }`}>
@@ -137,7 +137,7 @@ export default function ChromaDBStatus() {
             {/* Info */}
             <div className="mt-4 pt-4 border-t border-gray-200">
               <p className="text-xs text-gray-500">
-                ✨ Semantic search powered by ChromaDB
+                 Semantic search powered by ChromaDB
               </p>
             </div>
           </>

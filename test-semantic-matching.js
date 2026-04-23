@@ -93,11 +93,11 @@ function calculateSemanticSkillMatch(requiredSkills, candidateSkills) {
   };
 }
 
-console.log('🧪 TESTING SEMANTIC SKILL MATCHING\n');
+console.log(' TESTING SEMANTIC SKILL MATCHING\n');
 console.log('='*60);
 
 // Test Case 1: Exact Problem You Mentioned
-console.log('\n📌 TEST CASE 1: Full Stack Developer');
+console.log('\n TEST CASE 1: Full Stack Developer');
 console.log('Job Requirements: React, Node.js, MongoDB');
 console.log('Candidate Skills: Next.js, Express, Mongoose');
 
@@ -106,18 +106,18 @@ const test1 = calculateSemanticSkillMatch(
   ['Next.js', 'Express', 'Mongoose']
 );
 
-console.log('\n❌ OLD SYSTEM (Keyword Match):');
+console.log('\n OLD SYSTEM (Keyword Match):');
 console.log('   Match Score: 0%');
 console.log('   Matched: None');
 
-console.log('\n✅ NEW SYSTEM (Semantic Match):');
+console.log('\n NEW SYSTEM (Semantic Match):');
 console.log(`   Match Score: ${test1.score}%`);
 console.log(`   Matched Skills: ${test1.matchedSkills.join(', ')}`);
 console.log(`   Unmatched: ${test1.unmatchedSkills.join(', ') || 'None'}`);
 
 // Test Case 2: Frontend Developer
 console.log('\n'+'='*60);
-console.log('\n📌 TEST CASE 2: Frontend Developer');
+console.log('\n TEST CASE 2: Frontend Developer');
 console.log('Job Requirements: React, TypeScript, Redux');
 console.log('Candidate Skills: Next.js, TS, Zustand');
 
@@ -126,17 +126,17 @@ const test2 = calculateSemanticSkillMatch(
   ['Next.js', 'TS', 'Zustand']
 );
 
-console.log('\n❌ OLD SYSTEM:');
+console.log('\n OLD SYSTEM:');
 console.log('   Match Score: 0%');
 
-console.log('\n✅ NEW SYSTEM:');
+console.log('\n NEW SYSTEM:');
 console.log(`   Match Score: ${test2.score}%`);
 console.log(`   Matched: ${test2.matchedSkills.join(', ')}`);
 console.log(`   Unmatched: ${test2.unmatchedSkills.join(', ')}`);
 
 // Test Case 3: Backend Developer
 console.log('\n'+'='*60);
-console.log('\n📌 TEST CASE 3: Backend Developer');
+console.log('\n TEST CASE 3: Backend Developer');
 console.log('Job Requirements: Node.js, SQL, REST API');
 console.log('Candidate Skills: Express, PostgreSQL, RESTful');
 
@@ -145,17 +145,17 @@ const test3 = calculateSemanticSkillMatch(
   ['Express', 'PostgreSQL', 'RESTful']
 );
 
-console.log('\n❌ OLD SYSTEM:');
+console.log('\n OLD SYSTEM:');
 console.log('   Match Score: 0%');
 
-console.log('\n✅ NEW SYSTEM:');
+console.log('\n NEW SYSTEM:');
 console.log(`   Match Score: ${test3.score}%`);
 console.log(`   Matched: ${test3.matchedSkills.join(', ')}`);
 console.log(`   Unmatched: ${test3.unmatchedSkills.join(', ') || 'None'}`);
 
 // Test Case 4: DevOps Engineer
 console.log('\n'+'='*60);
-console.log('\n📌 TEST CASE 4: DevOps Engineer');
+console.log('\n TEST CASE 4: DevOps Engineer');
 console.log('Job Requirements: Docker, AWS, CI/CD');
 console.log('Candidate Skills: Kubernetes, EC2, GitHub Actions');
 
@@ -164,17 +164,17 @@ const test4 = calculateSemanticSkillMatch(
   ['Kubernetes', 'EC2', 'GitHub Actions']
 );
 
-console.log('\n❌ OLD SYSTEM:');
+console.log('\n OLD SYSTEM:');
 console.log('   Match Score: 0%');
 
-console.log('\n✅ NEW SYSTEM:');
+console.log('\n NEW SYSTEM:');
 console.log(`   Match Score: ${test4.score}%`);
 console.log(`   Matched: ${test4.matchedSkills.join(', ')}`);
 console.log(`   Unmatched: ${test4.unmatchedSkills.join(', ') || 'None'}`);
 
 console.log('\n'+'='*60);
-console.log('\n🎯 SUMMARY:');
+console.log('\n SUMMARY:');
 console.log('All 4 test cases show 0% match with OLD keyword system');
 console.log('All 4 test cases show 67-100% match with NEW semantic system');
-console.log('\n✅ PERCENTAGE AUTOMATICALLY INCREASES - NO SEARCH QUERY NEEDED!');
+console.log('\n PERCENTAGE AUTOMATICALLY INCREASES - NO SEARCH QUERY NEEDED!');
 console.log('='*60);

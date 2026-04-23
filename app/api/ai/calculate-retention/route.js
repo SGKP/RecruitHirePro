@@ -16,7 +16,7 @@ export async function POST(request) {
     }
 
     // Initialize Gemini model (use gemini-1.5-pro instead of flash)
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     // Create comprehensive prompt for retention analysis
     const prompt = `You are an expert HR analyst specializing in employee retention prediction. Analyze the following cultural fitness assessment answers from a candidate and predict their retention probability.

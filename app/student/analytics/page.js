@@ -69,7 +69,7 @@ export default function StudentAnalytics() {
         <header className="bg-white border-b border-gray-200 shadow-sm">
           <div className="container mx-auto px-4 py-4 flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-900">
-              📊 My Career Analytics
+               My Career Analytics
             </h1>
             <button onClick={handleLogout} className="btn-secondary">Logout</button>
           </div>
@@ -79,7 +79,7 @@ export default function StudentAnalytics() {
           {/* Profile Strength & Key Metrics */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <div className="card-modern p-6 hover:scale-105 transition-transform border border-gray-200">
-              <div className="text-gray-700 text-sm mb-1 font-medium">📊 Profile Strength</div>
+              <div className="text-gray-700 text-sm mb-1 font-medium"> Profile Strength</div>
               <div className="text-4xl font-bold text-green-600">
                 {analytics?.profile_strength || 0}%
               </div>
@@ -92,7 +92,7 @@ export default function StudentAnalytics() {
             </div>
 
             <div className="card-modern p-6 hover:scale-105 transition-transform border border-gray-200">
-              <div className="text-gray-700 text-sm mb-1 font-medium">📬 Applications</div>
+              <div className="text-gray-700 text-sm mb-1 font-medium"> Applications</div>
               <div className="text-4xl font-bold text-blue-600">
                 {analytics?.total_applications || 0}
               </div>
@@ -104,7 +104,7 @@ export default function StudentAnalytics() {
           <div className="grid lg:grid-cols-1 gap-8 mb-8">
             <div className="card-modern p-6 border border-gray-200">
               <h2 className="text-xl font-bold text-gray-900 mb-6">
-                📋 Application Status
+                 Application Status
               </h2>
               {analytics?.status_breakdown && analytics.status_breakdown.length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
@@ -139,7 +139,7 @@ export default function StudentAnalytics() {
           {/* Profile Completion Checklist */}
           <div className="card-modern p-6 mb-8 border border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-6">
-              ✨ Profile Completion Checklist
+               Profile Completion Checklist
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
               {analytics?.profile_checklist && analytics.profile_checklist.map((item, index) => (
@@ -162,7 +162,7 @@ export default function StudentAnalytics() {
           {/* Recommendations */}
           <div className="card-modern p-6 border border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-6">
-              💡 Recommendations to Improve
+               Recommendations to Improve
             </h2>
             <div className="space-y-4">
               {analytics?.recommendations && analytics.recommendations.length > 0 ? (

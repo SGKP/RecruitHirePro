@@ -53,7 +53,7 @@ export async function GET(request) {
 
     // Calculate match scores for each student (with AI-powered retention)
     const candidatesWithScores = await Promise.all(students.map(async student => {
-      // ✨ SEMANTIC SKILL MATCHING - Understands related skills
+      //  SEMANTIC SKILL MATCHING - Understands related skills
       const studentSkills = student.resume_parsed_data?.skills || [];
       const requiredSkills = job.required_skills || [];
       
@@ -72,7 +72,7 @@ export async function GET(request) {
       // Match score is based ONLY on skills
       const match_score = skillMatchScore;
 
-      // ✨ AI-POWERED RETENTION SCORE CALCULATION ✨
+      //  AI-POWERED RETENTION SCORE CALCULATION 
       const retentionResult = await calculateAIRetentionScore(student.cultural_fitness);
       const retentionScore = retentionResult.score;
       const retentionReasoning = retentionResult.reasoning;
@@ -238,7 +238,7 @@ async function calculateAIRetentionScore(culturalFitness) {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `Analyze this candidate's cultural fitness profile and predict retention probability (0-100).
 
@@ -371,13 +371,13 @@ function calculateFallbackRetention(culturalFitness) {
   let reasoning = '';
   
   if (score >= 80) {
-    reasoning = '🌟 Strong cultural fit. ';
+    reasoning = ' Strong cultural fit. ';
   } else if (score >= 65) {
-    reasoning = '✅ Good cultural alignment. ';
+    reasoning = ' Good cultural alignment. ';
   } else if (score >= 50) {
-    reasoning = '⚖️ Moderate fit. ';
+    reasoning = '️ Moderate fit. ';
   } else {
-    reasoning = '⚠️ Limited cultural data. ';
+    reasoning = '️ Limited cultural data. ';
   }
   
   if (strengths.length > 0) {

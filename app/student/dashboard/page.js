@@ -51,7 +51,7 @@ export default function StudentDashboard() {
       const data = await response.json();
 
       if (response.ok) {
-        alert('✅ Application submitted successfully!');
+        alert(' Application submitted successfully!');
         fetchData(); // Refresh data
       } else {
         alert(data.error || 'Failed to apply');
@@ -91,7 +91,7 @@ export default function StudentDashboard() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                <span className="text-4xl">👋</span>
+                <span className="text-4xl"></span>
                 Welcome Back!
               </h1>
               <p className="text-purple-200 mt-1">Hey {profile?.user_id?.name}, explore new opportunities</p>
@@ -101,7 +101,7 @@ export default function StudentDashboard() {
                 onClick={() => router.push('/student/profile')}
                 className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium border border-white/30 transition-all"
               >
-                ✏️ Edit Profile
+                ️ Edit Profile
               </button>
               <button
                 onClick={handleLogout}
@@ -124,7 +124,7 @@ export default function StudentDashboard() {
                 <p className="text-5xl font-bold text-white mt-3">{jobs.length}</p>
                 <p className="text-purple-200 text-sm mt-2">Available opportunities matching your profile</p>
               </div>
-              <div className="text-7xl">💼</div>
+              <div className="text-7xl"></div>
             </div>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function StudentDashboard() {
         <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-purple-500/30 shadow-xl">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-              <span>💼</span> Recommended Jobs for You
+              <span></span> Recommended Jobs for You
             </h2>
             <button
               onClick={() => router.push('/student/jobs')}
@@ -145,7 +145,7 @@ export default function StudentDashboard() {
           
           {jobs.length === 0 ? (
             <div className="text-center py-16 bg-white/5 rounded-xl border border-white/10">
-              <div className="text-6xl mb-4">🔍</div>
+              <div className="text-6xl mb-4"></div>
               <p className="text-white text-lg font-medium">No jobs available at the moment</p>
               <p className="text-gray-400 mt-2">Check back later for new opportunities!</p>
             </div>
@@ -162,13 +162,13 @@ export default function StudentDashboard() {
                       <p className="text-gray-300 mb-3 line-clamp-2">{job.description}</p>
                       <div className="flex flex-wrap gap-2 mb-3">
                         <span className="px-3 py-1 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg text-sm font-medium shadow-lg">
-                          📍 {job.location}
+                           {job.location}
                         </span>
                         <span className="px-3 py-1 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg text-sm font-medium shadow-lg">
-                          💰 {job.salary_range}
+                           {job.salary_range}
                         </span>
                         <span className="px-3 py-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-sm font-medium shadow-lg">
-                          📈 {job.experience_level}
+                           {job.experience_level}
                         </span>
                       </div>
                     </div>
@@ -224,7 +224,7 @@ export default function StudentDashboard() {
         className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center text-3xl z-50"
         title="Launch AI Co-Pilot"
       >
-        🤖
+        
       </button>
 
       </div>

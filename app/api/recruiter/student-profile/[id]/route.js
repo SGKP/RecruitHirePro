@@ -159,7 +159,7 @@ export async function GET(request, { params }) {
     });
 
   } catch (error) {
-    console.error('❌ Error fetching student profile:', error);
+    console.error(' Error fetching student profile:', error);
     return NextResponse.json({ error: 'Failed to fetch student profile' }, { status: 500 });
   }
 }

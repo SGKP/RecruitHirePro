@@ -40,8 +40,8 @@ export async function POST(request) {
     const pdfData = await pdf(Buffer.from(buffer));
     const text = pdfData.text;
 
-    console.log('📄 PDF Text extracted, length:', text.length);
-    console.log('📄 First 500 chars:', text.substring(0, 500));
+    console.log(' PDF Text extracted, length:', text.length);
+    console.log(' First 500 chars:', text.substring(0, 500));
 
     // Extract skills (case-insensitive matching) - COMPREHENSIVE LIST
     const skillKeywords = [
@@ -227,12 +227,12 @@ export async function POST(request) {
           foundSkills.add(skill);
         }
       });
-      console.log('📋 Skills section found, extracted additional skills');
+      console.log(' Skills section found, extracted additional skills');
     }
     
     const skills = Array.from(foundSkills);
-    console.log('🎯 Total skills found:', skills.length);
-    console.log('🎯 Skills:', skills);
+    console.log(' Total skills found:', skills.length);
+    console.log(' Skills:', skills);
 
     // Extract LinkedIn
     let linkedin_url = null;
@@ -240,7 +240,7 @@ export async function POST(request) {
     if (linkedinMatch) {
       linkedin_url = linkedinMatch[1];
     }
-    console.log('🔗 LinkedIn found:', linkedin_url);
+    console.log(' LinkedIn found:', linkedin_url);
 
     // Extract Email (NEW!)
     let email = null;
@@ -248,7 +248,7 @@ export async function POST(request) {
     if (emailMatch) {
       email = emailMatch[1];
     }
-    console.log('📧 Email found:', email);
+    console.log(' Email found:', email);
 
     // Extract GitHub (NEW!)
     let github_url = null;
@@ -256,7 +256,7 @@ export async function POST(request) {
     if (githubMatch) {
       github_url = githubMatch[1];
     }
-    console.log('🐙 GitHub found:', github_url);
+    console.log(' GitHub found:', github_url);
 
     // Extract GPA/CGPA - Keep ORIGINAL value (NO conversion!)
     let gpa = null;
@@ -274,7 +274,7 @@ export async function POST(request) {
         break;
       }
     }
-    console.log('📊 GPA/CGPA found (original):', gpa);
+    console.log(' GPA/CGPA found (original):', gpa);
 
     // Extract University - Enhanced patterns
     let university = null;
@@ -307,7 +307,7 @@ export async function POST(request) {
         }
       }
     }
-    console.log('🎓 University found:', university);
+    console.log(' University found:', university);
 
     // Extract Degree - Enhanced patterns
     let degree = null;
@@ -342,7 +342,7 @@ export async function POST(request) {
         }
       }
     }
-    console.log('📜 Degree found:', degree);
+    console.log(' Degree found:', degree);
 
     // Extract Major - Enhanced extraction
     let major = null;
@@ -380,7 +380,7 @@ export async function POST(request) {
         }
       }
     }
-    console.log('📚 Major found:', major);
+    console.log(' Major found:', major);
 
     // Extract Graduation Year
     let graduation_year = null;
@@ -397,7 +397,7 @@ export async function POST(request) {
         break;
       }
     }
-    console.log('📅 Graduation year found:', graduation_year);
+    console.log(' Graduation year found:', graduation_year);
 
     // Calculate Current Year
     let current_year = null;
@@ -412,7 +412,7 @@ export async function POST(request) {
       else if (yearsRemaining >= 0) current_year = '4th Year';
       else current_year = 'Graduate';
     }
-    console.log('📚 Current year calculated:', current_year);
+    console.log(' Current year calculated:', current_year);
 
     // Extract Phone - Enhanced patterns
     let phone = null;
@@ -433,7 +433,7 @@ export async function POST(request) {
         }
       }
     }
-    console.log('📱 Phone found:', phone);
+    console.log(' Phone found:', phone);
 
     // Extract Experience - New feature for better accuracy
     const experience = [];
@@ -472,7 +472,7 @@ export async function POST(request) {
         }
       }
     }
-    console.log('💼 Experience entries found:', experience.length);
+    console.log(' Experience entries found:', experience.length);
 
     // Extract Certifications - New feature
     const certifications = [];
@@ -497,7 +497,7 @@ export async function POST(request) {
         certifications.push(match[1].trim());
       }
     });
-    console.log('🏅 Certifications found:', certifications.length);
+    console.log(' Certifications found:', certifications.length);
 
     // Extract Achievements - ENHANCED for professional resumes
     const achievements = [];
@@ -584,7 +584,7 @@ export async function POST(request) {
       }
     });
     
-    console.log('🏆 Achievements extracted:', achievements.length);
+    console.log(' Achievements extracted:', achievements.length);
 
     await connectDB();
 
@@ -600,15 +600,15 @@ export async function POST(request) {
     // Auto-fill basic fields if not already set
     if (phone && !student.phone) {
       student.phone = phone;
-      console.log('✅ Phone auto-filled:', phone);
+      console.log(' Phone auto-filled:', phone);
     }
     if (linkedin_url && !student.linkedin_url) {
       student.linkedin_url = linkedin_url;
-      console.log('✅ LinkedIn auto-filled:', linkedin_url);
+      console.log(' LinkedIn auto-filled:', linkedin_url);
     }
     if (current_year && !student.current_year) {
       student.current_year = current_year;
-      console.log('✅ Current year auto-filled:', current_year);
+      console.log(' Current year auto-filled:', current_year);
     }
     
     // Save parsed resume data
@@ -628,17 +628,17 @@ export async function POST(request) {
     // Auto-fill achievements - ALWAYS REPLACE (not just when empty)
     if (achievements && achievements.length > 0) {
       student.achievements = achievements;
-      console.log('✅ Achievements auto-filled:', achievements.length);
-      console.log('✅ Achievement titles:', achievements.map(a => a.title));
+      console.log(' Achievements auto-filled:', achievements.length);
+      console.log(' Achievement titles:', achievements.map(a => a.title));
     } else {
-      console.log('⚠️ No achievements extracted from resume');
+      console.log('️ No achievements extracted from resume');
     }
     
     student.markModified('resume_parsed_data');
     
     await student.save();
 
-    console.log('✅ Student profile updated successfully');
+    console.log(' Student profile updated successfully');
     console.log('   - Phone:', phone);
     console.log('   - Email:', email);
     console.log('   - LinkedIn:', linkedin_url);
@@ -692,7 +692,7 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error('❌ Resume upload error:', error);
+    console.error(' Resume upload error:', error);
     return NextResponse.json(
       { error: 'Internal server error: ' + error.message },
       { status: 500 }

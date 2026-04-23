@@ -134,7 +134,7 @@ export default function RecruiterViewStudentProfile() {
                   />
                 ) : (
                   <div className="w-32 h-32 rounded-full border-4 border-white shadow-xl bg-gray-200 flex items-center justify-center text-4xl text-gray-500">
-                    👤
+                    
                   </div>
                 )}
               </div>
@@ -143,10 +143,10 @@ export default function RecruiterViewStudentProfile() {
                 <p className="text-blue-100 text-lg">{education.degree || 'Student'}</p>
                 <p className="text-blue-50 mt-1">{education.university || ''}</p>
                 <div className="flex gap-4 mt-3 text-sm">
-                  <span>📧 {student.user_id?.email}</span>
-                  {student.phone && <span>📱 {student.phone}</span>}
-                  {student.current_year && <span>🎓 {student.current_year}</span>}
-                  {education.gpa && <span>📊 GPA: {education.gpa}</span>}
+                  <span> {student.user_id?.email}</span>
+                  {student.phone && <span> {student.phone}</span>}
+                  {student.current_year && <span> {student.current_year}</span>}
+                  {education.gpa && <span> GPA: {education.gpa}</span>}
                 </div>
               </div>
             </div>
@@ -163,7 +163,7 @@ export default function RecruiterViewStudentProfile() {
                     : 'border-transparent text-gray-600 hover:text-gray-900'
                 }`}
               >
-                📋 Profile & Credentials
+                 Profile & Credentials
               </button>
               {githubAnalytics && (
                 <button
@@ -174,7 +174,7 @@ export default function RecruiterViewStudentProfile() {
                       : 'border-transparent text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  📊 GitHub Analytics
+                   GitHub Analytics
                 </button>
               )}
               {student.recommendations && student.recommendations.length > 0 && (
@@ -186,7 +186,7 @@ export default function RecruiterViewStudentProfile() {
                       : 'border-transparent text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  💬 Recommendations ({student.recommendations.length})
+                   Recommendations ({student.recommendations.length})
                 </button>
               )}
             </div>
@@ -198,7 +198,7 @@ export default function RecruiterViewStudentProfile() {
               {/* Skills */}
               {skills.length > 0 && (
                 <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">💼 Skills</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4"> Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {skills.map((skill, index) => (
                       <span 
@@ -214,7 +214,7 @@ export default function RecruiterViewStudentProfile() {
 
               {/* Education */}
               <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">🎓 Education</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4"> Education</h3>
                 <div className="space-y-2">
                   <p><span className="font-semibold">Degree:</span> {education.degree || 'N/A'}</p>
                   <p><span className="font-semibold">University:</span> {education.university || 'N/A'}</p>
@@ -227,7 +227,7 @@ export default function RecruiterViewStudentProfile() {
               {/* Experience */}
               {experience.length > 0 && (
                 <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">💼 Experience</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4"> Experience</h3>
                   <div className="space-y-4">
                     {experience.map((exp, index) => (
                       <div key={index} className="border-l-4 border-blue-500 pl-4">
@@ -244,7 +244,7 @@ export default function RecruiterViewStudentProfile() {
               {/* Achievements */}
               {achievements.length > 0 && (
                 <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">🏆 Achievements</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4"> Achievements</h3>
                   <div className="space-y-3">
                     {achievements.map((achievement, index) => (
                       <div key={index} className="border-l-4 border-yellow-500 pl-4 py-2">
@@ -260,7 +260,7 @@ export default function RecruiterViewStudentProfile() {
               {/* Certifications */}
               {certifications.length > 0 && (
                 <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">📜 Certifications</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4"> Certifications</h3>
                   <ul className="list-disc list-inside space-y-2">
                     {certifications.map((cert, index) => (
                       <li key={index} className="text-gray-700">{cert}</li>
@@ -273,7 +273,7 @@ export default function RecruiterViewStudentProfile() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {student.resume_url && (
                   <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-3">📄 Resume</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-3"> Resume</h3>
                     <a
                       href={student.resume_url}
                       target="_blank"
@@ -286,7 +286,7 @@ export default function RecruiterViewStudentProfile() {
                 )}
                 {student.id_card_url && (
                   <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-3">🪪 Student ID</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-3"> Student ID</h3>
                     <a
                       href={student.id_card_url}
                       target="_blank"
@@ -336,7 +336,7 @@ export default function RecruiterViewStudentProfile() {
 
                 <div className="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
                   <div className="text-3xl font-bold text-gray-900">{githubAnalytics.statistics.total_stars}</div>
-                  <div className="text-gray-600 mt-1">Total Stars ⭐</div>
+                  <div className="text-gray-600 mt-1">Total Stars </div>
                 </div>
 
                 <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
@@ -418,7 +418,7 @@ export default function RecruiterViewStudentProfile() {
               {/* Top Repositories */}
               {githubAnalytics.top_repos && githubAnalytics.top_repos.length > 0 && (
                 <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">🏆 Top Repositories</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4"> Top Repositories</h3>
                   <div className="space-y-4">
                     {githubAnalytics.top_repos.map((repo, index) => (
                       <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -433,8 +433,8 @@ export default function RecruiterViewStudentProfile() {
                         <p className="text-gray-600 text-sm mt-1">{repo.description || 'No description'}</p>
                         <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                           {repo.language && <span>{repo.language}</span>}
-                          <span>⭐ {repo.stars}</span>
-                          <span>🍴 {repo.forks}</span>
+                          <span> {repo.stars}</span>
+                          <span> {repo.forks}</span>
                         </div>
                       </div>
                     ))}
@@ -498,7 +498,7 @@ export default function RecruiterViewStudentProfile() {
                         <div className="flex gap-1 mb-2">
                           {[...Array(5)].map((_, i) => (
                             <span key={i} className={`text-2xl ${i < rec.rating ? 'text-yellow-500' : 'text-gray-300'}`}>
-                              ★
+                              
                             </span>
                           ))}
                         </div>
@@ -515,11 +515,11 @@ export default function RecruiterViewStudentProfile() {
                       <h5 className="font-semibold text-gray-900 mb-3">Skills Assessment</h5>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {[
-                          { label: '💻 Technical', value: rec.skills_rating?.technical },
-                          { label: '💬 Communication', value: rec.skills_rating?.communication },
-                          { label: '🤝 Teamwork', value: rec.skills_rating?.teamwork },
-                          { label: '👑 Leadership', value: rec.skills_rating?.leadership },
-                          { label: '🧩 Problem Solving', value: rec.skills_rating?.problem_solving }
+                          { label: ' Technical', value: rec.skills_rating?.technical },
+                          { label: ' Communication', value: rec.skills_rating?.communication },
+                          { label: ' Teamwork', value: rec.skills_rating?.teamwork },
+                          { label: ' Leadership', value: rec.skills_rating?.leadership },
+                          { label: ' Problem Solving', value: rec.skills_rating?.problem_solving }
                         ].map((skill, idx) => (
                           <div key={idx} className="bg-white rounded-lg p-3 text-center shadow-sm">
                             <div className="text-xs text-gray-600 mb-1">{skill.label}</div>
@@ -527,7 +527,7 @@ export default function RecruiterViewStudentProfile() {
                             <div className="flex gap-0.5 justify-center mt-1">
                               {[...Array(5)].map((_, i) => (
                                 <span key={i} className={`text-xs ${i < (skill.value || 0) ? 'text-yellow-500' : 'text-gray-300'}`}>
-                                  ★
+                                  
                                 </span>
                               ))}
                             </div>
@@ -546,7 +546,7 @@ export default function RecruiterViewStudentProfile() {
 
                     {/* Footer */}
                     <div className="flex justify-between items-center text-sm text-gray-500 pt-3 border-t border-gray-200">
-                      <span>📅 {new Date(rec.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                      <span> {new Date(rec.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                       {rec.would_hire_again && (
                         <span className="text-green-600 font-semibold bg-green-50 px-3 py-1 rounded">
                           ✓ Would recommend for hiring

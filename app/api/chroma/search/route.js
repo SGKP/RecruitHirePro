@@ -71,7 +71,7 @@ export async function GET(request) {
     if (min_github_repos) filters.min_github_repos = min_github_repos;
     if (location) filters.location = location;
 
-    console.log('🔍 Performing semantic search in ChromaDB...');
+    console.log(' Performing semantic search in ChromaDB...');
     console.log('Query:', query || jobDescription);
     console.log('Required Skills:', requiredSkills);
 
@@ -84,7 +84,7 @@ export async function GET(request) {
       filters
     });
 
-    console.log(`✅ Found ${chromaResults.ids.length} candidates via semantic search`);
+    console.log(` Found ${chromaResults.ids.length} candidates via semantic search`);
 
     // Get full student data from MongoDB
     const studentIds = chromaResults.ids;
@@ -114,7 +114,7 @@ export async function GET(request) {
         
         if (!student) return null;
 
-        // ✨ SEMANTIC SKILL MATCHING - Understands related skills
+        //  SEMANTIC SKILL MATCHING - Understands related skills
         let skillMatchScore = 0;
         let matchedSkills = [];
         let unmatchedSkills = [];
@@ -127,10 +127,11 @@ export async function GET(request) {
           unmatchedSkills = skillMatchResult.unmatchedSkills;
         }
 
-        // Get semantic similarity score from ChromaDB (distance)
-        // Lower distance = higher similarity (convert to 0-100 scale)
-        const semanticDistance = chromaResults.distances[index] || 1;
-        const semanticScore = Math.max(0, (1 - semanticDistance) * 100);
+        // Semantic similarity score from ChromaDB.
+        // Collection uses L2 space: distance range is [0, 2] for normalized vectors.
+        // 0 = identical, 2 = opposite → convert to 0-100%
+        const semanticDistance = chromaResults.distances[index] ?? 2;
+        const semanticScore = Math.round(Math.max(0, ((2 - semanticDistance) / 2) * 100));
 
         // Combined match score: 50% skills + 50% semantic similarity
         const combinedMatchScore = requiredSkills.length > 0
@@ -198,7 +199,7 @@ export async function GET(request) {
     });
 
   } catch (error) {
-    console.error('❌ Semantic Search Error:', error);
+    console.error(' Semantic Search Error:', error);
     return NextResponse.json({
       success: false,
       error: error.message
@@ -218,7 +219,7 @@ async function calculateAIRetentionScore(culturalFitness) {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `You are an expert HR analyst. Analyze this candidate's cultural fitness responses and predict their retention likelihood.
 
@@ -317,7 +318,7 @@ function calculateFallbackRetention(culturalFitness) {
   const avgScore = Math.round(totalScore / culturalFitness.length);
 
   // Build reasoning
-  let emoji = avgScore >= 75 ? '🌟' : avgScore >= 60 ? '✅' : avgScore >= 45 ? '⚖️' : '⚠️';
+  let emoji = avgScore >= 75 ? '' : avgScore >= 60 ? '' : avgScore >= 45 ? '️' : '️';
   let reasoning = `${emoji} Retention Analysis:\n\n`;
   
   if (strengths.length > 0) {

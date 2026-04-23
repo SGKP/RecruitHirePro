@@ -167,7 +167,7 @@ export async function GET(request) {
     return NextResponse.json(analytics);
 
   } catch (error) {
-    console.error('❌ GitHub Analytics Error:', error);
+    console.error(' GitHub Analytics Error:', error);
     return NextResponse.json({ error: 'Failed to fetch GitHub analytics', details: error.message }, { status: 500 });
   }
 }

@@ -33,7 +33,7 @@ export default function NewJob() {
       });
 
       if (response.ok) {
-        alert('✅ Job posted successfully!');
+        alert(' Job posted successfully!');
         router.push('/recruiter/jobs');
       } else {
         const data = await response.json();
