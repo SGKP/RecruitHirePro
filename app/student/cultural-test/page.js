@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
+import PageTransition from '@/components/PageTransition';
+import AnimatedCyberBackground from '@/components/AnimatedCyberBackground';
+import AnimatedCard from '@/components/AnimatedCard';
+import { BrainCircuit, ArrowLeft, CheckCircle, ChevronRight, ChevronLeft, Gamepad2, Check } from 'lucide-react';
 
 export default function CulturalTest() {
   const router = useRouter();
@@ -51,7 +55,6 @@ export default function CulturalTest() {
     {
       name: 'Team Dynamics',
       description: 'How you work with others',
-      color: 'green',
       questions: [
         {
           id: 'team_preference',
@@ -83,7 +86,6 @@ export default function CulturalTest() {
     {
       name: 'Work Style',
       description: 'Your work preferences',
-      color: 'purple',
       questions: [
         {
           id: 'work_life_balance',
@@ -115,7 +117,6 @@ export default function CulturalTest() {
     {
       name: 'Learning & Growth',
       description: 'How you develop skills',
-      color: 'blue',
       questions: [
         {
           id: 'learning_preference',
@@ -147,7 +148,6 @@ export default function CulturalTest() {
     {
       name: 'Career Goals',
       description: 'Your professional aspirations',
-      color: 'orange',
       questions: [
         {
           id: 'career_focus',
@@ -179,7 +179,6 @@ export default function CulturalTest() {
     {
       name: 'Communication',
       description: 'How you interact',
-      color: 'pink',
       questions: [
         {
           id: 'communication_style',
@@ -211,7 +210,6 @@ export default function CulturalTest() {
     {
       name: 'Gamified Assessment',
       description: 'Interactive games and challenges',
-      color: 'indigo',
       questions: []
     }
   ];
@@ -264,201 +262,209 @@ export default function CulturalTest() {
   const totalInCategory = currentCategoryData.questions.length;
 
   const Question = ({ id, question, options }) => (
-    <div className="mb-8">
-      <label className="block text-white font-semibold mb-4 text-lg">{question}</label>
+    <div className="mb-10 p-6 bg-white/[0.01] border border-white/5 rounded-2xl">
+      <label className="block text-white font-bold mb-5 text-lg">{question}</label>
       <div className="space-y-3">
-        {options.map((option) => (
-          <label 
-            key={option} 
-            className={`flex items-center p-4 rounded-xl cursor-pointer transition-all transform hover:scale-[1.02] hover:-translate-y-1 ${
-              answers[id] === option 
-                ? 'border-2 border-purple-400 bg-purple-500/30 shadow-lg shadow-purple-500/50 backdrop-blur-sm' 
-                : 'border-2 border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-sm'
-            }`}
-            onClick={(e) => {
-              e.preventDefault();
-              setAnswers({ ...answers, [id]: option });
-            }}
-          >
-            <input
-              type="radio"
-              name={id}
-              value={option}
-              checked={answers[id] === option}
-              onChange={() => {}}
-              className="mr-4 text-purple-600 pointer-events-none w-5 h-5"
-            />
-            <span className="text-white font-medium">{option}</span>
-          </label>
-        ))}
+        {options.map((option) => {
+          const isSelected = answers[id] === option;
+          return (
+            <label 
+              key={option} 
+              className={`flex items-center p-4 rounded-xl cursor-pointer transition-all border ${
+                isSelected 
+                  ? 'border-white bg-white/10' 
+                  : 'border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/30'
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                setAnswers({ ...answers, [id]: option });
+              }}
+            >
+              <div className={`w-5 h-5 rounded-full border-2 mr-4 flex items-center justify-center ${isSelected ? 'border-white bg-white text-black' : 'border-white/30'}`}>
+                {isSelected && <Check size={12} strokeWidth={4} />}
+              </div>
+              <span className={`font-medium ${isSelected ? 'text-white' : 'text-gray-300'}`}>{option}</span>
+            </label>
+          );
+        })}
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative font-sans text-gray-200">
+      <AnimatedCyberBackground />
       <Sidebar role="student" />
-      <div className="ml-64">
+      
+      <div className="ml-[260px] relative z-10 pb-20">
         {/* Header */}
-        <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-pink-900 border-b border-purple-500/50 shadow-lg">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <span className="text-4xl"></span>
-              Cultural Fitness Test
-            </h1>
-            <p className="text-purple-200 mt-1">25 questions to understand your work preferences</p>
+        <header className="border-b border-white/5 bg-[#050505]/50 backdrop-blur-xl sticky top-0 z-20">
+          <div className="max-w-4xl mx-auto px-8 py-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                  <BrainCircuit size={28} className="text-white/70" />
+                  Cultural Fitness Test
+                </h1>
+                <p className="text-gray-400 font-medium mt-1">25 questions to understand your work preferences.</p>
+              </div>
+              <button
+                onClick={() => router.push('/student/dashboard')}
+                className="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold border border-white/10 flex items-center gap-2 text-sm transition-colors"
+              >
+                <ArrowLeft size={18} /> Back
+              </button>
+            </div>
           </div>
         </header>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Bar */}
-        <div className="mb-8 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-purple-500/30 shadow-xl">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-white text-sm font-semibold">Overall Progress</span>
-            <span className="text-purple-300 text-sm font-medium">{answeredQuestions} / {totalQuestions} questions answered</span>
-          </div>
-          <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
-            <div
-              className="h-4 rounded-full transition-all bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 shadow-lg"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-          <div className="mt-2 text-right">
-            <span className="text-2xl font-bold text-white">{Math.round(progress)}%</span>
-          </div>
-        </div>
-
-        {/* Category Tabs */}
-        <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
-          {categories.map((cat, idx) => {
-            const categoryAnswered = cat.questions.filter(q => answers[q.id]).length;
-            const categoryTotal = cat.questions.length;
-            const isComplete = categoryAnswered === categoryTotal;
-            
-            return (
-              <button
-                key={idx}
-                onClick={() => setCurrentCategory(idx)}
-                className={`px-5 py-3 rounded-xl whitespace-nowrap transition-all font-bold shadow-lg text-base ${
-                  currentCategory === idx
-                    ? `bg-gradient-to-r from-purple-600 to-pink-600 text-white border-2 border-purple-400`
-                    : isComplete
-                    ? 'bg-gradient-to-r from-green-600 to-green-700 text-white border-2 border-green-400 hover:from-green-700 hover:to-green-800'
-                    : 'bg-gradient-to-r from-gray-600 to-gray-700 border-2 border-gray-500 text-white hover:from-gray-500 hover:to-gray-600'
-                }`}
-              >
-                {cat.name} ({categoryAnswered}/{categoryTotal})
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-purple-500/30 shadow-xl">
-          {error && (
-            <div className="mb-6 p-4 bg-red-500/20 border-2 border-red-400/50 text-red-200 rounded-xl backdrop-blur-sm">
-              {error}
+        <PageTransition className="max-w-4xl mx-auto px-8 py-10">
+          {/* Progress Bar */}
+          <AnimatedCard index={0} className="mb-8 p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Overall Progress</span>
+              <span className="text-gray-400 text-sm font-medium">{answeredQuestions} / {totalQuestions} answered</span>
             </div>
-          )}
+            <div className="w-full bg-[#0a0a0a] rounded-full h-1.5 border border-white/10 overflow-hidden">
+              <div
+                className="h-full bg-white transition-all duration-500 ease-out"
+                style={{ width: `${progress}%`, boxShadow: '0 0 10px rgba(255,255,255,0.5)' }}
+              ></div>
+            </div>
+            <div className="mt-3 text-right">
+              <span className="text-xl font-light text-white">{Math.round(progress)}%</span>
+            </div>
+          </AnimatedCard>
 
-          {/* Category Header */}
-          <div className="mb-8 pb-6 border-b border-purple-500/30">
-            <h2 className="text-3xl font-bold text-white mb-2">{currentCategoryData.name}</h2>
-            <p className="text-gray-300 text-lg">{currentCategoryData.description}</p>
-            {currentCategoryData.questions.length > 0 && (
-              <div className="mt-4">
-                <div className="flex justify-between text-sm text-gray-200 font-semibold mb-2">
-                  <span>Category Progress</span>
-                  <span>{answeredInCategory} / {totalInCategory} answered</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-3">
-                  <div
-                    className={`h-3 rounded-full transition-all bg-gradient-to-r from-green-500 to-green-600 shadow-lg`}
-                    style={{ width: `${(answeredInCategory / totalInCategory) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Questions or Gamified Section */}
-          <form onSubmit={handleSubmit}>
-            {currentCategoryData.questions.length > 0 ? (
-              currentCategoryData.questions.map((q) => (
-                <Question key={q.id} {...q} />
-              ))
-            ) : (
-              /* Gamified Assessment Placeholder */
-              <div className="text-center py-16">
-                <div className="mb-6">
-                  <div className="text-8xl mb-4"></div>
-                  <h3 className="text-3xl font-bold text-white mb-3">Gamified Assessment Section</h3>
-                  <p className="text-gray-300 text-lg mb-8">Interactive games and challenges will be added here</p>
-                </div>
-                
-                {/* Results Section Placeholder */}
-                <div className="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border-2 border-indigo-500/30 rounded-xl p-8 max-w-2xl mx-auto backdrop-blur-sm">
-                  <h4 className="text-2xl font-bold text-white mb-4 flex items-center justify-center gap-2">
-                    <span></span> Assessment Results
-                  </h4>
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-                      <div className="text-4xl font-bold text-green-400">0</div>
-                      <div className="text-sm text-gray-300">Games Completed</div>
-                    </div>
-                    <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-                      <div className="text-4xl font-bold text-blue-400">0%</div>
-                      <div className="text-sm text-gray-300">Overall Score</div>
-                    </div>
-                  </div>
-                  <p className="text-gray-400 text-sm italic">Results will be displayed here after completion</p>
-                </div>
-              </div>
-            )}
-
-            {/* Navigation */}
-            <div className="mt-8 flex justify-between items-center pt-6 border-t border-purple-500/30">
-              <div className="flex gap-3">
+          {/* Category Tabs */}
+          <div className="flex flex-wrap gap-2 mb-8">
+            {categories.map((cat, idx) => {
+              const categoryAnswered = cat.questions.filter(q => answers[q.id]).length;
+              const categoryTotal = cat.questions.length;
+              const isComplete = categoryTotal > 0 && categoryAnswered === categoryTotal;
+              const isActive = currentCategory === idx;
+              
+              return (
                 <button
-                  type="button"
-                  onClick={() => router.push('/student/dashboard')}
-                  className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium border border-white/30 transition-all"
+                  key={idx}
+                  onClick={() => setCurrentCategory(idx)}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all border ${
+                    isActive
+                      ? `bg-white text-black border-white`
+                      : isComplete
+                      ? 'bg-[#0a0a0a] text-white border-white/30 hover:bg-white/10 flex items-center gap-2'
+                      : 'bg-[#050505] text-gray-500 border-white/10 hover:border-white/30 hover:text-gray-300'
+                  }`}
                 >
-                  Back to Dashboard
+                  {isComplete && !isActive && <CheckCircle size={14} className="text-white" />}
+                  {cat.name} {categoryTotal > 0 && `(${categoryAnswered}/${categoryTotal})`}
                 </button>
-                {currentCategory > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setCurrentCategory(currentCategory - 1)}
-                    className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium border border-white/30 transition-all"
-                  >
-                    Previous Category
-                  </button>
-                )}
-              </div>
+              );
+            })}
+          </div>
 
-              <div className="flex gap-3">
-                {currentCategory < categories.length - 1 ? (
-                  <button
-                    type="button"
-                    onClick={() => setCurrentCategory(currentCategory + 1)}
-                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-bold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
-                  >
-                    Next Category →
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={loading || Object.values(answers).filter(a => !a).length > 0}
-                    className="px-8 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg font-bold hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
-                  >
-                    {loading ? 'Submitting...' : '✓ Submit Test'}
-                  </button>
-                )}
+          <AnimatedCard index={1} className="p-8 bg-white/[0.02] border border-white/5 rounded-2xl">
+            {error && (
+              <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl font-medium flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                {error}
               </div>
+            )}
+
+            {/* Category Header */}
+            <div className="mb-10 pb-6 border-b border-white/5">
+              <h2 className="text-2xl font-bold text-white mb-2">{currentCategoryData.name}</h2>
+              <p className="text-gray-400 text-sm">{currentCategoryData.description}</p>
+              {currentCategoryData.questions.length > 0 && (
+                <div className="mt-6">
+                  <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
+                    <span>Category Progress</span>
+                    <span>{answeredInCategory} / {totalInCategory}</span>
+                  </div>
+                  <div className="w-full bg-[#0a0a0a] rounded-full h-1 border border-white/5">
+                    <div
+                      className={`h-full bg-white transition-all duration-300 ease-out`}
+                      style={{ width: `${(answeredInCategory / totalInCategory) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
             </div>
-          </form>
-        </div>
-      </div>
+
+            {/* Questions or Gamified Section */}
+            <form onSubmit={handleSubmit}>
+              {currentCategoryData.questions.length > 0 ? (
+                <div className="space-y-6">
+                  {currentCategoryData.questions.map((q) => (
+                    <Question key={q.id} {...q} />
+                  ))}
+                </div>
+              ) : (
+                /* Gamified Assessment Placeholder */
+                <div className="text-center py-16">
+                  <div className="mb-6">
+                    <Gamepad2 size={64} className="mx-auto text-white/20 mb-6" />
+                    <h3 className="text-2xl font-bold text-white mb-3">Gamified Assessment Section</h3>
+                    <p className="text-gray-400 text-sm mb-8">Interactive games and challenges will be available here.</p>
+                  </div>
+                  
+                  {/* Results Section Placeholder */}
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-8 max-w-lg mx-auto">
+                    <h4 className="text-lg font-bold text-white mb-6 flex items-center justify-center gap-2">
+                      <BrainCircuit size={18} className="text-white/50" /> Assessment Results
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-6">
+                        <div className="text-4xl font-light text-white tracking-tight mb-2">0</div>
+                        <div className="text-xs font-bold uppercase tracking-widest text-gray-500">Games Done</div>
+                      </div>
+                      <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-6">
+                        <div className="text-4xl font-light text-white tracking-tight mb-2">0%</div>
+                        <div className="text-xs font-bold uppercase tracking-widest text-gray-500">Overall Score</div>
+                      </div>
+                    </div>
+                    <p className="text-gray-500 text-xs italic">Results will be displayed here after completion.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation */}
+              <div className="mt-10 pt-8 border-t border-white/5 flex flex-wrap justify-between items-center gap-4">
+                <div className="flex gap-3">
+                  {currentCategory > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentCategory(currentCategory - 1)}
+                      className="px-6 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-sm transition-colors flex items-center gap-2"
+                    >
+                      <ChevronLeft size={16} /> Previous
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex gap-3 ml-auto">
+                  {currentCategory < categories.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentCategory(currentCategory + 1)}
+                      className="px-6 py-3 bg-white text-black hover:bg-gray-200 rounded-xl font-bold text-sm transition-colors flex items-center gap-2"
+                    >
+                      Next Category <ChevronRight size={16} />
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      disabled={loading || Object.values(answers).filter(a => !a).length > 0}
+                      className="px-8 py-3 bg-white text-black hover:bg-gray-200 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {loading ? 'Submitting...' : 'Submit Assessment'} <CheckCircle size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </form>
+          </AnimatedCard>
+        </PageTransition>
       </div>
     </div>
   );

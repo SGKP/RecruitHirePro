@@ -1,90 +1,45 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 
 export default function AnimatedCyberBackground() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div className="fixed inset-0 z-[-1] bg-[#03010b]" />;
-  }
-
   return (
-    <div className="fixed inset-0 z-[-1] overflow-hidden bg-[#03010b]">
-      {/* Dynamic Purple Bottom Glow (as seen in Figma) */}
-      <motion.div
-        animate={{
-          opacity: [0.3, 0.5, 0.3],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute -bottom-1/4 left-1/2 -translate-x-1/2 w-[80vw] h-[50vh] rounded-[100%] bg-gradient-to-t from-[#4c1d95] via-[#2e1065] to-transparent blur-[80px] pointer-events-none"
-      />
+    <div className="fixed inset-0 z-[-1] bg-[#050505] overflow-hidden">
+      
+      {/* Central deep glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/[0.02] rounded-full blur-[100px] pointer-events-none" />
 
-      {/* Perspective Curved Grid overlay */}
-      <div 
-        className="absolute inset-0 opacity-[0.15] pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, #8b5cf6 1px, transparent 1px),
-            linear-gradient(to bottom, #8b5cf6 1px, transparent 1px)
-          `,
-          backgroundSize: '80px 80px',
-          transform: 'perspective(1000px) rotateX(60deg) scale(2.5) translateY(20%)',
-          transformOrigin: 'bottom',
-          maskImage: 'linear-gradient(to bottom, transparent 10%, black 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 10%, black 100%)'
-        }}
-      />
-
-      {/* Another subtle light behind the robot on the right */}
-      <motion.div
-        animate={{
-          opacity: [0.1, 0.2, 0.1],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute top-1/2 right-[10%] w-[40vw] h-[40vw] rounded-full bg-[#3b82f6] blur-[120px] mix-blend-screen pointer-events-none"
-      />
-
-      {/* The Animated Hovering Robot */}
-      <motion.div
-        animate={{
-          y: [-15, 15, -15],
-          rotate: [-1, 1, -1]
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute right-[-5%] lg:right-[5%] xl:right-[10%] top-[15%] w-[500px] h-[500px] lg:w-[600px] lg:h-[600px] xl:w-[700px] xl:h-[700px] pointer-events-none opacity-90"
-        style={{
-          // mix-blend-screen removes the black background from the AI generated image, leaving only the glowing robot
-          mixBlendMode: 'screen',
-        }}
-      >
-        <img 
-          src="/images/robot.png" 
-          alt="AI Robot" 
-          className="w-full h-full object-contain filter contrast-125 saturate-150"
+      {/* High-end SaaS concentric dotted burst pattern */}
+      <div className="absolute inset-0 opacity-[0.15] mix-blend-screen pointer-events-none flex items-center justify-center">
+        <div className="w-[150vw] h-[150vw] absolute animate-[spin_240s_linear_infinite]"
+             style={{
+               backgroundImage: `repeating-radial-gradient(circle at center, transparent 0, transparent 4px, rgba(255,255,255,0.8) 4px, rgba(255,255,255,0.8) 5px)`,
+               backgroundSize: '40px 40px',
+               maskImage: 'radial-gradient(circle at center, black 10%, transparent 60%)',
+               WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 60%)'
+             }}
         />
-      </motion.div>
+        
+        {/* intersecting lines to create the burst effect */}
+        <div className="w-[150vw] h-[150vw] absolute animate-[spin_300s_linear_infinite_reverse]"
+             style={{
+               backgroundImage: `repeating-conic-gradient(from 0deg, transparent 0deg, transparent 2deg, rgba(255,255,255,0.5) 2deg, rgba(255,255,255,0.5) 2.5deg)`,
+               maskImage: 'radial-gradient(circle at center, transparent 10%, black 40%, transparent 70%)',
+               WebkitMaskImage: 'radial-gradient(circle at center, transparent 10%, black 40%, transparent 70%)'
+             }}
+        />
+      </div>
+      
+      {/* Top light leak */}
+      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[60%] h-[200px] bg-white/[0.03] rounded-[100%] blur-[60px]" />
 
-      {/* Dark overlay to ensure left-side UI readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#03010b] via-[#03010b]/80 to-transparent pointer-events-none" />
+      {/* Noise texture overlay for premium feel */}
+      <div 
+        className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
     </div>
   );
 }

@@ -50,7 +50,7 @@ export default function NewJob() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-white/10 mx-auto mb-4"></div>
           <p className="text-gray-300 text-lg">Posting job...</p>
         </div>
       </div>
@@ -60,9 +60,9 @@ export default function NewJob() {
   return (
     <div className="min-h-screen">
       <Sidebar role="recruiter" />
-      <div className="ml-64">
+      <div className="ml-[260px]">
         {/* Header */}
-        <header className="navbar-modern border-b border-purple-500/30">
+        <header className="border-b border-white/5 bg-[#050505]/50 backdrop-blur-xl border-b border-white/10/30">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex justify-between items-center">
               <div>
@@ -71,7 +71,7 @@ export default function NewJob() {
               </div>
               <button
                 onClick={() => router.push('/recruiter/jobs')}
-                className="btn-secondary"
+                className="px-5 py-2.5 bg-white/5 text-white border border-white/10 hover:bg-white/10 rounded-xl font-bold transition-colors"
               >
                 ← Back
               </button>
@@ -177,14 +177,14 @@ export default function NewJob() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary flex-1"
+                className="px-5 py-2.5 bg-white text-black hover:bg-gray-200 rounded-xl font-bold transition-colors flex-1"
               >
                 {loading ? 'Posting...' : 'Post Job'}
               </button>
               <button
                 type="button"
                 onClick={() => router.push('/recruiter/jobs')}
-                className="btn-secondary px-6"
+                className="px-5 py-2.5 bg-white/5 text-white border border-white/10 hover:bg-white/10 rounded-xl font-bold transition-colors px-6"
               >
                 Cancel
               </button>

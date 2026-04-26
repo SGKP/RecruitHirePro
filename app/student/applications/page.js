@@ -3,6 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
+import PageTransition from '@/components/PageTransition';
+import AnimatedCyberBackground from '@/components/AnimatedCyberBackground';
+import AnimatedCard from '@/components/AnimatedCard';
+import { FileText, LogOut, Briefcase, Clock, CheckCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function StudentApplications() {
   const router = useRouter();
@@ -36,18 +41,18 @@ export default function StudentApplications() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case 'accepted':
       case 'shortlisted':
-        return 'bg-green-500/20 text-green-400 border-green-500/50';
+        return 'bg-white/5 text-gray-200 border-white/20';
       case 'rejected':
-        return 'bg-red-500/20 text-red-400 border-red-500/50';
+        return 'bg-white/5 text-gray-500 border-white/10';
       case 'pending':
       case 'applied':
-        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
+        return 'bg-white/10 text-white border-white/30';
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
+        return 'bg-white/5 text-gray-400 border-white/10';
     }
   };
 
@@ -57,163 +62,180 @@ export default function StudentApplications() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative font-sans text-gray-200">
+      <AnimatedCyberBackground />
       <Sidebar role="student" />
-      <div className="ml-64">
+      
+      <div className="ml-[260px] relative z-10">
         {/* Header */}
-        <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-pink-900 border-b border-purple-500/50 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <header className="border-b border-white/5 bg-[#050505]/50 backdrop-blur-xl">
+          <div className="max-w-7xl mx-auto px-8 py-6">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-1 flex items-center gap-3">
-                  <span className="text-4xl"></span>
+                <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                  <FileText size={28} className="text-white/70" />
                   My Applications
                 </h1>
-                <p className="text-purple-200">Track your job application status and progress</p>
+                <p className="text-gray-400 font-medium mt-1">Track your job application status and progress.</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium border border-white/30 transition-all"
+                className="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold border border-white/10 flex items-center gap-2 text-sm transition-colors"
               >
-                Logout
+                <LogOut size={18} /> Logout
               </button>
             </div>
           </div>
         </header>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <PageTransition className="max-w-7xl mx-auto px-8 py-10">
           {loading ? (
-            <div className="text-center py-20">
-              <div className="relative inline-flex">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <span className="text-2xl"></span>
-                </div>
-              </div>
-              <p className="mt-6 text-lg text-white font-medium">Loading your applications...</p>
-              <p className="text-gray-400 text-sm mt-2">Please wait while we fetch your data</p>
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/20"></div>
+              <p className="mt-6 text-gray-400 font-medium text-sm">Loading your applications...</p>
             </div>
           ) : applications.length === 0 ? (
-            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-16 text-center border border-purple-500/30 shadow-2xl">
-              <div className="text-8xl mb-6"></div>
-              <h2 className="text-3xl font-bold text-white mb-3">No Applications Yet</h2>
-              <p className="text-gray-300 text-lg mb-8 max-w-md mx-auto">You haven't applied to any jobs yet. Start browsing exciting opportunities and take the first step towards your dream career!</p>
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-16 text-center">
+              <FileText className="mx-auto h-16 w-16 text-white/20 mb-6" />
+              <h2 className="text-2xl font-bold text-white mb-3">No Applications Yet</h2>
+              <p className="text-gray-400 text-sm mb-8 max-w-md mx-auto">
+                You haven't applied to any jobs yet. Start browsing exciting opportunities and take the first step towards your career!
+              </p>
               <button
                 onClick={() => router.push('/student/jobs')}
-                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-xl shadow-purple-500/30 hover:shadow-2xl hover:scale-105"
+                className="px-8 py-3 bg-white text-black hover:bg-gray-200 rounded-xl font-bold text-sm transition-colors"
               >
-                 Browse Jobs Now
+                Browse Jobs Now
               </button>
             </div>
           ) : (
             <>
               {/* Summary Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-6 shadow-lg">
-                  <div className="text-4xl mb-2"></div>
-                  <div className="text-3xl font-bold text-white">{applications.length}</div>
-                  <div className="text-purple-200 text-sm">Total Applications</div>
-                </div>
-                <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-xl p-6 shadow-lg">
-                  <div className="text-4xl mb-2"></div>
-                  <div className="text-3xl font-bold text-white">
-                    {applications.filter(a => ['accepted', 'shortlisted'].includes(a.status?.toLowerCase())).length}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <AnimatedCard index={0} className="p-8">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Total Applied</p>
+                      <p className="text-5xl font-light text-white tracking-tight">{applications.length}</p>
+                    </div>
+                    <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/70">
+                      <FileText size={24} strokeWidth={1.5} />
+                    </div>
                   </div>
-                  <div className="text-green-200 text-sm">Shortlisted/Accepted</div>
-                </div>
-                <div className="bg-gradient-to-br from-yellow-600 to-yellow-700 rounded-xl p-6 shadow-lg">
-                  <div className="text-4xl mb-2"></div>
-                  <div className="text-3xl font-bold text-white">
-                    {applications.filter(a => ['pending', 'applied'].includes(a.status?.toLowerCase())).length}
+                </AnimatedCard>
+
+                <AnimatedCard index={1} className="p-8">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Shortlisted</p>
+                      <p className="text-5xl font-light text-white tracking-tight">
+                        {applications.filter(a => ['accepted', 'shortlisted'].includes(a.status?.toLowerCase())).length}
+                      </p>
+                    </div>
+                    <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/70">
+                      <CheckCircle size={24} strokeWidth={1.5} />
+                    </div>
                   </div>
-                  <div className="text-yellow-200 text-sm">Pending Review</div>
-                </div>
+                </AnimatedCard>
+
+                <AnimatedCard index={2} className="p-8">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Pending</p>
+                      <p className="text-5xl font-light text-white tracking-tight">
+                        {applications.filter(a => ['pending', 'applied'].includes(a.status?.toLowerCase())).length}
+                      </p>
+                    </div>
+                    <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/70">
+                      <Clock size={24} strokeWidth={1.5} />
+                    </div>
+                  </div>
+                </AnimatedCard>
               </div>
 
               {/* Applications List */}
               <div className="grid gap-6">
-              {applications.map((application) => (
-                <div
-                  key={application._id}
-                  className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-purple-500/30 shadow-xl hover:shadow-2xl hover:border-purple-500/50 transition-all duration-300"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between gap-4 mb-3">
-                        <h2 className="text-2xl font-bold text-white">
-                          {application.job_id?.title || 'Job Title Not Available'}
-                        </h2>
-                        <div className={`rounded-lg px-4 py-2 text-center border-2 ${getStatusColor(application.status)} min-w-[120px]`}>
-                          <div className="text-sm font-bold uppercase">{application.status || 'Pending'}</div>
-                        </div>
-                      </div>
-                      
-                      <p className="text-gray-300 mb-4 leading-relaxed">
-                        {application.job_id?.description || 'No description available'}
-                      </p>
-                      
-                      <div className="flex flex-wrap gap-3 mb-4">
-                        <span className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg text-sm font-medium shadow-lg shadow-purple-500/30">
-                           {application.job_id?.location || 'Location N/A'}
-                        </span>
-                        <span className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg text-sm font-medium shadow-lg shadow-green-500/30">
-                           {application.job_id?.salary_range || 'Salary N/A'}
-                        </span>
-                        <span className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-sm font-medium shadow-lg shadow-blue-500/30">
-                           {application.job_id?.experience_level || 'Experience N/A'}
-                        </span>
-                      </div>
-
-                      {application.job_id?.required_skills && application.job_id.required_skills.length > 0 && (
-                        <div className="mb-4 bg-white/5 rounded-lg p-4 border border-white/10">
-                          <p className="text-sm font-semibold text-purple-300 mb-3 flex items-center gap-2">
-                            <span></span> Required Skills
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {application.job_id.required_skills.map((skill, idx) => (
-                              <span
-                                key={idx}
-                                className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-sm font-medium border border-indigo-400/30"
-                              >
-                                {skill}
-                              </span>
-                            ))}
+                {applications.map((application, i) => (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    key={application._id}
+                    className="bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 rounded-2xl p-8 transition-all duration-300"
+                  >
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                          <h2 className="text-2xl font-bold text-white">
+                            {application.job_id?.title || 'Job Title Not Available'}
+                          </h2>
+                          <div className={`rounded-md px-4 py-1.5 border text-xs font-bold uppercase tracking-widest ${getStatusStyle(application.status)}`}>
+                            {application.status || 'Pending'}
                           </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center pt-4 border-t border-purple-500/30">
-                    <div className="text-sm text-gray-200 flex gap-6">
-                      <p className="flex items-center gap-2">
-                        <span className="text-purple-400"></span>
-                        <span className="font-medium">Applied:</span>
-                        <span className="text-white">{new Date(application.applied_at || application.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-                      </p>
-                      {application.match_score && (
-                        <p className="flex items-center gap-2">
-                          <span className="text-green-400"></span>
-                          <span className="font-medium">Match Score:</span>
-                          <span className="text-white font-bold">{Math.round(application.match_score)}%</span>
+                        
+                        <p className="text-gray-400 text-sm mb-6 leading-relaxed line-clamp-2">
+                          {application.job_id?.description || 'No description available'}
                         </p>
+                        
+                        <div className="flex flex-wrap gap-3 mb-6">
+                          <span className="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 rounded-md text-xs font-medium">
+                            {application.job_id?.location || 'Location N/A'}
+                          </span>
+                          <span className="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 rounded-md text-xs font-medium">
+                            {application.job_id?.salary_range || 'Salary N/A'}
+                          </span>
+                          <span className="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 rounded-md text-xs font-medium">
+                            {application.job_id?.experience_level || 'Experience N/A'}
+                          </span>
+                        </div>
+
+                        {application.job_id?.required_skills && application.job_id.required_skills.length > 0 && (
+                          <div className="mb-2">
+                            <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
+                              Required Skills
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {application.job_id.required_skills.map((skill, idx) => (
+                                <span
+                                  key={idx}
+                                  className="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 rounded-md text-xs font-medium"
+                                >
+                                  {skill}
+                               </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-6 border-t border-white/5">
+                      <div className="flex gap-6">
+                        <p className="text-xs text-gray-500 font-medium">
+                          Applied: {new Date(application.applied_at || application.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                        </p>
+                        {application.match_score && (
+                          <p className="text-xs text-gray-400 font-medium">
+                            Match: <span className="text-white font-bold">{Math.round(application.match_score)}%</span>
+                          </p>
+                        )}
+                      </div>
+                      {application.job_id?._id && (
+                        <button
+                          onClick={() => router.push(`/student/jobs`)}
+                          className="px-5 py-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-xs transition-colors flex items-center gap-2"
+                        >
+                          <Briefcase size={14} /> View Similar
+                        </button>
                       )}
                     </div>
-                    {application.job_id?._id && (
-                      <button
-                        onClick={() => router.push(`/student/jobs`)}
-                        className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg shadow-purple-500/30 hover:shadow-xl"
-                      >
-                        View Similar Jobs
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                  </motion.div>
+                ))}
+              </div>
             </>
           )}
-        </div>
+        </PageTransition>
       </div>
     </div>
   );

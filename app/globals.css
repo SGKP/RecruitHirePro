@@ -2,19 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Modern Clean UI Design System & Glassmorphism */
+/* Modern Clean Dark UI Design System & Glassmorphism (Synk Theme) */
 :root {
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-secondary: #64748b;
+  --color-primary: #ffffff;
+  --color-primary-hover: #e5e5e5;
+  --color-secondary: #1a1a1a;
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
-  --color-text: #1e293b;
-  --color-text-light: #64748b;
-  --color-bg: #f8fafc;
-  --color-card: #ffffff;
-  --color-border: #e2e8f0;
+  --color-text: #f8fafc;
+  --color-text-light: #94a3b8;
+  --color-bg: #050505;
+  --color-card: #0a0a0a;
+  --color-border: rgba(255, 255, 255, 0.05);
 }
 
 * {
@@ -40,7 +40,7 @@ body {
   min-height: 100vh;
 }
 
-/* Custom Scrollbar - Modern Light Theme */
+/* Custom Scrollbar - Premium Dark Theme */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -51,64 +51,62 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(203, 213, 225, 0.5);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.8);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Selection Color */
 ::selection {
-  background: rgba(59, 130, 246, 0.2);
-  color: #1e40af;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 
 @layer components {
-  /* Premium Glassmorphism Panel */
+  /* Premium Glassmorphism Panel (Dark) */
   .glass-panel {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
     border-radius: 16px;
   }
 
-  /* Modern Card Component (Updated to Glass) */
+  /* Modern Card Component (Dark) */
   .card-modern {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(10, 10, 10, 0.8);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   
   .card-modern:hover {
-    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 15px 35px rgba(255, 255, 255, 0.02);
     transform: translateY(-4px);
-    border-color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
-  /* Primary Button - Vibrant Gradient */
+  /* Primary Button - Sleek White */
   .btn-primary {
     padding: 12px 24px;
     border-radius: 12px;
-    font-weight: 600;
-    color: white;
-    background: linear-gradient(135deg, #3b82f6, #4f46e5);
+    font-weight: 700;
+    color: #000000;
+    background: #ffffff;
     border: none;
     transition: all 0.3s ease;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   }
   
   .btn-primary:hover {
-    background: linear-gradient(135deg, #2563eb, #4338ca);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    background: #e5e5e5;
     transform: translateY(-2px);
   }
 
@@ -116,63 +114,59 @@ body {
     transform: translateY(0);
   }
 
-  /* Secondary Button - Glass Outline */
+  /* Secondary Button - Dark Glass */
   .btn-secondary {
     padding: 12px 24px;
     border-radius: 12px;
     font-weight: 600;
-    border: 2px solid rgba(59, 130, 246, 0.3);
-    color: #2563eb;
-    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(8px);
     transition: all 0.3s ease;
     cursor: pointer;
   }
   
   .btn-secondary:hover {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: #3b82f6;
-    color: #1d4ed8;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 
-  /* Modern Input Field with Glass Effect */
+  /* Modern Input Field with Dark Glass Effect */
   .input-modern {
     width: 100%;
     padding: 12px 16px;
     border-radius: 12px;
-    border: 2px solid rgba(226, 232, 240, 0.8);
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(4px);
-    color: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+    color: #ffffff;
     transition: all 0.3s ease;
     font-size: 15px;
   }
   
   .input-modern:focus {
     outline: none;
-    border-color: #3b82f6;
-    background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
   }
   
   .input-modern::placeholder {
-    color: #94a3b8;
+    color: #64748b;
   }
 
-  /* Gradient Text */
+  /* Gradient Text - Reverting to stark white for premium SaaS feel */
   .text-gradient {
-    background: linear-gradient(135deg, #2563eb, #8b5cf6, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #ffffff;
+    background: none;
+    -webkit-text-fill-color: initial;
   }
 
-  /* Modern Navbar */
+  /* Modern Navbar (Dark) */
   .navbar-modern {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.5);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    background: rgba(5, 5, 5, 0.5);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     position: sticky;
     top: 0;
     z-index: 50;
