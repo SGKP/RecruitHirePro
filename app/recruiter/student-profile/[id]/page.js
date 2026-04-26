@@ -195,6 +195,27 @@ export default function RecruiterViewStudentProfile() {
           {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className="space-y-6">
+
+              {/* Gamified Assessment Results */}
+              {student.gamified_assessment && student.gamified_assessment.persona && (
+                <div className="bg-white rounded-lg shadow p-6 border-l-4 border-indigo-500">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Gamified Cultural Assessment</h3>
+                  <div className="mb-4">
+                    <span className="text-sm text-gray-500 uppercase tracking-wide font-semibold">Matched Persona:</span>
+                    <div className="text-2xl font-extrabold text-indigo-600 mt-1">{student.gamified_assessment.persona}</div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    {Object.entries(student.gamified_assessment.scores || {}).map(([trait, score]) => (
+                      <div key={trait} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                        <div className="text-gray-500 capitalize text-sm mb-2 font-medium">{trait}</div>
+                        <div className="text-xl font-bold text-gray-800 mb-2">{score > 0 ? `+${score}` : score}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Skills */}
               {skills.length > 0 && (
                 <div className="bg-white rounded-lg shadow p-6">

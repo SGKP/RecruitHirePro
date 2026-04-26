@@ -1,471 +1,344 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import PageTransition from '@/components/PageTransition';
 import AnimatedCyberBackground from '@/components/AnimatedCyberBackground';
 import AnimatedCard from '@/components/AnimatedCard';
-import { BrainCircuit, ArrowLeft, CheckCircle, ChevronRight, ChevronLeft, Gamepad2, Check } from 'lucide-react';
+import { BrainCircuit, ArrowLeft, CheckCircle, ChevronRight, Gamepad2, Shield, Zap, Target, Users, Code, Award, Loader2 } from 'lucide-react';
+
+const GAMIFIED_SCENARIOS = [
+  {
+    id: 1,
+    title: "Scenario 1: The Friday Deploy Night",
+    context: "It is 4:30 PM on a Friday. A recent deployment just broke the main login page for 10% of users. Your senior engineer is currently offline.",
+    challenge: "What is your immediate action?",
+    choices: [
+      { text: "Instantly rollback the deployment and notify the team later.", attributes: { pragmatism: 3, leadership: 1, teamwork: 0, innovation: -1 } },
+      { text: "Quickly post in the team channel, wait 5 mins for replies, then rollback if no one answers.", attributes: { teamwork: 3, leadership: 1, pragmatism: 2, innovation: 0 } },
+      { text: "Dive into the logs, find the exact bug, and push a hotfix directly to production.", attributes: { innovation: 3, pragmatism: -1, teamwork: -1, leadership: 2 } },
+      { text: "Mitigate by routing traffic to a backup server while you investigate safely.", attributes: { pragmatism: 2, innovation: 2, teamwork: 1, leadership: 2 } }
+    ]
+  },
+  {
+    id: 2,
+    title: "Scenario 2: The Scope Creep",
+    context: "Your project is due in 3 days. The Product Manager suddenly asks to add a 'small' feature that you know will take at least 2 days.",
+    challenge: "How do you handle this request?",
+    choices: [
+      { text: "Agree to do it, pull an all-nighter, and deliver everything to impress them.", attributes: { teamwork: 1, pragmatism: -2, leadership: -1, innovation: 3 } },
+      { text: "Politely decline, explaining the technical risks to the current deadline.", attributes: { pragmatism: 3, leadership: 2, teamwork: 1, innovation: 0 } },
+      { text: "Propose an alternative: launch on time, but hide the feature behind a toggle to finish next week.", attributes: { innovation: 3, pragmatism: 2, leadership: 3, teamwork: 2 } },
+      { text: "Tell them you need to consult with the dev team first to see if it's feasible.", attributes: { teamwork: 3, leadership: 1, pragmatism: 1, innovation: 0 } }
+    ]
+  },
+  {
+    id: 3,
+    title: "Scenario 3: The Legacy Codebase",
+    context: "You've been assigned to maintain a 5-year-old monolith. The code is messy, undocumented, and hard to read. You need to add a new API route.",
+    challenge: "What is your development approach?",
+    choices: [
+      { text: "Refactor the entire module first, then add the new API route cleanly.", attributes: { innovation: 3, pragmatism: -1, leadership: 2, teamwork: 0 } },
+      { text: "Write the API route matching the existing messy style to keep things 'consistent' and deliver fast.", attributes: { pragmatism: 3, innovation: -1, teamwork: 1, leadership: 0 } },
+      { text: "Write the new API perfectly, and leave comments documenting the old mess for future you.", attributes: { innovation: 2, pragmatism: 2, teamwork: 1, leadership: 1 } },
+      { text: "Pair program with a senior who previously worked on it to learn the hidden traps.", attributes: { teamwork: 3, leadership: 0, pragmatism: 2, innovation: 1 } }
+    ]
+  },
+  {
+    id: 4,
+    title: "Scenario 4: The Junior's PR",
+    context: "A junior developer submits a Pull Request. The logic works perfectly, but the code style is very messy and breaks several linting rules.",
+    challenge: "How do you conduct the code review?",
+    choices: [
+      { text: "Reject the PR and tell them to fix the linting errors before you even look at the logic.", attributes: { pragmatism: 3, teamwork: -1, leadership: 1, innovation: 0 } },
+      { text: "Fix the formatting yourself and merge it so they aren't blocked.", attributes: { teamwork: 2, pragmatism: 2, leadership: -1, innovation: -1 } },
+      { text: "Approve the PR but leave a friendly comment explaining the team's coding standards for next time.", attributes: { teamwork: 3, leadership: 2, pragmatism: 1, innovation: 0 } },
+      { text: "Schedule a 10-minute pair-programming call to show them how to configure auto-formatting.", attributes: { leadership: 3, teamwork: 3, innovation: 1, pragmatism: 0 } }
+    ]
+  },
+  {
+    id: 5,
+    title: "Scenario 5: The Missing Specification",
+    context: "You pick up a new Jira ticket. The requirements are incredibly vague ('Make the dashboard load faster'). The PM is out sick.",
+    challenge: "What is your next move?",
+    choices: [
+      { text: "Skip the ticket and pick up something clearly defined from the backlog.", attributes: { pragmatism: 3, teamwork: 0, innovation: -1, leadership: 0 } },
+      { text: "Implement a caching layer and optimize DB queries based on your best guess of what is slow.", attributes: { innovation: 3, pragmatism: 1, leadership: 1, teamwork: -1 } },
+      { text: "Message the stakeholders or client directly to ask what specific slowness they are seeing.", attributes: { teamwork: 2, leadership: 2, pragmatism: 2, innovation: 0 } },
+      { text: "Write a proposal to migrate the entire dashboard to a faster framework like Next.js.", attributes: { innovation: 3, pragmatism: -2, leadership: 1, teamwork: 0 } }
+    ]
+  },
+  {
+    id: 6,
+    title: "Scenario 6: The Security Vulnerability",
+    context: "While browsing an old repo, you notice a hardcoded AWS API key pushed 6 months ago. The system hasn't been compromised yet.",
+    challenge: "How do you respond to this discovery?",
+    choices: [
+      { text: "Immediately revoke the key in AWS, even if it might break an internal tool temporarily.", attributes: { pragmatism: 3, leadership: 2, teamwork: -1, innovation: 0 } },
+      { text: "Report it privately to the DevOps/Security team and await their instructions.", attributes: { teamwork: 3, pragmatism: 2, leadership: 1, innovation: 0 } },
+      { text: "Write a script to scan all company repos for similar keys before reporting.", attributes: { innovation: 3, leadership: 1, pragmatism: 0, teamwork: 1 } },
+      { text: "Quietly delete the key from the code in your next PR and hope no one noticed.", attributes: { pragmatism: -1, teamwork: -2, leadership: -2, innovation: -1 } }
+    ]
+  },
+  {
+    id: 7,
+    title: "Scenario 7: The Impossible Deadline",
+    context: "You are mid-sprint and realize there's a 0% chance the team will hit the Friday deadline for a major feature.",
+    challenge: "How do you communicate this?",
+    choices: [
+      { text: "Work 14-hour days to try and save the sprint by yourself.", attributes: { innovation: 2, pragmatism: -3, teamwork: -1, leadership: -1 } },
+      { text: "Bring it up in tomorrow's standup so the whole team can re-estimate.", attributes: { teamwork: 3, leadership: 1, pragmatism: 2, innovation: 0 } },
+      { text: "Quietly message the PM right now to manage expectations and descriminate features.", attributes: { leadership: 3, pragmatism: 3, teamwork: 1, innovation: 0 } },
+      { text: "Wait until Friday. Maybe you'll find a magical workaround by then.", attributes: { pragmatism: -3, teamwork: -2, leadership: -2, innovation: 1 } }
+    ]
+  },
+  {
+    id: 8,
+    title: "Scenario 8: The Client Call",
+    context: "Sales drags you into a client call. The client is angry that a feature is delayed and demands a technical explanation they can understand.",
+    challenge: "How do you handle the confrontation?",
+    choices: [
+      { text: "Explain the complex architecture (microservices, caching) in deep technical detail so they know it's hard.", attributes: { innovation: 1, pragmatism: 0, teamwork: -1, leadership: -1 } },
+      { text: "Use a simple analogy (like building a house) to explain the delay and reassure them of the quality.", attributes: { leadership: 3, teamwork: 3, pragmatism: 2, innovation: 1 } },
+      { text: "Stay quiet and let the Sales team handle it since you are just the engineer.", attributes: { teamwork: 0, pragmatism: 1, leadership: -2, innovation: 0 } },
+      { text: "Apologize profusely and promise them it will definitely be done tomorrow (even if you aren't sure).", attributes: { pragmatism: -2, teamwork: 1, leadership: -2, innovation: 0 } }
+    ]
+  },
+  {
+    id: 9,
+    title: "Scenario 9: The Shiny New Tech",
+    context: "Your team is starting a greenfield project. A teammate suggests using a brand new framework released three weeks ago.",
+    challenge: "What is your stance?",
+    choices: [
+      { text: "Absolutely! Bleeding-edge tech will make the project faster and fun to build.", attributes: { innovation: 3, pragmatism: -2, leadership: 1, teamwork: 1 } },
+      { text: "Reject it. Stick to the 5-year-old framework everyone already knows to guarantee delivery.", attributes: { pragmatism: 3, innovation: -2, leadership: 1, teamwork: 1 } },
+      { text: "Suggest doing a 2-day proof-of-concept (PoC) to see if the new tech actually solves your specific problems.", attributes: { leadership: 3, pragmatism: 2, innovation: 2, teamwork: 2 } },
+      { text: "Go with whatever the majority of the team votes for in a poll.", attributes: { teamwork: 3, leadership: -1, pragmatism: 1, innovation: 0 } }
+    ]
+  },
+  {
+    id: 10,
+    title: "Scenario 10: The Broken Production Pipe",
+    context: "It is launch day. The build pipeline fails. If you bypass the automated tests, you can deploy on time. If you fix the tests, you will be 2 hours late.",
+    challenge: "What is your decision?",
+    choices: [
+      { text: "Bypass the pipeline and deploy! Hitting the deadline is paramount.", attributes: { pragmatism: 2, innovation: 1, leadership: 1, teamwork: -1 } },
+      { text: "Refuse to deploy. Fix the tests because broken tests mean broken code.", attributes: { pragmatism: 3, leadership: 2, teamwork: 0, innovation: 0 } },
+      { text: "Deploy the bypass, but sit at your desk monitoring graphs manually for the next 4 hours.", attributes: { teamwork: 2, pragmatism: -1, leadership: 1, innovation: 1 } },
+      { text: "Gather the PM and Tech Lead for an immediate 5-minute huddle to make a joint decision.", attributes: { teamwork: 3, leadership: 3, pragmatism: 2, innovation: 0 } }
+    ]
+  }
+];
 
 export default function CulturalTest() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [currentCategory, setCurrentCategory] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [scores, setScores] = useState({ pragmatism: 0, teamwork: 0, innovation: 0, leadership: 0 });
+  const [isFinished, setIsFinished] = useState(false);
+  const [calculating, setCalculating] = useState(false);
 
-  const [answers, setAnswers] = useState({
-    // Team Dynamics (5 questions)
-    team_preference: '',
-    conflict_handling: '',
-    collaboration_style: '',
-    team_contribution: '',
-    group_role: '',
-    
-    // Work Style (5 questions)
-    work_life_balance: '',
-    work_environment: '',
-    deadline_management: '',
-    remote_preference: '',
-    schedule_flexibility: '',
-    
-    // Learning & Growth (5 questions)
-    learning_preference: '',
-    upskill_method: '',
-    feedback_preference: '',
-    challenge_approach: '',
-    mentorship_preference: '',
-    
-    // Career Goals (5 questions)
-    career_focus: '',
-    five_year_vision: '',
-    leadership_interest: '',
-    specialist_generalist: '',
-    company_size_preference: '',
-    
-    // Communication (5 questions)
-    communication_style: '',
-    meeting_preference: '',
-    written_verbal: '',
-    presentation_comfort: '',
-    update_frequency: ''
-  });
+  const handleSelection = (attributes) => {
+    setScores(prev => ({
+      pragmatism: prev.pragmatism + attributes.pragmatism,
+      teamwork: prev.teamwork + attributes.teamwork,
+      innovation: prev.innovation + attributes.innovation,
+      leadership: prev.leadership + attributes.leadership
+    }));
 
-  const categories = [
-    {
-      name: 'Team Dynamics',
-      description: 'How you work with others',
-      questions: [
-        {
-          id: 'team_preference',
-          question: 'How do you prefer to work on projects?',
-          options: ['Independently with autonomy', 'In collaborative teams', 'Mix of solo and team work', 'Leading a team']
-        },
-        {
-          id: 'conflict_handling',
-          question: 'How do you handle conflicts in a team?',
-          options: ['Address directly and immediately', 'Seek mediation from manager', 'Discuss in team meeting', 'Avoid and focus on work']
-        },
-        {
-          id: 'collaboration_style',
-          question: 'What\'s your collaboration approach?',
-          options: ['Take initiative and lead', 'Support others\' ideas', 'Contribute equally', 'Follow established direction']
-        },
-        {
-          id: 'team_contribution',
-          question: 'How do you contribute to team success?',
-          options: ['Drive strategy and vision', 'Ensure execution quality', 'Facilitate communication', 'Provide technical expertise']
-        },
-        {
-          id: 'group_role',
-          question: 'What role do you naturally take in groups?',
-          options: ['Leader/organizer', 'Creative problem-solver', 'Implementer/executor', 'Supporter/helper']
-        }
-      ]
-    },
-    {
-      name: 'Work Style',
-      description: 'Your work preferences',
-      questions: [
-        {
-          id: 'work_life_balance',
-          question: 'How important is work-life balance?',
-          options: ['Very important - strict boundaries', 'Important but flexible', 'Moderate - depends on project', 'Work comes first']
-        },
-        {
-          id: 'work_environment',
-          question: 'What work environment suits you best?',
-          options: ['Fast-paced and dynamic', 'Structured and stable', 'Flexible and creative', 'Quiet and focused']
-        },
-        {
-          id: 'deadline_management',
-          question: 'How do you handle tight deadlines?',
-          options: ['Thrive under pressure', 'Plan ahead to avoid rush', 'Work extra hours to deliver', 'Negotiate timeline if needed']
-        },
-        {
-          id: 'remote_preference',
-          question: 'What\'s your ideal work setup?',
-          options: ['Fully remote', 'Hybrid (2-3 days office)', 'Mostly in-office', 'Fully in-office']
-        },
-        {
-          id: 'schedule_flexibility',
-          question: 'What schedule do you prefer?',
-          options: ['Fixed hours (9-5)', 'Flexible hours (choose start/end)', 'Results-based (no fixed hours)', 'Project-based schedule']
-        }
-      ]
-    },
-    {
-      name: 'Learning & Growth',
-      description: 'How you develop skills',
-      questions: [
-        {
-          id: 'learning_preference',
-          question: 'How do you learn best?',
-          options: ['Formal training/courses', 'Hands-on practice', 'Self-study and research', 'Mentorship and guidance']
-        },
-        {
-          id: 'upskill_method',
-          question: 'How do you stay updated with technology?',
-          options: ['Online courses and certifications', 'Side projects and experiments', 'Reading docs and articles', 'Conferences and workshops']
-        },
-        {
-          id: 'feedback_preference',
-          question: 'How do you prefer feedback?',
-          options: ['Regular structured reviews', 'Continuous informal feedback', 'Occasional check-ins', 'Self-assessment with manager input']
-        },
-        {
-          id: 'challenge_approach',
-          question: 'How do you approach new challenges?',
-          options: ['Research thoroughly first', 'Jump in and learn by doing', 'Seek guidance from experts', 'Collaborate with team']
-        },
-        {
-          id: 'mentorship_preference',
-          question: 'What\'s your mentorship preference?',
-          options: ['Need active mentorship', 'Appreciate occasional guidance', 'Prefer independent learning', 'Like to mentor others too']
-        }
-      ]
-    },
-    {
-      name: 'Career Goals',
-      description: 'Your professional aspirations',
-      questions: [
-        {
-          id: 'career_focus',
-          question: 'What\'s most important in your career?',
-          options: ['Rapid career growth', 'Technical mastery', 'Work-life balance', 'Making impact']
-        },
-        {
-          id: 'five_year_vision',
-          question: 'Where do you see yourself in 5 years?',
-          options: ['Leadership/management role', 'Senior technical expert', 'Starting own venture', 'Still exploring options']
-        },
-        {
-          id: 'leadership_interest',
-          question: 'How interested are you in leadership?',
-          options: ['Very interested - want to lead teams', 'Somewhat interested - maybe later', 'Not interested - prefer technical', 'Interested in thought leadership']
-        },
-        {
-          id: 'specialist_generalist',
-          question: 'What career path appeals to you?',
-          options: ['Deep specialist in one area', 'Generalist across domains', 'T-shaped (deep + broad)', 'Explore different roles']
-        },
-        {
-          id: 'company_size_preference',
-          question: 'What company size interests you?',
-          options: ['Small startup (10-50)', 'Growing company (50-500)', 'Large corporation (500+)', 'No preference']
-        }
-      ]
-    },
-    {
-      name: 'Communication',
-      description: 'How you interact',
-      questions: [
-        {
-          id: 'communication_style',
-          question: 'How do you communicate at work?',
-          options: ['Direct and concise', 'Detailed and thorough', 'Collaborative and inclusive', 'Adaptive to audience']
-        },
-        {
-          id: 'meeting_preference',
-          question: 'What\'s your meeting preference?',
-          options: ['Love brainstorming meetings', 'Prefer async communication', 'Short focused meetings only', 'Regular team syncs']
-        },
-        {
-          id: 'written_verbal',
-          question: 'How do you prefer to communicate?',
-          options: ['Written (email, docs)', 'Verbal (calls, in-person)', 'Chat/messaging', 'Mix of all']
-        },
-        {
-          id: 'presentation_comfort',
-          question: 'How comfortable are you presenting?',
-          options: ['Love presenting to large groups', 'Comfortable with small groups', 'Prefer written communication', 'Willing but need preparation']
-        },
-        {
-          id: 'update_frequency',
-          question: 'How often should you update stakeholders?',
-          options: ['Daily standups', 'Weekly updates', 'Milestone-based', 'When asked']
-        }
-      ]
-    },
-    {
-      name: 'Gamified Assessment',
-      description: 'Interactive games and challenges',
-      questions: []
+    if (currentStep < GAMIFIED_SCENARIOS.length - 1) {
+      setCurrentStep(curr => curr + 1);
+    } else {
+      finishAssessment();
     }
-  ];
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+  const finishAssessment = () => {
+    setCalculating(true);
+    // Simulate AI processing time
+    setTimeout(() => {
+      setCalculating(false);
+      setIsFinished(true);
+    }, 2000);
+  };
+
+  const submitResults = async () => {
     setLoading(true);
-
-    // Check if all questions are answered
-    const unanswered = Object.values(answers).filter(a => !a).length;
-    if (unanswered > 0) {
-      setError(`Please answer all questions (${unanswered} remaining)`);
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await fetch('/api/student/cultural-test', {
+      const res = await fetch('/api/student/cultural-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(answers)
+        body: JSON.stringify({
+          scores: scores,
+          persona: persona.name
+        })
       });
-
-      if (response.ok) {
-        alert('Cultural fitness test completed successfully!');
-        router.push('/student/dashboard');
-      } else {
-        const data = await response.json();
-        setError(data.error || 'Failed to submit test');
+      
+      if (!res.ok) {
+        throw new Error('Failed to save assessment');
       }
+      
+      router.push('/student/dashboard');
     } catch (err) {
-      setError('An error occurred. Please try again.');
-    } finally {
+      console.error(err);
       setLoading(false);
     }
   };
 
-  const currentCategoryData = categories[currentCategory];
-  
-  // Calculate overall progress based on answered questions across all categories
-  const totalQuestions = categories.reduce((sum, cat) => sum + cat.questions.length, 0);
-  const answeredQuestions = Object.values(answers).filter(answer => answer && answer.trim() !== '').length;
-  const progress = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
-  
-  // Category-specific progress
-  const answeredInCategory = currentCategoryData.questions.length > 0 
-    ? currentCategoryData.questions.filter(q => answers[q.id]).length 
-    : 0;
-  const totalInCategory = currentCategoryData.questions.length;
+  const getPersona = () => {
+    const dominantTrait = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+    switch (dominantTrait) {
+      case 'teamwork': return { name: "The Diplomat", icon: <Users className="w-12 h-12 text-blue-400" />, desc: "You excel at communication and keeping the team aligned." };
+      case 'innovation': return { name: "The Trailblazer", icon: <Zap className="w-12 h-12 text-yellow-400" />, desc: "You love creative solutions and aren't afraid of trying new things." };
+      case 'leadership': return { name: "The Architect", icon: <Target className="w-12 h-12 text-purple-400" />, desc: "You take charge and guide projects to successful completion." };
+      case 'pragmatism': return { name: "The Optimizer", icon: <Shield className="w-12 h-12 text-green-400" />, desc: "You prefer safe, practical, and efficient solutions to get things done." };
+      default: return { name: "The Versatile Developer", icon: <Code className="w-12 h-12 text-gray-400" />, desc: "You have a balanced approach to all situations." };
+    }
+  };
 
-  const Question = ({ id, question, options }) => (
-    <div className="mb-10 p-6 bg-white/[0.01] border border-white/5 rounded-2xl">
-      <label className="block text-white font-bold mb-5 text-lg">{question}</label>
-      <div className="space-y-3">
-        {options.map((option) => {
-          const isSelected = answers[id] === option;
-          return (
-            <label 
-              key={option} 
-              className={`flex items-center p-4 rounded-xl cursor-pointer transition-all border ${
-                isSelected 
-                  ? 'border-white bg-white/10' 
-                  : 'border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/30'
-              }`}
-              onClick={(e) => {
-                e.preventDefault();
-                setAnswers({ ...answers, [id]: option });
-              }}
-            >
-              <div className={`w-5 h-5 rounded-full border-2 mr-4 flex items-center justify-center ${isSelected ? 'border-white bg-white text-black' : 'border-white/30'}`}>
-                {isSelected && <Check size={12} strokeWidth={4} />}
-              </div>
-              <span className={`font-medium ${isSelected ? 'text-white' : 'text-gray-300'}`}>{option}</span>
-            </label>
-          );
-        })}
-      </div>
-    </div>
-  );
+  const persona = getPersona();
 
   return (
-    <div className="min-h-screen relative font-sans text-gray-200">
-      <AnimatedCyberBackground />
+    <div className="flex h-screen bg-black overflow-hidden">
       <Sidebar role="student" />
       
-      <div className="ml-[260px] relative z-10 pb-20">
-        {/* Header */}
-        <header className="border-b border-white/5 bg-[#050505]/50 backdrop-blur-xl sticky top-0 z-20">
-          <div className="max-w-4xl mx-auto px-8 py-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-                  <BrainCircuit size={28} className="text-white/70" />
-                  Cultural Fitness Test
-                </h1>
-                <p className="text-gray-400 font-medium mt-1">25 questions to understand your work preferences.</p>
-              </div>
-              <button
-                onClick={() => router.push('/student/dashboard')}
-                className="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold border border-white/10 flex items-center gap-2 text-sm transition-colors"
-              >
-                <ArrowLeft size={18} /> Back
-              </button>
-            </div>
-          </div>
-        </header>
-
-        <PageTransition className="max-w-4xl mx-auto px-8 py-10">
-          {/* Progress Bar */}
-          <AnimatedCard index={0} className="mb-8 p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Overall Progress</span>
-              <span className="text-gray-400 text-sm font-medium">{answeredQuestions} / {totalQuestions} answered</span>
-            </div>
-            <div className="w-full bg-[#0a0a0a] rounded-full h-1.5 border border-white/10 overflow-hidden">
-              <div
-                className="h-full bg-white transition-all duration-500 ease-out"
-                style={{ width: `${progress}%`, boxShadow: '0 0 10px rgba(255,255,255,0.5)' }}
-              ></div>
-            </div>
-            <div className="mt-3 text-right">
-              <span className="text-xl font-light text-white">{Math.round(progress)}%</span>
-            </div>
-          </AnimatedCard>
-
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {categories.map((cat, idx) => {
-              const categoryAnswered = cat.questions.filter(q => answers[q.id]).length;
-              const categoryTotal = cat.questions.length;
-              const isComplete = categoryTotal > 0 && categoryAnswered === categoryTotal;
-              const isActive = currentCategory === idx;
+      <main className="flex-1 relative overflow-y-auto">
+        <AnimatedCyberBackground />
+        
+        <PageTransition>
+          <div className="min-h-screen p-8 mt-16 relative z-10">
+            <div className="max-w-4xl mx-auto">
               
-              return (
+              {/* Header */}
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-neon-blue to-neon-purple cyberpunk-font">
+                    Gamified Assessment
+                  </h1>
+                  <p className="text-gray-400 mt-2 flex items-center">
+                    <Gamepad2 className="w-4 h-4 mr-2" />
+                    Determine your ideal cultural fit through workplace scenarios
+                  </p>
+                </div>
                 <button
-                  key={idx}
-                  onClick={() => setCurrentCategory(idx)}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all border ${
-                    isActive
-                      ? `bg-white text-black border-white`
-                      : isComplete
-                      ? 'bg-[#0a0a0a] text-white border-white/30 hover:bg-white/10 flex items-center gap-2'
-                      : 'bg-[#050505] text-gray-500 border-white/10 hover:border-white/30 hover:text-gray-300'
-                  }`}
+                  onClick={() => router.back()}
+                  className="flex items-center px-4 py-2 text-gray-400 hover:text-white transition-colors bg-white/5 rounded-lg border border-white/10 hover:border-white/20"
                 >
-                  {isComplete && !isActive && <CheckCircle size={14} className="text-white" />}
-                  {cat.name} {categoryTotal > 0 && `(${categoryAnswered}/${categoryTotal})`}
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
                 </button>
-              );
-            })}
-          </div>
-
-          <AnimatedCard index={1} className="p-8 bg-white/[0.02] border border-white/5 rounded-2xl">
-            {error && (
-              <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl font-medium flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                {error}
               </div>
-            )}
 
-            {/* Category Header */}
-            <div className="mb-10 pb-6 border-b border-white/5">
-              <h2 className="text-2xl font-bold text-white mb-2">{currentCategoryData.name}</h2>
-              <p className="text-gray-400 text-sm">{currentCategoryData.description}</p>
-              {currentCategoryData.questions.length > 0 && (
-                <div className="mt-6">
-                  <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">
-                    <span>Category Progress</span>
-                    <span>{answeredInCategory} / {totalInCategory}</span>
+              {!isFinished && !calculating ? (
+                /* Scenario UI */
+                <AnimatedCard className="p-8 border-neon-blue/30 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gray-800">
+                    <div 
+                      className="h-full bg-gradient-to-r from-neon-blue to-neon-purple transition-all duration-500"
+                      style={{ width: `${((currentStep + 1) / GAMIFIED_SCENARIOS.length) * 100}%` }}
+                    />
                   </div>
-                  <div className="w-full bg-[#0a0a0a] rounded-full h-1 border border-white/5">
-                    <div
-                      className={`h-full bg-white transition-all duration-300 ease-out`}
-                      style={{ width: `${(answeredInCategory / totalInCategory) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-            </div>
 
-            {/* Questions or Gamified Section */}
-            <form onSubmit={handleSubmit}>
-              {currentCategoryData.questions.length > 0 ? (
-                <div className="space-y-6">
-                  {currentCategoryData.questions.map((q) => (
-                    <Question key={q.id} {...q} />
-                  ))}
-                </div>
+                  <div className="mb-6 flex justify-between items-center mt-4">
+                    <span className="text-neon-blue font-mono text-sm">
+                      Level {currentStep + 1} of {GAMIFIED_SCENARIOS.length}
+                    </span>
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-white mb-4">{GAMIFIED_SCENARIOS[currentStep].title}</h2>
+                  <p className="text-gray-300 text-lg mb-6 leading-relaxed border-l-4 border-neon-purple pl-4">
+                    {GAMIFIED_SCENARIOS[currentStep].context}
+                  </p>
+                  
+                  <h3 className="text-xl text-neon-action font-semibold mb-6">
+                    {GAMIFIED_SCENARIOS[currentStep].challenge}
+                  </h3>
+
+                  <div className="grid gap-4">
+                    {GAMIFIED_SCENARIOS[currentStep].choices.map((choice, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleSelection(choice.attributes)}
+                        className="text-left p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-neon-blue/10 hover:border-neon-blue/50 transition-all duration-200 group flex items-start"
+                      >
+                        <div className="w-6 h-6 rounded-full border border-gray-500 mr-4 flex-shrink-0 group-hover:border-neon-blue flex items-center justify-center mt-1">
+                          <div className="w-3 h-3 rounded-full bg-neon-blue opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        <span className="text-gray-200 group-hover:text-white text-lg">
+                          {choice.text}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </AnimatedCard>
+              ) : calculating ? (
+                /* Calculating UI */
+                <AnimatedCard className="p-12 text-center border-neon-purple/50 flex flex-col items-center justify-center min-h-[400px]">
+                  <BrainCircuit className="w-16 h-16 text-neon-purple animate-pulse mb-6" />
+                  <h2 className="text-2xl font-bold text-white mb-2">Analyzing Your Decisions...</h2>
+                  <p className="text-gray-400 mb-8">Computing your developer persona based on your instincts.</p>
+                  <Loader2 className="w-8 h-8 text-neon-blue animate-spin" />
+                </AnimatedCard>
               ) : (
-                /* Gamified Assessment Placeholder */
-                <div className="text-center py-16">
-                  <div className="mb-6">
-                    <Gamepad2 size={64} className="mx-auto text-white/20 mb-6" />
-                    <h3 className="text-2xl font-bold text-white mb-3">Gamified Assessment Section</h3>
-                    <p className="text-gray-400 text-sm mb-8">Interactive games and challenges will be available here.</p>
+                /* Result UI */
+                <AnimatedCard className="p-8 border-green-500/50 text-center">
+                  <div className="mb-6 flex justify-center">
+                    <div className="w-24 h-24 rounded-full bg-black border-2 border-white/10 flex items-center justify-center shadow-[0_0_30px_rgba(0,0,0,0.5)] relative">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-neon-blue/20 to-neon-purple/20 animate-pulse" />
+                      {persona.icon}
+                    </div>
                   </div>
                   
-                  {/* Results Section Placeholder */}
-                  <div className="bg-white/5 border border-white/10 rounded-2xl p-8 max-w-lg mx-auto">
-                    <h4 className="text-lg font-bold text-white mb-6 flex items-center justify-center gap-2">
-                      <BrainCircuit size={18} className="text-white/50" /> Assessment Results
-                    </h4>
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-6">
-                        <div className="text-4xl font-light text-white tracking-tight mb-2">0</div>
-                        <div className="text-xs font-bold uppercase tracking-widest text-gray-500">Games Done</div>
-                      </div>
-                      <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-6">
-                        <div className="text-4xl font-light text-white tracking-tight mb-2">0%</div>
-                        <div className="text-xs font-bold uppercase tracking-widest text-gray-500">Overall Score</div>
-                      </div>
-                    </div>
-                    <p className="text-gray-500 text-xs italic">Results will be displayed here after completion.</p>
+                  <h2 className="text-3xl font-bold text-white mb-2">Assessment Complete!</h2>
+                  <p className="text-gray-400 mb-6">Your responses indicate your developer persona is:</p>
+                  
+                  <div className="inline-block px-6 py-3 rounded-full bg-white/5 border border-white/10 mb-8">
+                    <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-neon-blue to-neon-purple">
+                      {persona.name}
+                    </span>
                   </div>
-                </div>
+                  
+                  <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    {persona.desc}
+                  </p>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                    {Object.entries(scores).map(([trait, score]) => (
+                      <div key={trait} className="bg-black/50 p-4 rounded-xl border border-white/5">
+                        <div className="text-gray-400 capitalize text-sm mb-2">{trait}</div>
+                        <div className="w-full bg-gray-800 rounded-full h-2">
+                          <div 
+                            className="bg-gradient-to-r from-neon-blue to-neon-purple h-2 rounded-full"
+                            style={{ width: `${Math.max(10, Math.min(100, (score + 5) * 10))}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={submitResults}
+                    disabled={loading}
+                    className="flex justify-center items-center w-full max-w-md mx-auto py-4 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple text-white font-bold hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                    ) : (
+                      <>
+                        <Award className="w-5 h-5 mr-2" />
+                        Claim Badge & Complete
+                      </>
+                    )}
+                  </button>
+                </AnimatedCard>
               )}
 
-              {/* Navigation */}
-              <div className="mt-10 pt-8 border-t border-white/5 flex flex-wrap justify-between items-center gap-4">
-                <div className="flex gap-3">
-                  {currentCategory > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setCurrentCategory(currentCategory - 1)}
-                      className="px-6 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-sm transition-colors flex items-center gap-2"
-                    >
-                      <ChevronLeft size={16} /> Previous
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex gap-3 ml-auto">
-                  {currentCategory < categories.length - 1 ? (
-                    <button
-                      type="button"
-                      onClick={() => setCurrentCategory(currentCategory + 1)}
-                      className="px-6 py-3 bg-white text-black hover:bg-gray-200 rounded-xl font-bold text-sm transition-colors flex items-center gap-2"
-                    >
-                      Next Category <ChevronRight size={16} />
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      disabled={loading || Object.values(answers).filter(a => !a).length > 0}
-                      className="px-8 py-3 bg-white text-black hover:bg-gray-200 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      {loading ? 'Submitting...' : 'Submit Assessment'} <CheckCircle size={16} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            </form>
-          </AnimatedCard>
+            </div>
+          </div>
         </PageTransition>
-      </div>
+      </main>
+
     </div>
   );
-}
+} 

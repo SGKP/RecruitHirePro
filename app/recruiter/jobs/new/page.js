@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
+import Script from 'next/script';
 
 export default function NewJob() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState(null); // tracking payment status visually
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -16,10 +18,74 @@ export default function NewJob() {
     required_skills: ''
   });
 
-  const handleSubmit = async (e) => {
+  const handlePaymentAndSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
+    try {
+      // 1. Create Razorpay Order
+      setPaymentStatus('Initializing Payment...');
+      const orderRes = await fetch('/api/razorpay/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: 499 }) // Charging ₹499 for a standard job post !
+      });
+      const orderData = await orderRes.json();
+
+      if (!orderData.success) {
+        throw new Error('Failed to start payment');
+      }
+
+      // 2. Open Razorpay Widget
+      const options = {
+        key: process.env.NEXT_PUBLIC_KEY_ID, 
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: "RecruitHirePro",
+        description: `Job Posting: ${formData.title}`,
+        order_id: orderData.order.id,
+        handler: async function (response) {
+          setPaymentStatus('Verifying Payment...');
+          
+          // 3. Verify Payment
+          const verifyRes = await fetch('/api/razorpay/verify', {
+            method: 'POST',
+            body: JSON.stringify(response),
+            headers: { 'Content-Type': 'application/json' },
+          });
+
+          const verifyResult = await verifyRes.json();
+          
+          if (verifyResult.success) {
+             setPaymentStatus('Payment Verified! Saving Job...');
+             await saveJobToDatabase();
+          } else {
+             alert('Payment verification failed.');
+             setLoading(false);
+             setPaymentStatus(null);
+          }
+        },
+        theme: { color: "#6366f1" },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+            setPaymentStatus(null);
+          }
+        }
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+
+    } catch (error) {
+      console.error(error);
+      alert('Error initializing payment checkout.');
+      setLoading(false);
+      setPaymentStatus(null);
+    }
+  };
+
+  const saveJobToDatabase = async () => {
     try {
       const skills = formData.required_skills.split(',').map(s => s.trim()).filter(s => s);
       
@@ -33,15 +99,15 @@ export default function NewJob() {
       });
 
       if (response.ok) {
-        alert(' Job posted successfully!');
+        alert('Job Paid for and Posted Successfully!');
         router.push('/recruiter/jobs');
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to post job');
+        alert(data.error || 'Failed to finish posting job to database');
+        setLoading(false);
       }
     } catch (error) {
-      alert('Error posting job');
-    } finally {
+      alert('Error communicating with database after payment!');
       setLoading(false);
     }
   };
@@ -50,8 +116,8 @@ export default function NewJob() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-white/10 mx-auto mb-4"></div>
-          <p className="text-gray-300 text-lg">Posting job...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-500 mx-auto mb-4"></div>
+          <p className="text-gray-300 text-lg">{paymentStatus || 'Processing...'}</p>
         </div>
       </div>
     );
@@ -59,6 +125,7 @@ export default function NewJob() {
 
   return (
     <div className="min-h-screen">
+      <Script id="razorpay-checkout-js" src="https://checkout.razorpay.com/v1/checkout.js" />
       <Sidebar role="recruiter" />
       <div className="ml-[260px]">
         {/* Header */}
@@ -81,7 +148,7 @@ export default function NewJob() {
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="card-modern p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handlePaymentAndSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">
                 Job Title *

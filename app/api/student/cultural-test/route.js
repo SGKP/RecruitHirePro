@@ -19,7 +19,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const answers = await request.json();
+    const data = await request.json();
 
     await connectDB();
 
@@ -29,13 +29,28 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Student profile not found' }, { status: 404 });
     }
 
-    student.cultural_fitness = answers;
-    student.profile_completion = Math.max(student.profile_completion, 80);
+    student.gamified_assessment = {
+      scores: data.scores,
+      persona: data.persona
+    };
+    
+    // Calculate retention_score directly from the gamified assessment
+    const scores = data.scores || { pragmatism: 0, teamwork: 0, innovation: 0, leadership: 0 };
+    const totalRaw = (scores.pragmatism || 0) +
+                     (scores.innovation || 0) +
+                     (scores.teamwork || 0) +
+                     (scores.leadership || 0);
+
+    // Basic heuristic: 50 + (totalRaw * 1.5), capped at 95
+    const computedRetentionScore = Math.min(95, Math.max(50, 50 + (totalRaw * 1.5)));
+    student.retention_score = Math.round(computedRetentionScore);
+
+    student.profile_completion = Math.max(student.profile_completion || 0, 80);
     
     await student.save();
 
     return NextResponse.json({
-      message: 'Cultural fitness test completed successfully'
+      message: 'Gamified assessment completed successfully'
     });
 
   } catch (error) {

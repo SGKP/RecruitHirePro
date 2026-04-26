@@ -56,6 +56,16 @@ const studentSchema = new mongoose.Schema({
     risk_tolerance: String,
     collaboration_style: String
   },
+  gamified_assessment: {
+    scores: {
+      pragmatism: Number,
+      teamwork: Number,
+      innovation: Number,
+      leadership: Number
+    },
+    persona: String
+  },
+  retention_score: Number,
   recommendations: [{
     recommender_name: {
       type: String,

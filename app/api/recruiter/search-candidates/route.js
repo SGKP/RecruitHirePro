@@ -5,11 +5,12 @@ import connectDB from '@/lib/mongodb';
 import Student from '@/models/Student';
 import Job from '@/models/Job';
 import User from '@/models/User';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 import { calculateSemanticSkillMatch } from '@/lib/skillSemantics';
+import { getRedisClient } from '@/lib/redis';
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialize Groq AI
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function GET(request) {
   try {
@@ -41,6 +42,21 @@ export async function GET(request) {
     const location = searchParams.get('location');
     const interests = searchParams.get('interests');
 
+    // 1. FAST PATH: Check Redis Cache First
+    const redis = await getRedisClient();
+    const cacheKey = `recruiter:search:${job_id}:${searchParams.toString()}`;
+    
+    if (redis && redis.isOpen) {
+      const cachedResults = await redis.get(cacheKey);
+      // Temporarily bypassing cache read so we can test the new Groq API!
+      // if (cachedResults) {
+      //   console.log('⚡ Serving recruiter search results from Redis Cache');
+      //   return NextResponse.json(JSON.parse(cachedResults));
+      // }
+    }
+
+    // 2. SLOW PATH: If not in cache, query MongoDB and hit Gemini APIs
+    console.log('🐌 Cache MISS. Running heavy MongoDB & AI queries...');
     await connectDB();
 
     const job = await Job.findById(job_id);
@@ -53,30 +69,49 @@ export async function GET(request) {
 
     // Calculate match scores for each student (with AI-powered retention)
     const candidatesWithScores = await Promise.all(students.map(async student => {
-      //  SEMANTIC SKILL MATCHING - Understands related skills
+      // STANDARD KEYWORD MATCHING - Exact/Partial matches only
       const studentSkills = student.resume_parsed_data?.skills || [];
       const requiredSkills = job.required_skills || [];
       
-      // Use semantic matching instead of simple keyword matching
-      const skillMatchResult = calculateSemanticSkillMatch(requiredSkills, studentSkills);
-      const skillMatchScore = skillMatchResult.score;
-      const matchedSkills = skillMatchResult.matchedSkills;
-      const unmatchedSkills = skillMatchResult.unmatchedSkills;
+      let matchedSkills = [];
+      let unmatchedSkills = [];
+      let match_score = 0;
 
+      if (requiredSkills.length > 0) {
+        // Standard keyword matching (case-insensitive)
+        const stdStudentSkills = studentSkills.map(s => s.toLowerCase().trim());
+        
+        requiredSkills.forEach(reqSkill => {
+          const stdReqSkill = reqSkill.toLowerCase().trim();
+          if (stdStudentSkills.some(s => s.includes(stdReqSkill) || stdReqSkill.includes(s))) {
+            matchedSkills.push(reqSkill);
+          } else {
+            unmatchedSkills.push(reqSkill);
+          }
+        });
+
+        match_score = (matchedSkills.length / requiredSkills.length) * 100;
+      }
+      
       // Extract education data
       const education = student.resume_parsed_data?.education || {};
       const studentGPA = education.gpa ? parseFloat(education.gpa) : null;
       const studentDegree = education.degree || '';
       const studentGradYear = education.graduation_year || null;
 
-      // Match score is based ONLY on skills
-      const match_score = skillMatchScore;
-
       //  AI-POWERED RETENTION SCORE CALCULATION 
-      const retentionResult = await calculateAIRetentionScore(student.cultural_fitness);
+      const retentionResult = await calculateAIRetentionScore(student.cultural_fitness, student.gamified_assessment);
       const retentionScore = retentionResult.score;
       const retentionReasoning = retentionResult.reasoning;
       const aiPowered = retentionResult.ai_powered;
+
+      // Console logging the scores as requested
+      console.log(`\n======================================================`);
+      console.log(`📝 Candidate: ${student.user_id?.name || 'Unknown'}`);
+      console.log(`🎯 Semantic Match Score : ${Math.round(match_score)}/100`);
+      console.log(`🧠 AI Retention Score   : ${Math.round(retentionScore)}/100`);
+      console.log(`➕ Total Combined M+R   : ${Math.round(match_score) + Math.round(retentionScore)}/200`);
+      console.log(`------------------------------------------------------`);
 
       return {
         student_id: student._id.toString(),
@@ -102,7 +137,8 @@ export async function GET(request) {
         github_repos: student.github_data?.repos_count || 0,
         gpa_numeric: studentGPA,
         location: student.location || 'N/A',
-        interests: student.interests || []
+        interests: student.interests || [],
+        gamified_assessment: student.gamified_assessment || null
       };
     }));
 
@@ -208,7 +244,7 @@ export async function GET(request) {
       return gpaB - gpaA;
     });
 
-    return NextResponse.json({
+    const responsePayload = {
       job: {
         id: job._id,
         title: job.title,
@@ -216,7 +252,15 @@ export async function GET(request) {
       },
       candidates: filteredCandidates,
       total: filteredCandidates.length
-    });
+    };
+
+    // 3. CACHE THE RESULTS: Save the heavy calculated list to Redis for 1 hour (3600 seconds)
+    if (redis && redis.isOpen) {
+      await redis.setEx(cacheKey, 3600, JSON.stringify(responsePayload));
+      console.log(`💾 Saved ${filteredCandidates.length} candidates to Redis cache.`);
+    }
+
+    return NextResponse.json(responsePayload);
 
   } catch (error) {
     console.error('Search Candidates API Error:', error);
@@ -227,34 +271,51 @@ export async function GET(request) {
   }
 }
 
-// AI-Powered Retention Score Calculation using Gemini
-async function calculateAIRetentionScore(culturalFitness) {
-  if (!culturalFitness) {
+// AI-Powered Retention Score Calculation using Groq
+async function calculateAIRetentionScore(culturalFitness, gamifiedAssessment) {
+  if (!culturalFitness && !gamifiedAssessment) {
     return {
       score: 50,
-      reasoning: 'No cultural fitness data available',
+      reasoning: 'No cultural or gamified assessment data available',
       ai_powered: false
     };
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-
-    const prompt = `Analyze this candidate's cultural fitness profile and predict retention probability (0-100).
-
-PROFILE:
+    let profileText = 'PROFILE:\n';
+    
+    if (culturalFitness) {
+      profileText += `
 Team: ${culturalFitness.team_preference || 'N/A'}, Conflict: ${culturalFitness.conflict_handling || 'N/A'}, Collaboration: ${culturalFitness.collaboration_style || 'N/A'}
 Work-Life: ${culturalFitness.work_life_balance || 'N/A'}, Environment: ${culturalFitness.work_environment || 'N/A'}
 Learning: ${culturalFitness.learning_preference || 'N/A'}, Feedback: ${culturalFitness.feedback_preference || 'N/A'}
 Career: ${culturalFitness.career_focus || 'N/A'}, Vision: ${culturalFitness.five_year_vision || 'N/A'}
 Communication: ${culturalFitness.communication_style || 'N/A'}
+`;
+    }
+
+    if (gamifiedAssessment) {
+      profileText += `
+Gamified Persona: ${gamifiedAssessment.persona || 'N/A'}
+Gamified Scores: Pragmatism (${gamifiedAssessment.scores?.pragmatism || 0}), Teamwork (${gamifiedAssessment.scores?.teamwork || 0}), Innovation (${gamifiedAssessment.scores?.innovation || 0}), Leadership (${gamifiedAssessment.scores?.leadership || 0})
+`;
+    }
+
+    const prompt = `Analyze this candidate's profile and predict retention probability (0-100) combining cultural fitness and gamified scenario logic:
+
+${profileText}
 
 Respond with ONLY a JSON object:
 {"score": <0-100>, "reason": "<brief 1-sentence reason>"}`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: 'user', content: prompt }],
+      model: 'llama-3.1-8b-instant',
+      temperature: 0.1,
+      response_format: { type: 'json_object' }
+    });
+
+    const text = chatCompletion.choices[0]?.message?.content || '{}';
 
     // Parse response
     const cleanText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
@@ -269,20 +330,38 @@ Respond with ONLY a JSON object:
   } catch (error) {
     console.error('AI Retention Error:', error);
     // Fallback to basic calculation
-    return calculateFallbackRetention(culturalFitness);
+    return calculateFallbackRetention(culturalFitness, gamifiedAssessment);
   }
 }
 
 // Fallback calculation if AI fails
-function calculateFallbackRetention(culturalFitness) {
+function calculateFallbackRetention(culturalFitness, gamifiedAssessment) {
   let score = 50;
   const strengths = [];
   const concerns = [];
+
+  if (gamifiedAssessment && gamifiedAssessment.persona) {
+    // Determine score based on Gamified Assessment
+    const totalRaw = (gamifiedAssessment.scores?.pragmatism || 0) +
+                     (gamifiedAssessment.scores?.innovation || 0) +
+                     (gamifiedAssessment.scores?.teamwork || 0) +
+                     (gamifiedAssessment.scores?.leadership || 0);
+
+    // Basic heuristic: 50 + (Raw points / max possible points (approx 30)) * 50
+    // Give them a bump for simply completing it.
+    score = Math.min(95, Math.max(50, 50 + (totalRaw * 1.5)));
+
+    return {
+      score: Math.round(score),
+      reasoning: `Gamified Assessment Completed (Persona: ${gamifiedAssessment.persona}). API unavailable so using fallback formula.`,
+      ai_powered: false
+    };
+  }
   
   if (!culturalFitness) {
     return { 
       score: 50, 
-      reasoning: 'No cultural fitness assessment completed. Score based on baseline metrics only.', 
+      reasoning: 'No cultural fitness assessment completed. Default retention score assigned.', 
       ai_powered: false 
     };
   }

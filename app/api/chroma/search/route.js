@@ -5,11 +5,11 @@ import connectDB from '@/lib/mongodb';
 import Student from '@/models/Student';
 import Job from '@/models/Job';
 import { searchCandidatesInChroma } from '@/lib/chromadb';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 import { calculateSemanticSkillMatch } from '@/lib/skillSemantics';
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialize Groq AI
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 /**
  * Semantic Search for Candidates using ChromaDB + AI Retention
@@ -139,7 +139,7 @@ export async function GET(request) {
           : semanticScore;
 
         // AI-Powered Retention Score
-        const retentionResult = await calculateAIRetentionScore(student.cultural_fitness);
+        const retentionResult = await calculateAIRetentionScore(student.cultural_fitness, student.gamified_assessment);
 
         // Extract education
         const education = student.resume_parsed_data?.education || {};
@@ -207,53 +207,74 @@ export async function GET(request) {
   }
 }
 
-// AI-Powered Retention Score Calculation using Gemini
-async function calculateAIRetentionScore(culturalFitness) {
-  // If no cultural fitness data, return fallback
-  if (!culturalFitness || !Array.isArray(culturalFitness) || culturalFitness.length === 0) {
+// AI-Powered Retention Score Calculation using Groq
+async function calculateAIRetentionScore(culturalFitness, gamifiedAssessment) {
+  if (!culturalFitness && !gamifiedAssessment) {
     return {
       score: 50,
-      reasoning: 'No cultural fitness assessment completed. Default retention score assigned.',
+      reasoning: 'No cultural or gamified assessment data available. Default retention score assigned.',
       ai_powered: false
     };
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    let profileText = 'PROFILE:\n';
+    
+    // Add Cultural Fitness context if it exists (for Semantic search it might be an array or an object)
+    if (culturalFitness) {
+      if (Array.isArray(culturalFitness) && culturalFitness.length > 0) {
+        profileText += `\nCultural Fitness Responses:\n${culturalFitness.map((cf, idx) => `${idx + 1}. ${cf.question}\nAnswer: ${cf.answer}`).join('\n\n')}\n`;
+      } else if (!Array.isArray(culturalFitness)) {
+        profileText += `
+Team: ${culturalFitness.team_preference || 'N/A'}, Conflict: ${culturalFitness.conflict_handling || 'N/A'}, Collaboration: ${culturalFitness.collaboration_style || 'N/A'}
+Work-Life: ${culturalFitness.work_life_balance || 'N/A'}, Environment: ${culturalFitness.work_environment || 'N/A'}
+Learning: ${culturalFitness.learning_preference || 'N/A'}, Feedback: ${culturalFitness.feedback_preference || 'N/A'}
+Career: ${culturalFitness.career_focus || 'N/A'}, Vision: ${culturalFitness.five_year_vision || 'N/A'}
+Communication: ${culturalFitness.communication_style || 'N/A'}
+`;
+      }
+    }
 
-    const prompt = `You are an expert HR analyst. Analyze this candidate's cultural fitness responses and predict their retention likelihood.
+    if (gamifiedAssessment) {
+      profileText += `
+Gamified Persona: ${gamifiedAssessment.persona || 'N/A'}
+Gamified Scores: Pragmatism (${gamifiedAssessment.scores?.pragmatism || 0}), Teamwork (${gamifiedAssessment.scores?.teamwork || 0}), Innovation (${gamifiedAssessment.scores?.innovation || 0}), Leadership (${gamifiedAssessment.scores?.leadership || 0})
+`;
+    }
 
-Cultural Fitness Responses:
-${culturalFitness.map((cf, idx) => `${idx + 1}. ${cf.question}\nAnswer: ${cf.answer}`).join('\n\n')}
+    const prompt = `Analyze this candidate's profile and predict retention probability (0-100) combining cultural fitness and gamified scenario logic:
 
-Provide:
-1. A retention score from 0-100 (higher = more likely to stay long-term)
-2. Brief reasoning (2-3 sentences focusing on key strengths and concerns)
+${profileText}
 
-Format your response as:
-SCORE: [number]
-REASONING: [your analysis]`;
+Respond with ONLY a JSON object:
+{"score": <0-100>, "reason": "<brief 1-sentence reason>"}`;
 
-    const result = await model.generateContent(prompt);
-    const response = result.response.text();
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: 'user', content: prompt }],
+      model: 'llama-3.1-8b-instant',
+      temperature: 0.1,
+      response_format: { type: 'json_object' }
+    });
+
+    const text = chatCompletion.choices[0]?.message?.content || '{}';
 
     // Parse response
-    const scoreMatch = response.match(/SCORE:\s*(\d+)/i);
-    const reasoningMatch = response.match(/REASONING:\s*(.+)/is);
-
-    const score = scoreMatch ? parseInt(scoreMatch[1]) : 50;
-    const reasoning = reasoningMatch ? reasoningMatch[1].trim() : 'AI analysis completed';
+    const cleanText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const aiResult = JSON.parse(cleanText);
 
     return {
-      score: Math.min(100, Math.max(0, score)),
-      reasoning,
+      score: Math.max(0, Math.min(100, aiResult.score || 50)),
+      reasoning: aiResult.reason || 'AI analysis completed',
       ai_powered: true
     };
 
   } catch (error) {
-    console.error('Gemini AI Error:', error);
-    // Fallback to enhanced algorithm
-    return calculateFallbackRetention(culturalFitness);
+    console.error('Groq AI Error:', error);
+    return {
+      score: 50,
+      reasoning: 'API unavailable so using fallback formula.',
+      ai_powered: false
+    };
   }
 }
 
